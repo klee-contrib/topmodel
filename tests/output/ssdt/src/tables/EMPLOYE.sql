@@ -3,7 +3,7 @@
 ----
 
 -- ===========================================================================================
---   Description		:	Création de la table EMPLOYE.
+--  Description          : Création de la table EMPLOYE.
 -- ===========================================================================================
 
 create table EMPLOYE (
@@ -20,12 +20,12 @@ create table EMPLOYE (
 	constraint UK_EMPLOYE_EMP_MATRICULE unique nonclustered (EMP_MATRICULE asc))
 go
 
-/* Index on foreign key column for EMPLOYE.LIE_ID */
+/* Index sur la colonne de clé étrangère EMPLOYE.LIE_ID */
 create nonclustered index IDX_EMP_LIE_ID_FK
 	on EMPLOYE (LIE_ID asc)
 go
 
-/* Index on foreign key column for EMPLOYE.PER_ID */
+/* Index sur la colonne de clé étrangère EMPLOYE.PER_ID */
 create nonclustered index IDX_EMP_PER_ID_FK
 	on EMPLOYE (PER_ID asc)
 go

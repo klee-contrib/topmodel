@@ -25,21 +25,21 @@ import restaurant.jpa_server.entities.restaurant.CategoriePlat;
 public class MenuRead implements Serializable {
 
 	/**
-	 * Serial ID.
+	 * ID de sérialisation.
 	 */
 	@Serial
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Identifiant du menu.
-	 * Alias of {@link restaurant.jpa_server.entities.restaurant.Menu#getId() Menu#getId()}
+	 * Alias de {@link restaurant.jpa_server.entities.restaurant.Menu#getId() Menu#getId()}
 	 */
 	@NotNull
 	private Integer id;
 
 	/**
 	 * Nom du menu.
-	 * Alias of {@link restaurant.jpa_server.entities.restaurant.Menu#getNom() Menu#getNom()}
+	 * Alias de {@link restaurant.jpa_server.entities.restaurant.Menu#getNom() Menu#getNom()}
 	 */
 	@NotNull
 	@Size(max = 100)
@@ -47,47 +47,47 @@ public class MenuRead implements Serializable {
 
 	/**
 	 * Description du menu.
-	 * Alias of {@link restaurant.jpa_server.entities.restaurant.Menu#getDescription() Menu#getDescription()}
+	 * Alias de {@link restaurant.jpa_server.entities.restaurant.Menu#getDescription() Menu#getDescription()}
 	 */
 	@Size(max = 100)
 	private String description;
 
 	/**
 	 * Prix du menu.
-	 * Alias of {@link restaurant.jpa_server.entities.restaurant.Menu#getPrix() Menu#getPrix()}
+	 * Alias de {@link restaurant.jpa_server.entities.restaurant.Menu#getPrix() Menu#getPrix()}
 	 */
 	@NotNull
 	private BigDecimal prix;
 
 	/**
 	 * Indique si le menu est disponible.
-	 * Alias of {@link restaurant.jpa_server.entities.restaurant.Menu#getDisponible() Menu#getDisponible()}
+	 * Alias de {@link restaurant.jpa_server.entities.restaurant.Menu#getDisponible() Menu#getDisponible()}
 	 */
 	@NotNull
 	private Boolean disponible = true;
 
 	/**
 	 * Date de début de validité du menu.
-	 * Alias of {@link restaurant.jpa_server.entities.restaurant.Menu#getDateDebut() Menu#getDateDebut()}
+	 * Alias de {@link restaurant.jpa_server.entities.restaurant.Menu#getDateDebut() Menu#getDateDebut()}
 	 */
 	private LocalDateTime dateDebut;
 
 	/**
 	 * Date de fin de validité du menu.
-	 * Alias of {@link restaurant.jpa_server.entities.restaurant.Menu#getDateFin() Menu#getDateFin()}
+	 * Alias de {@link restaurant.jpa_server.entities.restaurant.Menu#getDateFin() Menu#getDateFin()}
 	 */
 	private LocalDateTime dateFin;
 
 	/**
 	 * Restaurant proposant ce menu.
-	 * Alias of {@link restaurant.jpa_server.entities.restaurant.Menu#getRestaurant() Menu#getRestaurant()}
+	 * Alias de {@link restaurant.jpa_server.entities.restaurant.Menu#getRestaurant() Menu#getRestaurant()}
 	 */
 	@NotNull
 	private Integer restaurantId;
 
 	/**
 	 * Date de création de l'enregistrement.
-	 * Alias of {@link restaurant.jpa_server.entities.restaurant.Menu#getDateCreation() Menu#getDateCreation()}
+	 * Alias de {@link restaurant.jpa_server.entities.restaurant.Menu#getDateCreation() Menu#getDateCreation()}
 	 */
 	@NotNull
 	@PastOrPresent
@@ -108,187 +108,187 @@ public class MenuRead implements Serializable {
 	private List<PlatItem> plats;
 
 	/**
-	 * Getter for id.
+	 * Accesseur de 'id'.
 	 *
-	 * @return value of {@link #id id}.
+	 * @return Valeur de {@link #id id}.
 	 */
 	public Integer getId() {
 		return this.id;
 	}
 
 	/**
-	 * Getter for nom.
+	 * Accesseur de 'nom'.
 	 *
-	 * @return value of {@link #nom nom}.
+	 * @return Valeur de {@link #nom nom}.
 	 */
 	public String getNom() {
 		return this.nom;
 	}
 
 	/**
-	 * Getter for description.
+	 * Accesseur de 'description'.
 	 *
-	 * @return value of {@link #description description}.
+	 * @return Valeur de {@link #description description}.
 	 */
 	public String getDescription() {
 		return this.description;
 	}
 
 	/**
-	 * Getter for prix.
+	 * Accesseur de 'prix'.
 	 *
-	 * @return value of {@link #prix prix}.
+	 * @return Valeur de {@link #prix prix}.
 	 */
 	public BigDecimal getPrix() {
 		return this.prix;
 	}
 
 	/**
-	 * Getter for disponible.
+	 * Accesseur de 'disponible'.
 	 *
-	 * @return value of {@link #disponible disponible}.
+	 * @return Valeur de {@link #disponible disponible}.
 	 */
 	public Boolean getDisponible() {
 		return this.disponible;
 	}
 
 	/**
-	 * Getter for dateDebut.
+	 * Accesseur de 'dateDebut'.
 	 *
-	 * @return value of {@link #dateDebut dateDebut}.
+	 * @return Valeur de {@link #dateDebut dateDebut}.
 	 */
 	public LocalDateTime getDateDebut() {
 		return this.dateDebut;
 	}
 
 	/**
-	 * Getter for dateFin.
+	 * Accesseur de 'dateFin'.
 	 *
-	 * @return value of {@link #dateFin dateFin}.
+	 * @return Valeur de {@link #dateFin dateFin}.
 	 */
 	public LocalDateTime getDateFin() {
 		return this.dateFin;
 	}
 
 	/**
-	 * Getter for restaurantId.
+	 * Accesseur de 'restaurantId'.
 	 *
-	 * @return value of {@link #restaurantId restaurantId}.
+	 * @return Valeur de {@link #restaurantId restaurantId}.
 	 */
 	public Integer getRestaurantId() {
 		return this.restaurantId;
 	}
 
 	/**
-	 * Getter for dateCreation.
+	 * Accesseur de 'dateCreation'.
 	 *
-	 * @return value of {@link #dateCreation dateCreation}.
+	 * @return Valeur de {@link #dateCreation dateCreation}.
 	 */
 	public LocalDateTime getDateCreation() {
 		return this.dateCreation;
 	}
 
 	/**
-	 * Getter for categoriesPlat.
+	 * Accesseur de 'categoriesPlat'.
 	 *
-	 * @return value of {@link #categoriesPlat categoriesPlat}.
+	 * @return Valeur de {@link #categoriesPlat categoriesPlat}.
 	 */
 	public List<CategoriePlat> getCategoriesPlat() {
 		return this.categoriesPlat;
 	}
 
 	/**
-	 * Getter for plats.
+	 * Accesseur de 'plats'.
 	 *
-	 * @return value of {@link #plats plats}.
+	 * @return Valeur de {@link #plats plats}.
 	 */
 	public List<PlatItem> getPlats() {
 		return this.plats;
 	}
 
 	/**
-	 * Set the value of {@link #id id}.
-	 * @param id value to set.
+	 * Définit la valeur de {@link #id id}.
+	 * @param id Valeur à définir.
 	 */
 	public void setId(Integer id) {
 		this.id = id;
 	}
 
 	/**
-	 * Set the value of {@link #nom nom}.
-	 * @param nom value to set.
+	 * Définit la valeur de {@link #nom nom}.
+	 * @param nom Valeur à définir.
 	 */
 	public void setNom(String nom) {
 		this.nom = nom;
 	}
 
 	/**
-	 * Set the value of {@link #description description}.
-	 * @param description value to set.
+	 * Définit la valeur de {@link #description description}.
+	 * @param description Valeur à définir.
 	 */
 	public void setDescription(String description) {
 		this.description = description;
 	}
 
 	/**
-	 * Set the value of {@link #prix prix}.
-	 * @param prix value to set.
+	 * Définit la valeur de {@link #prix prix}.
+	 * @param prix Valeur à définir.
 	 */
 	public void setPrix(BigDecimal prix) {
 		this.prix = prix;
 	}
 
 	/**
-	 * Set the value of {@link #disponible disponible}.
-	 * @param disponible value to set.
+	 * Définit la valeur de {@link #disponible disponible}.
+	 * @param disponible Valeur à définir.
 	 */
 	public void setDisponible(Boolean disponible) {
 		this.disponible = disponible;
 	}
 
 	/**
-	 * Set the value of {@link #dateDebut dateDebut}.
-	 * @param dateDebut value to set.
+	 * Définit la valeur de {@link #dateDebut dateDebut}.
+	 * @param dateDebut Valeur à définir.
 	 */
 	public void setDateDebut(LocalDateTime dateDebut) {
 		this.dateDebut = dateDebut;
 	}
 
 	/**
-	 * Set the value of {@link #dateFin dateFin}.
-	 * @param dateFin value to set.
+	 * Définit la valeur de {@link #dateFin dateFin}.
+	 * @param dateFin Valeur à définir.
 	 */
 	public void setDateFin(LocalDateTime dateFin) {
 		this.dateFin = dateFin;
 	}
 
 	/**
-	 * Set the value of {@link #restaurantId restaurantId}.
-	 * @param restaurantId value to set.
+	 * Définit la valeur de {@link #restaurantId restaurantId}.
+	 * @param restaurantId Valeur à définir.
 	 */
 	public void setRestaurantId(Integer restaurantId) {
 		this.restaurantId = restaurantId;
 	}
 
 	/**
-	 * Set the value of {@link #dateCreation dateCreation}.
-	 * @param dateCreation value to set.
+	 * Définit la valeur de {@link #dateCreation dateCreation}.
+	 * @param dateCreation Valeur à définir.
 	 */
 	public void setDateCreation(LocalDateTime dateCreation) {
 		this.dateCreation = dateCreation;
 	}
 
 	/**
-	 * Set the value of {@link #categoriesPlat categoriesPlat}.
-	 * @param categoriesPlat value to set.
+	 * Définit la valeur de {@link #categoriesPlat categoriesPlat}.
+	 * @param categoriesPlat Valeur à définir.
 	 */
 	public void setCategoriesPlat(List<CategoriePlat> categoriesPlat) {
 		this.categoriesPlat = categoriesPlat;
 	}
 
 	/**
-	 * Set the value of {@link #plats plats}.
-	 * @param plats value to set.
+	 * Définit la valeur de {@link #plats plats}.
+	 * @param plats Valeur à définir.
 	 */
 	public void setPlats(List<PlatItem> plats) {
 		this.plats = plats;

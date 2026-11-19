@@ -18,133 +18,133 @@ import jakarta.validation.constraints.Size;
 public class AvisClientWrite implements Serializable {
 
 	/**
-	 * Serial ID.
+	 * ID de sérialisation.
 	 */
 	@Serial
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Note sur 5.
-	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.AvisClient#getNote() AvisClient#getNote()}
+	 * Alias de {@link restaurant.jpa_feign.entities.restaurant.AvisClient#getNote() AvisClient#getNote()}
 	 */
 	@NotNull
 	private Integer note;
 
 	/**
 	 * Commentaire de l'avis.
-	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.AvisClient#getCommentaire() AvisClient#getCommentaire()}
+	 * Alias de {@link restaurant.jpa_feign.entities.restaurant.AvisClient#getCommentaire() AvisClient#getCommentaire()}
 	 */
 	@Size(max = 100)
 	private String commentaire;
 
 	/**
 	 * Indique si l'avis est approuvé par le restaurant.
-	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.AvisClient#getApprouve() AvisClient#getApprouve()}
+	 * Alias de {@link restaurant.jpa_feign.entities.restaurant.AvisClient#getApprouve() AvisClient#getApprouve()}
 	 */
 	@NotNull
 	private Boolean approuve = false;
 
 	/**
 	 * Client ayant donné l'avis.
-	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.AvisClient#getClient() AvisClient#getClient()}
+	 * Alias de {@link restaurant.jpa_feign.entities.restaurant.AvisClient#getClient() AvisClient#getClient()}
 	 */
 	@NotNull
 	private Integer clientId;
 
 	/**
 	 * Restaurant concerné par l'avis.
-	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.AvisClient#getRestaurant() AvisClient#getRestaurant()}
+	 * Alias de {@link restaurant.jpa_feign.entities.restaurant.AvisClient#getRestaurant() AvisClient#getRestaurant()}
 	 */
 	@NotNull
 	private Integer restaurantId;
 
 	/**
-	 * Getter for note.
+	 * Accesseur de 'note'.
 	 *
-	 * @return value of {@link #note note}.
+	 * @return Valeur de {@link #note note}.
 	 */
 	public Integer getNote() {
 		return this.note;
 	}
 
 	/**
-	 * Getter for commentaire.
+	 * Accesseur de 'commentaire'.
 	 *
-	 * @return value of {@link #commentaire commentaire}.
+	 * @return Valeur de {@link #commentaire commentaire}.
 	 */
 	public String getCommentaire() {
 		return this.commentaire;
 	}
 
 	/**
-	 * Getter for approuve.
+	 * Accesseur de 'approuve'.
 	 *
-	 * @return value of {@link #approuve approuve}.
+	 * @return Valeur de {@link #approuve approuve}.
 	 */
 	public Boolean getApprouve() {
 		return this.approuve;
 	}
 
 	/**
-	 * Getter for clientId.
+	 * Accesseur de 'clientId'.
 	 *
-	 * @return value of {@link #clientId clientId}.
+	 * @return Valeur de {@link #clientId clientId}.
 	 */
 	public Integer getClientId() {
 		return this.clientId;
 	}
 
 	/**
-	 * Getter for restaurantId.
+	 * Accesseur de 'restaurantId'.
 	 *
-	 * @return value of {@link #restaurantId restaurantId}.
+	 * @return Valeur de {@link #restaurantId restaurantId}.
 	 */
 	public Integer getRestaurantId() {
 		return this.restaurantId;
 	}
 
 	/**
-	 * Set the value of {@link #note note}.
-	 * @param note value to set.
+	 * Définit la valeur de {@link #note note}.
+	 * @param note Valeur à définir.
 	 */
 	public void setNote(Integer note) {
 		this.note = note;
 	}
 
 	/**
-	 * Set the value of {@link #commentaire commentaire}.
-	 * @param commentaire value to set.
+	 * Définit la valeur de {@link #commentaire commentaire}.
+	 * @param commentaire Valeur à définir.
 	 */
 	public void setCommentaire(String commentaire) {
 		this.commentaire = commentaire;
 	}
 
 	/**
-	 * Set the value of {@link #approuve approuve}.
-	 * @param approuve value to set.
+	 * Définit la valeur de {@link #approuve approuve}.
+	 * @param approuve Valeur à définir.
 	 */
 	public void setApprouve(Boolean approuve) {
 		this.approuve = approuve;
 	}
 
 	/**
-	 * Set the value of {@link #clientId clientId}.
-	 * @param clientId value to set.
+	 * Définit la valeur de {@link #clientId clientId}.
+	 * @param clientId Valeur à définir.
 	 */
 	public void setClientId(Integer clientId) {
 		this.clientId = clientId;
 	}
 
 	/**
-	 * Set the value of {@link #restaurantId restaurantId}.
-	 * @param restaurantId value to set.
+	 * Définit la valeur de {@link #restaurantId restaurantId}.
+	 * @param restaurantId Valeur à définir.
 	 */
 	public void setRestaurantId(Integer restaurantId) {
 		this.restaurantId = restaurantId;
 	}
 
 	/**
-	 * Enumération des champs de la classe {@link restaurant.jpa_feign.dtos.restaurant.AvisClientWrite AvisClientWrite}.
+	 * Énumération des champs de la classe {@link restaurant.jpa_feign.dtos.restaurant.AvisClientWrite AvisClientWrite}.
 	 */
 	public enum Fields {
 		NOTE(Integer.class),
@@ -160,9 +160,9 @@ public class AvisClientWrite implements Serializable {
 		}
 
 		/**
-		 * Getter for type.
+		 * Accesseur de 'type'.
 		 *
-		 * @return value of {@link #type type}.
+		 * @return Valeur de {@link #type type}.
 		 */
 		public Class<?> getType() {
 			return this.type;

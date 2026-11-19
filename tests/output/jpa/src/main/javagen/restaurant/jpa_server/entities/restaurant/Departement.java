@@ -40,7 +40,7 @@ public class Departement {
 	public static final Departement SEINE_SAINT_DENIS = new Departement(DepartementCode.SeineSaintDenis, "restaurant.departement.values.SeineSaintDenis", RegionCode.IDF);
 
 	/**
-	 * Liste de toutes les valeurs de l'énumération Departement.
+	 * Liste de toutes les valeurs de l'énumération 'Departement'.
 	 */
 	public static final List<Departement> VALUES = List.of(HAUTS_DE_SEINE, PARIS, SEINE_ET_MARNE, SEINE_SAINT_DENIS);
 
@@ -65,14 +65,14 @@ public class Departement {
 	private RegionCode regionCode;
 
 	/**
-	 * No arg constructor.
+	 * Constructeur sans argument.
 	 */
 	public Departement() {
-		// No arg constructor
+		// Constructeur sans argument
 	}
 
 	/**
-	 * All args constructor for 'Departement'.
+	 * Constructeur tout arguments pour 'Departement'.
 	 * @param code Code du département.
 	 * @param libelle Libellé du département.
 	 * @param regionCode Région associée.
@@ -84,27 +84,27 @@ public class Departement {
 	}
 
 	/**
-	 * Getter for code.
+	 * Accesseur de 'code'.
 	 *
-	 * @return value of {@link #code code}.
+	 * @return Valeur de {@link #code code}.
 	 */
 	public String getCode() {
 		return this.code;
 	}
 
 	/**
-	 * Getter for libelle.
+	 * Accesseur de 'libelle'.
 	 *
-	 * @return value of {@link #libelle libelle}.
+	 * @return Valeur de {@link #libelle libelle}.
 	 */
 	public String getLibelle() {
 		return this.libelle;
 	}
 
 	/**
-	 * Getter for regionCode.
+	 * Accesseur de 'regionCode'.
 	 *
-	 * @return value of {@link #regionCode regionCode}.
+	 * @return Valeur de {@link #regionCode regionCode}.
 	 */
 	public RegionCode getRegionCode() {
 		return this.regionCode;
@@ -127,7 +127,7 @@ public class Departement {
 	}
 
 	/**
-	 * Enumération des champs de la classe {@link restaurant.jpa_server.entities.restaurant.Departement Departement}.
+	 * Énumération des champs de la classe {@link restaurant.jpa_server.entities.restaurant.Departement Departement}.
 	 */
 	public enum Fields {
 		CODE(String.class),
@@ -141,9 +141,9 @@ public class Departement {
 		}
 
 		/**
-		 * Getter for type.
+		 * Accesseur de 'type'.
 		 *
-		 * @return value of {@link #type type}.
+		 * @return Valeur de {@link #type type}.
 		 */
 		public Class<?> getType() {
 			return this.type;

@@ -50,16 +50,16 @@ public abstract class AbstractMenuClient {
 
 	/**
 	 * Méthode de récupération des headers.
-	 * @return les headers à ajouter à la requête
+	 * @return Headers à ajouter à la requête
 	 */
 	protected abstract HttpHeaders getHeaders();
 
 	/**
 	 * Ajoute une valeur au corps multipart de la requête.
 	 * Les valeurs nulles sont ignorées, les collections sont ajoutées élément par élément.
-	 * @param body corps multipart de la requête
-	 * @param name nom du champ
-	 * @param value valeur du champ
+	 * @param body Corps multipart de la requête
+	 * @param name Nom du champ
+	 * @param value Valeur du champ
 	 */
 	protected void addPart(MultiValueMap<String, Object> body, String name, Object value) {
 		if (value instanceof Collection<?> values) {
@@ -74,7 +74,7 @@ public abstract class AbstractMenuClient {
 	}
 
 	/**
-	 * UriComponentsBuilder pour la méthode addPlat.
+	 * UriComponentsBuilder pour la méthode 'addPlat'.
 	 * @return uriBuilder avec les query params remplis
 	 */
 	protected UriComponentsBuilder addPlatUriComponentsBuilder() {
@@ -94,7 +94,7 @@ public abstract class AbstractMenuClient {
 	}
 
 	/**
-	 * UriComponentsBuilder pour la méthode createMenu.
+	 * UriComponentsBuilder pour la méthode 'createMenu'.
 	 * @return uriBuilder avec les query params remplis
 	 */
 	protected UriComponentsBuilder createMenuUriComponentsBuilder() {
@@ -128,7 +128,7 @@ public abstract class AbstractMenuClient {
 	}
 
 	/**
-	 * UriComponentsBuilder pour la méthode deletePlat.
+	 * UriComponentsBuilder pour la méthode 'deletePlat'.
 	 * @param plaId Identifiant du plat
 	 */
 	protected UriComponentsBuilder deletePlatUriComponentsBuilder(Integer plaId) {
@@ -147,7 +147,7 @@ public abstract class AbstractMenuClient {
 	}
 
 	/**
-	 * UriComponentsBuilder pour la méthode getCategoriePlats.
+	 * UriComponentsBuilder pour la méthode 'getCategoriePlats'.
 	 * @return uriBuilder avec les query params remplis
 	 */
 	protected UriComponentsBuilder getCategoriePlatsUriComponentsBuilder() {
@@ -166,7 +166,7 @@ public abstract class AbstractMenuClient {
 	}
 
 	/**
-	 * UriComponentsBuilder pour la méthode getPlat.
+	 * UriComponentsBuilder pour la méthode 'getPlat'.
 	 * @param plaId Identifiant du plat
 	 * @return uriBuilder avec les query params remplis
 	 */
@@ -187,7 +187,7 @@ public abstract class AbstractMenuClient {
 	}
 
 	/**
-	 * UriComponentsBuilder pour la méthode getPlats.
+	 * UriComponentsBuilder pour la méthode 'getPlats'.
 	 * @param restaurantId Restaurant proposant ce plat
 	 * @param categoriePlatCode Catégorie du plat
 	 * @param disponible Indique si le plat est disponible
@@ -216,7 +216,7 @@ public abstract class AbstractMenuClient {
 	}
 
 	/**
-	 * UriComponentsBuilder pour la méthode patchPlat.
+	 * UriComponentsBuilder pour la méthode 'patchPlat'.
 	 * @param plaId Identifiant du plat
 	 * @return uriBuilder avec les query params remplis
 	 */
@@ -238,7 +238,7 @@ public abstract class AbstractMenuClient {
 	}
 
 	/**
-	 * UriComponentsBuilder pour la méthode patchPromotion.
+	 * UriComponentsBuilder pour la méthode 'patchPromotion'.
 	 * @param plaId Identifiant du plat
 	 * @return uriBuilder avec les query params remplis
 	 */
@@ -260,7 +260,7 @@ public abstract class AbstractMenuClient {
 	}
 
 	/**
-	 * UriComponentsBuilder pour la méthode searchPlats.
+	 * UriComponentsBuilder pour la méthode 'searchPlats'.
 	 * @param nom Nom du plat
 	 * @param restaurantId Restaurant proposant ce plat
 	 * @param categoriePlatCode Catégorie du plat
@@ -292,7 +292,7 @@ public abstract class AbstractMenuClient {
 	}
 
 	/**
-	 * UriComponentsBuilder pour la méthode updatePlat.
+	 * UriComponentsBuilder pour la méthode 'updatePlat'.
 	 * @param plaId Identifiant du plat
 	 * @return uriBuilder avec les query params remplis
 	 */

@@ -20,63 +20,63 @@ import jakarta.validation.constraints.Size;
 public class AvisClientRead implements Serializable {
 
 	/**
-	 * Serial ID.
+	 * ID de sérialisation.
 	 */
 	@Serial
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Identifiant de l'avis.
-	 * Alias of {@link restaurant.jpa_server.entities.restaurant.AvisClient#getId() AvisClient#getId()}
+	 * Alias de {@link restaurant.jpa_server.entities.restaurant.AvisClient#getId() AvisClient#getId()}
 	 */
 	@NotNull
 	private Integer id;
 
 	/**
 	 * Note sur 5.
-	 * Alias of {@link restaurant.jpa_server.entities.restaurant.AvisClient#getNote() AvisClient#getNote()}
+	 * Alias de {@link restaurant.jpa_server.entities.restaurant.AvisClient#getNote() AvisClient#getNote()}
 	 */
 	@NotNull
 	private Integer note;
 
 	/**
 	 * Commentaire de l'avis.
-	 * Alias of {@link restaurant.jpa_server.entities.restaurant.AvisClient#getCommentaire() AvisClient#getCommentaire()}
+	 * Alias de {@link restaurant.jpa_server.entities.restaurant.AvisClient#getCommentaire() AvisClient#getCommentaire()}
 	 */
 	@Size(max = 100)
 	private String commentaire;
 
 	/**
 	 * Date de l'avis.
-	 * Alias of {@link restaurant.jpa_server.entities.restaurant.AvisClient#getDateAvis() AvisClient#getDateAvis()}
+	 * Alias de {@link restaurant.jpa_server.entities.restaurant.AvisClient#getDateAvis() AvisClient#getDateAvis()}
 	 */
 	@NotNull
 	private LocalDateTime dateAvis;
 
 	/**
 	 * Indique si l'avis est approuvé par le restaurant.
-	 * Alias of {@link restaurant.jpa_server.entities.restaurant.AvisClient#getApprouve() AvisClient#getApprouve()}
+	 * Alias de {@link restaurant.jpa_server.entities.restaurant.AvisClient#getApprouve() AvisClient#getApprouve()}
 	 */
 	@NotNull
 	private Boolean approuve = false;
 
 	/**
 	 * Client ayant donné l'avis.
-	 * Alias of {@link restaurant.jpa_server.entities.restaurant.AvisClient#getClient() AvisClient#getClient()}
+	 * Alias de {@link restaurant.jpa_server.entities.restaurant.AvisClient#getClient() AvisClient#getClient()}
 	 */
 	@NotNull
 	private Integer clientId;
 
 	/**
 	 * Restaurant concerné par l'avis.
-	 * Alias of {@link restaurant.jpa_server.entities.restaurant.AvisClient#getRestaurant() AvisClient#getRestaurant()}
+	 * Alias de {@link restaurant.jpa_server.entities.restaurant.AvisClient#getRestaurant() AvisClient#getRestaurant()}
 	 */
 	@NotNull
 	private Integer restaurantId;
 
 	/**
 	 * Date de création de l'enregistrement.
-	 * Alias of {@link restaurant.jpa_server.entities.restaurant.AvisClient#getDateCreation() AvisClient#getDateCreation()}
+	 * Alias de {@link restaurant.jpa_server.entities.restaurant.AvisClient#getDateCreation() AvisClient#getDateCreation()}
 	 */
 	@NotNull
 	@PastOrPresent
@@ -84,159 +84,159 @@ public class AvisClientRead implements Serializable {
 
 	/**
 	 * Nombre de vues de l'avis (calculé).
-	 * Alias of {@link restaurant.jpa_server.entities.restaurant.AvisClient#getNombreVues() AvisClient#getNombreVues()}
+	 * Alias de {@link restaurant.jpa_server.entities.restaurant.AvisClient#getNombreVues() AvisClient#getNombreVues()}
 	 */
 	@NotNull
 	private Integer nombreVues = 0;
 
 	/**
-	 * Getter for id.
+	 * Accesseur de 'id'.
 	 *
-	 * @return value of {@link #id id}.
+	 * @return Valeur de {@link #id id}.
 	 */
 	public Integer getId() {
 		return this.id;
 	}
 
 	/**
-	 * Getter for note.
+	 * Accesseur de 'note'.
 	 *
-	 * @return value of {@link #note note}.
+	 * @return Valeur de {@link #note note}.
 	 */
 	public Integer getNote() {
 		return this.note;
 	}
 
 	/**
-	 * Getter for commentaire.
+	 * Accesseur de 'commentaire'.
 	 *
-	 * @return value of {@link #commentaire commentaire}.
+	 * @return Valeur de {@link #commentaire commentaire}.
 	 */
 	public String getCommentaire() {
 		return this.commentaire;
 	}
 
 	/**
-	 * Getter for dateAvis.
+	 * Accesseur de 'dateAvis'.
 	 *
-	 * @return value of {@link #dateAvis dateAvis}.
+	 * @return Valeur de {@link #dateAvis dateAvis}.
 	 */
 	public LocalDateTime getDateAvis() {
 		return this.dateAvis;
 	}
 
 	/**
-	 * Getter for approuve.
+	 * Accesseur de 'approuve'.
 	 *
-	 * @return value of {@link #approuve approuve}.
+	 * @return Valeur de {@link #approuve approuve}.
 	 */
 	public Boolean getApprouve() {
 		return this.approuve;
 	}
 
 	/**
-	 * Getter for clientId.
+	 * Accesseur de 'clientId'.
 	 *
-	 * @return value of {@link #clientId clientId}.
+	 * @return Valeur de {@link #clientId clientId}.
 	 */
 	public Integer getClientId() {
 		return this.clientId;
 	}
 
 	/**
-	 * Getter for restaurantId.
+	 * Accesseur de 'restaurantId'.
 	 *
-	 * @return value of {@link #restaurantId restaurantId}.
+	 * @return Valeur de {@link #restaurantId restaurantId}.
 	 */
 	public Integer getRestaurantId() {
 		return this.restaurantId;
 	}
 
 	/**
-	 * Getter for dateCreation.
+	 * Accesseur de 'dateCreation'.
 	 *
-	 * @return value of {@link #dateCreation dateCreation}.
+	 * @return Valeur de {@link #dateCreation dateCreation}.
 	 */
 	public LocalDateTime getDateCreation() {
 		return this.dateCreation;
 	}
 
 	/**
-	 * Getter for nombreVues.
+	 * Accesseur de 'nombreVues'.
 	 *
-	 * @return value of {@link #nombreVues nombreVues}.
+	 * @return Valeur de {@link #nombreVues nombreVues}.
 	 */
 	public Integer getNombreVues() {
 		return this.nombreVues;
 	}
 
 	/**
-	 * Set the value of {@link #id id}.
-	 * @param id value to set.
+	 * Définit la valeur de {@link #id id}.
+	 * @param id Valeur à définir.
 	 */
 	public void setId(Integer id) {
 		this.id = id;
 	}
 
 	/**
-	 * Set the value of {@link #note note}.
-	 * @param note value to set.
+	 * Définit la valeur de {@link #note note}.
+	 * @param note Valeur à définir.
 	 */
 	public void setNote(Integer note) {
 		this.note = note;
 	}
 
 	/**
-	 * Set the value of {@link #commentaire commentaire}.
-	 * @param commentaire value to set.
+	 * Définit la valeur de {@link #commentaire commentaire}.
+	 * @param commentaire Valeur à définir.
 	 */
 	public void setCommentaire(String commentaire) {
 		this.commentaire = commentaire;
 	}
 
 	/**
-	 * Set the value of {@link #dateAvis dateAvis}.
-	 * @param dateAvis value to set.
+	 * Définit la valeur de {@link #dateAvis dateAvis}.
+	 * @param dateAvis Valeur à définir.
 	 */
 	public void setDateAvis(LocalDateTime dateAvis) {
 		this.dateAvis = dateAvis;
 	}
 
 	/**
-	 * Set the value of {@link #approuve approuve}.
-	 * @param approuve value to set.
+	 * Définit la valeur de {@link #approuve approuve}.
+	 * @param approuve Valeur à définir.
 	 */
 	public void setApprouve(Boolean approuve) {
 		this.approuve = approuve;
 	}
 
 	/**
-	 * Set the value of {@link #clientId clientId}.
-	 * @param clientId value to set.
+	 * Définit la valeur de {@link #clientId clientId}.
+	 * @param clientId Valeur à définir.
 	 */
 	public void setClientId(Integer clientId) {
 		this.clientId = clientId;
 	}
 
 	/**
-	 * Set the value of {@link #restaurantId restaurantId}.
-	 * @param restaurantId value to set.
+	 * Définit la valeur de {@link #restaurantId restaurantId}.
+	 * @param restaurantId Valeur à définir.
 	 */
 	public void setRestaurantId(Integer restaurantId) {
 		this.restaurantId = restaurantId;
 	}
 
 	/**
-	 * Set the value of {@link #dateCreation dateCreation}.
-	 * @param dateCreation value to set.
+	 * Définit la valeur de {@link #dateCreation dateCreation}.
+	 * @param dateCreation Valeur à définir.
 	 */
 	public void setDateCreation(LocalDateTime dateCreation) {
 		this.dateCreation = dateCreation;
 	}
 
 	/**
-	 * Set the value of {@link #nombreVues nombreVues}.
-	 * @param nombreVues value to set.
+	 * Définit la valeur de {@link #nombreVues nombreVues}.
+	 * @param nombreVues Valeur à définir.
 	 */
 	public void setNombreVues(Integer nombreVues) {
 		this.nombreVues = nombreVues;

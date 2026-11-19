@@ -17,7 +17,7 @@ import jakarta.validation.constraints.Size;
 public abstract class PersonneItem implements Serializable {
 
 	/**
-	 * Serial ID.
+	 * ID de sérialisation.
 	 */
 	@Serial
 	private static final long serialVersionUID = 1L;
@@ -40,58 +40,58 @@ public abstract class PersonneItem implements Serializable {
 	private String prenom;
 
 	/**
-	 * Getter for id.
+	 * Accesseur de 'id'.
 	 *
-	 * @return value of {@link #id id}.
+	 * @return Valeur de {@link #id id}.
 	 */
 	public Integer getId() {
 		return this.id;
 	}
 
 	/**
-	 * Getter for nom.
+	 * Accesseur de 'nom'.
 	 *
-	 * @return value of {@link #nom nom}.
+	 * @return Valeur de {@link #nom nom}.
 	 */
 	public String getNom() {
 		return this.nom;
 	}
 
 	/**
-	 * Getter for prenom.
+	 * Accesseur de 'prenom'.
 	 *
-	 * @return value of {@link #prenom prenom}.
+	 * @return Valeur de {@link #prenom prenom}.
 	 */
 	public String getPrenom() {
 		return this.prenom;
 	}
 
 	/**
-	 * Set the value of {@link #id id}.
-	 * @param id value to set.
+	 * Définit la valeur de {@link #id id}.
+	 * @param id Valeur à définir.
 	 */
 	public void setId(Integer id) {
 		this.id = id;
 	}
 
 	/**
-	 * Set the value of {@link #nom nom}.
-	 * @param nom value to set.
+	 * Définit la valeur de {@link #nom nom}.
+	 * @param nom Valeur à définir.
 	 */
 	public void setNom(String nom) {
 		this.nom = nom;
 	}
 
 	/**
-	 * Set the value of {@link #prenom prenom}.
-	 * @param prenom value to set.
+	 * Définit la valeur de {@link #prenom prenom}.
+	 * @param prenom Valeur à définir.
 	 */
 	public void setPrenom(String prenom) {
 		this.prenom = prenom;
 	}
 
 	/**
-	 * Enumération des champs de la classe {@link restaurant.jpa_feign.dtos.restaurant.PersonneItem PersonneItem}.
+	 * Énumération des champs de la classe {@link restaurant.jpa_feign.dtos.restaurant.PersonneItem PersonneItem}.
 	 */
 	public enum Fields {
 		ID(Integer.class),
@@ -105,9 +105,9 @@ public abstract class PersonneItem implements Serializable {
 		}
 
 		/**
-		 * Getter for type.
+		 * Accesseur de 'type'.
 		 *
-		 * @return value of {@link #type type}.
+		 * @return Valeur de {@link #type type}.
 		 */
 		public Class<?> getType() {
 			return this.type;

@@ -47,7 +47,7 @@ public class SsdtMainValuesGenerator(ILogger<SsdtMainValuesGenerator> logger, IF
     /// <param name="writer">Writer.</param>
     protected virtual void WriteHeader(IFileWriter writer)
     {
-        writer.WriteSqlFileHeader(description: "Insertion des valeurs de listes statiques.");
+        writer.WriteSqlFileHeader(Config, description: Config.GetMessage(SqlMessage.SqlStaticValuesHeader));
         writer.WriteLine();
     }
 
@@ -62,7 +62,9 @@ public class SsdtMainValuesGenerator(ILogger<SsdtMainValuesGenerator> logger, IF
         foreach (var classe in classes)
         {
             var subscriptName = Config.GetSqlName(classe, tag, noQuote: true) + ".insert.sql";
-            writer.WriteLine("/* Insertion dans la table " + Config.GetSqlName(classe, tag) + ". */");
+            writer.WriteLine(
+                "/* " + Config.GetMessage(SqlMessage.SqlTableInsertion, Config.GetSqlName(classe, tag)) + ". */"
+            );
             writer.WriteLine(":r .\\" + subscriptName);
             writer.WriteLine();
         }

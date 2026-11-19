@@ -29,7 +29,7 @@ public class CommandeHistorique {
 
 	/**
 	 * Identifiant de la commande.
-	 * Alias of {@link restaurant.jpa_server.entities.restaurant.Commande#getId() Commande#getId()}
+	 * Alias de {@link restaurant.jpa_server.entities.restaurant.Commande#getId() Commande#getId()}
 	 */
 	@Id
 	@Column(name = "com_id", nullable = false, columnDefinition = "int")
@@ -37,49 +37,49 @@ public class CommandeHistorique {
 
 	/**
 	 * Date et heure de la commande.
-	 * Alias of {@link restaurant.jpa_server.entities.restaurant.Commande#getDateCommande() Commande#getDateCommande()}
+	 * Alias de {@link restaurant.jpa_server.entities.restaurant.Commande#getDateCommande() Commande#getDateCommande()}
 	 */
 	@Column(name = "com_date_commande", nullable = false, columnDefinition = "timestamp")
 	private LocalDateTime dateCommande;
 
 	/**
 	 * Date et heure de livraison.
-	 * Alias of {@link restaurant.jpa_server.entities.restaurant.Commande#getDateLivraison() Commande#getDateLivraison()}
+	 * Alias de {@link restaurant.jpa_server.entities.restaurant.Commande#getDateLivraison() Commande#getDateLivraison()}
 	 */
 	@Column(name = "com_date_livraison", columnDefinition = "timestamp")
 	private LocalDateTime dateLivraison;
 
 	/**
 	 * Montant total de la commande.
-	 * Alias of {@link restaurant.jpa_server.entities.restaurant.Commande#getMontantTotal() Commande#getMontantTotal()}
+	 * Alias de {@link restaurant.jpa_server.entities.restaurant.Commande#getMontantTotal() Commande#getMontantTotal()}
 	 */
 	@Column(name = "com_montant_total", nullable = false, scale = 2, columnDefinition = "decimal")
 	private BigDecimal montantTotal;
 
 	/**
 	 * Client ayant passé la commande.
-	 * Alias of {@link restaurant.jpa_server.entities.restaurant.Commande#getClient() Commande#getClient()}
+	 * Alias de {@link restaurant.jpa_server.entities.restaurant.Commande#getClient() Commande#getClient()}
 	 */
 	@Column(name = "per_id", nullable = false, columnDefinition = "int")
 	private Integer clientId;
 
 	/**
 	 * Table associée à la commande.
-	 * Alias of {@link restaurant.jpa_server.entities.restaurant.Commande#getTableId() Commande#getTableId()}
+	 * Alias de {@link restaurant.jpa_server.entities.restaurant.Commande#getTableId() Commande#getTableId()}
 	 */
 	@Column(name = "tab_id", columnDefinition = "int")
 	private Integer tableId;
 
 	/**
 	 * Réservation associée à la commande.
-	 * Alias of {@link restaurant.jpa_server.entities.restaurant.Commande#getReservation() Commande#getReservation()}
+	 * Alias de {@link restaurant.jpa_server.entities.restaurant.Commande#getReservation() Commande#getReservation()}
 	 */
 	@Column(name = "rev_id", columnDefinition = "int")
 	private Integer reservationId;
 
 	/**
 	 * Statut de la commande.
-	 * Alias of {@link restaurant.jpa_server.entities.restaurant.Commande#getStatutCommande() Commande#getStatutCommande()}
+	 * Alias de {@link restaurant.jpa_server.entities.restaurant.Commande#getStatutCommande() Commande#getStatutCommande()}
 	 */
 	@Enumerated(EnumType.STRING)
 	@Column(name = "stc_code", nullable = false, length = 10, columnDefinition = "varchar")
@@ -87,191 +87,191 @@ public class CommandeHistorique {
 
 	/**
 	 * Avis laissé par le client sur la commande.
-	 * Alias of {@link restaurant.jpa_server.entities.restaurant.Commande#getAvisClient() Commande#getAvisClient()}
+	 * Alias de {@link restaurant.jpa_server.entities.restaurant.Commande#getAvisClient() Commande#getAvisClient()}
 	 */
 	@Column(name = "avi_id", columnDefinition = "int")
 	private Integer avisClientId;
 
 	/**
 	 * Date de création de l'enregistrement.
-	 * Alias of {@link restaurant.jpa_server.entities.restaurant.Commande#getDateCreation() Commande#getDateCreation()}
+	 * Alias de {@link restaurant.jpa_server.entities.restaurant.Commande#getDateCreation() Commande#getDateCreation()}
 	 */
 	@CreatedDate
 	@Column(name = "com_date_creation", nullable = false, columnDefinition = "timestamp")
 	private LocalDateTime dateCreation;
 
 	/**
-	 * Getter for id.
+	 * Accesseur de 'id'.
 	 *
-	 * @return value of {@link #id id}.
+	 * @return Valeur de {@link #id id}.
 	 */
 	public Integer getId() {
 		return this.id;
 	}
 
 	/**
-	 * Getter for dateCommande.
+	 * Accesseur de 'dateCommande'.
 	 *
-	 * @return value of {@link #dateCommande dateCommande}.
+	 * @return Valeur de {@link #dateCommande dateCommande}.
 	 */
 	public LocalDateTime getDateCommande() {
 		return this.dateCommande;
 	}
 
 	/**
-	 * Getter for dateLivraison.
+	 * Accesseur de 'dateLivraison'.
 	 *
-	 * @return value of {@link #dateLivraison dateLivraison}.
+	 * @return Valeur de {@link #dateLivraison dateLivraison}.
 	 */
 	public LocalDateTime getDateLivraison() {
 		return this.dateLivraison;
 	}
 
 	/**
-	 * Getter for montantTotal.
+	 * Accesseur de 'montantTotal'.
 	 *
-	 * @return value of {@link #montantTotal montantTotal}.
+	 * @return Valeur de {@link #montantTotal montantTotal}.
 	 */
 	public BigDecimal getMontantTotal() {
 		return this.montantTotal;
 	}
 
 	/**
-	 * Getter for clientId.
+	 * Accesseur de 'clientId'.
 	 *
-	 * @return value of {@link #clientId clientId}.
+	 * @return Valeur de {@link #clientId clientId}.
 	 */
 	public Integer getClientId() {
 		return this.clientId;
 	}
 
 	/**
-	 * Getter for tableId.
+	 * Accesseur de 'tableId'.
 	 *
-	 * @return value of {@link #tableId tableId}.
+	 * @return Valeur de {@link #tableId tableId}.
 	 */
 	public Integer getTableId() {
 		return this.tableId;
 	}
 
 	/**
-	 * Getter for reservationId.
+	 * Accesseur de 'reservationId'.
 	 *
-	 * @return value of {@link #reservationId reservationId}.
+	 * @return Valeur de {@link #reservationId reservationId}.
 	 */
 	public Integer getReservationId() {
 		return this.reservationId;
 	}
 
 	/**
-	 * Getter for statutCommande.
+	 * Accesseur de 'statutCommande'.
 	 *
-	 * @return value of {@link #statutCommande statutCommande}.
+	 * @return Valeur de {@link #statutCommande statutCommande}.
 	 */
 	public StatutCommande getStatutCommande() {
 		return this.statutCommande;
 	}
 
 	/**
-	 * Getter for avisClientId.
+	 * Accesseur de 'avisClientId'.
 	 *
-	 * @return value of {@link #avisClientId avisClientId}.
+	 * @return Valeur de {@link #avisClientId avisClientId}.
 	 */
 	public Integer getAvisClientId() {
 		return this.avisClientId;
 	}
 
 	/**
-	 * Getter for dateCreation.
+	 * Accesseur de 'dateCreation'.
 	 *
-	 * @return value of {@link #dateCreation dateCreation}.
+	 * @return Valeur de {@link #dateCreation dateCreation}.
 	 */
 	public LocalDateTime getDateCreation() {
 		return this.dateCreation;
 	}
 
 	/**
-	 * Set the value of {@link #id id}.
-	 * @param id value to set.
+	 * Définit la valeur de {@link #id id}.
+	 * @param id Valeur à définir.
 	 */
 	public void setId(Integer id) {
 		this.id = id;
 	}
 
 	/**
-	 * Set the value of {@link #dateCommande dateCommande}.
-	 * @param dateCommande value to set.
+	 * Définit la valeur de {@link #dateCommande dateCommande}.
+	 * @param dateCommande Valeur à définir.
 	 */
 	public void setDateCommande(LocalDateTime dateCommande) {
 		this.dateCommande = dateCommande;
 	}
 
 	/**
-	 * Set the value of {@link #dateLivraison dateLivraison}.
-	 * @param dateLivraison value to set.
+	 * Définit la valeur de {@link #dateLivraison dateLivraison}.
+	 * @param dateLivraison Valeur à définir.
 	 */
 	public void setDateLivraison(LocalDateTime dateLivraison) {
 		this.dateLivraison = dateLivraison;
 	}
 
 	/**
-	 * Set the value of {@link #montantTotal montantTotal}.
-	 * @param montantTotal value to set.
+	 * Définit la valeur de {@link #montantTotal montantTotal}.
+	 * @param montantTotal Valeur à définir.
 	 */
 	public void setMontantTotal(BigDecimal montantTotal) {
 		this.montantTotal = montantTotal;
 	}
 
 	/**
-	 * Set the value of {@link #clientId clientId}.
-	 * @param clientId value to set.
+	 * Définit la valeur de {@link #clientId clientId}.
+	 * @param clientId Valeur à définir.
 	 */
 	public void setClientId(Integer clientId) {
 		this.clientId = clientId;
 	}
 
 	/**
-	 * Set the value of {@link #tableId tableId}.
-	 * @param tableId value to set.
+	 * Définit la valeur de {@link #tableId tableId}.
+	 * @param tableId Valeur à définir.
 	 */
 	public void setTableId(Integer tableId) {
 		this.tableId = tableId;
 	}
 
 	/**
-	 * Set the value of {@link #reservationId reservationId}.
-	 * @param reservationId value to set.
+	 * Définit la valeur de {@link #reservationId reservationId}.
+	 * @param reservationId Valeur à définir.
 	 */
 	public void setReservationId(Integer reservationId) {
 		this.reservationId = reservationId;
 	}
 
 	/**
-	 * Set the value of {@link #statutCommande statutCommande}.
-	 * @param statutCommande value to set.
+	 * Définit la valeur de {@link #statutCommande statutCommande}.
+	 * @param statutCommande Valeur à définir.
 	 */
 	public void setStatutCommande(StatutCommande statutCommande) {
 		this.statutCommande = statutCommande;
 	}
 
 	/**
-	 * Set the value of {@link #avisClientId avisClientId}.
-	 * @param avisClientId value to set.
+	 * Définit la valeur de {@link #avisClientId avisClientId}.
+	 * @param avisClientId Valeur à définir.
 	 */
 	public void setAvisClientId(Integer avisClientId) {
 		this.avisClientId = avisClientId;
 	}
 
 	/**
-	 * Set the value of {@link #dateCreation dateCreation}.
-	 * @param dateCreation value to set.
+	 * Définit la valeur de {@link #dateCreation dateCreation}.
+	 * @param dateCreation Valeur à définir.
 	 */
 	public void setDateCreation(LocalDateTime dateCreation) {
 		this.dateCreation = dateCreation;
 	}
 
 	/**
-	 * Enumération des champs de la classe {@link restaurant.jpa_server.entities.restaurant.CommandeHistorique CommandeHistorique}.
+	 * Énumération des champs de la classe {@link restaurant.jpa_server.entities.restaurant.CommandeHistorique CommandeHistorique}.
 	 */
 	public enum Fields {
 		ID(Integer.class),
@@ -292,9 +292,9 @@ public class CommandeHistorique {
 		}
 
 		/**
-		 * Getter for type.
+		 * Accesseur de 'type'.
 		 *
-		 * @return value of {@link #type type}.
+		 * @return Valeur de {@link #type type}.
 		 */
 		public Class<?> getType() {
 			return this.type;

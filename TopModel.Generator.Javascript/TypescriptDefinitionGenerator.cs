@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Text;
+using Microsoft.Extensions.Logging;
 using TopModel.Core;
 using TopModel.Core.Model;
 using TopModel.Generator.Core;
@@ -29,7 +30,10 @@ public class TypescriptDefinitionGenerator(
 
     protected override async Task HandleClass(string fileName, Class classe, string tag, CancellationToken ct = default)
     {
-        await using var fw = OpenFileWriter(fileName, encoderShouldEmitUTF8Identifier: false);
+        await using var fw = OpenFileWriter(
+            fileName,
+            new() { Encoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false) }
+        );
 
         var commonImports = new List<(string Import, string Path)>();
 

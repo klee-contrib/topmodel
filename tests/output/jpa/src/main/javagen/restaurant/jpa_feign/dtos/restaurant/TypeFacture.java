@@ -28,7 +28,7 @@ public record TypeFacture(
 	public static final TypeFacture PHY = new TypeFacture(TypeFactureCode.PHY, "Facture physique");
 
 	/**
-	 * Liste de toutes les valeurs de l'énumération TypeFacture.
+	 * Liste de toutes les valeurs de l'énumération 'TypeFacture'.
 	 */
 	public static final List<TypeFacture> VALUES = List.of(ELE, PHY);
 
@@ -46,7 +46,7 @@ public record TypeFacture(
 	}
 
 	/**
-	 * Enumération des champs de la classe {@link restaurant.jpa_feign.dtos.restaurant.TypeFacture TypeFacture}.
+	 * Énumération des champs de la classe {@link restaurant.jpa_feign.dtos.restaurant.TypeFacture TypeFacture}.
 	 */
 	public enum Fields {
 		CODE(TypeFactureCode.class),
@@ -59,9 +59,9 @@ public record TypeFacture(
 		}
 
 		/**
-		 * Getter for type.
+		 * Accesseur de 'type'.
 		 *
-		 * @return value of {@link #type type}.
+		 * @return Valeur de {@link #type type}.
 		 */
 		public Class<?> getType() {
 			return this.type;

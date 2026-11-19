@@ -68,8 +68,7 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
     {
         var javaEnum = new JavaEnum("Fields")
         {
-            Comment =
-                $"Enumération des champs de la classe {{@link {classe.GetImport(Config, tag)} {classe.NamePascal}}}",
+            Comment = Config.GetMessage(JpaMessage.EnumClassFields, classe.GetImport(Config, tag), classe.NamePascal),
         };
 
         if (Config.FieldsEnumInterface != null)
@@ -94,12 +93,12 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
                 classField.Name.ToPascalCase().WithPrefix(classField.Type == "boolean" ? "is" : "get")
             )
             {
-                Comment = $"Getter for {classField.Name}",
+                Comment = Config.GetMessage(JpaMessage.Getter, classField.Name),
                 Body =
                 {
                     new WriterLine() { Line = $"return this.{classField.Name};", Indent = 0 },
                 },
-                ReturnComment = $"value of {{@link #{classField.Name} {classField.Name}}}",
+                ReturnComment = Config.GetMessage(JpaMessage.GetterValue, classField.Name),
                 Visibility = "public",
             }
         );
@@ -181,7 +180,7 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
 
         var javaClass = InitClass(classe, tag);
 
-        await using var fw = this.OpenJavaWriter(fileName, packageName, codePage: null);
+        await using var fw = this.OpenJavaWriter(fileName, packageName);
         fw.Write(javaClass);
     }
 

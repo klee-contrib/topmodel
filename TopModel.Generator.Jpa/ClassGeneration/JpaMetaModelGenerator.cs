@@ -1,4 +1,4 @@
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using TopModel.Core.Model;
 using TopModel.Generator.Core;
 using TopModel.Generator.Jpa.ClassGeneration.Utils;
@@ -35,7 +35,7 @@ public class JpaMetaModelGenerator(ILogger<JpaMetaModelGenerator> logger, IFileW
     protected override async Task HandleClass(string fileName, Class classe, string tag, CancellationToken ct = default)
     {
         var packageName = Config.GetPackageName(classe, tag);
-        await using var fw = this.OpenJavaWriter(fileName, packageName, codePage: null);
+        await using var fw = this.OpenJavaWriter(fileName, packageName);
         var javaClass = new JavaClass($"{classe.NamePascal}_");
         javaClass.Add(
             new JavaAnnotation(

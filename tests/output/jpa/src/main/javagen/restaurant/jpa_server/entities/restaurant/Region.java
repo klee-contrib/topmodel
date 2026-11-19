@@ -47,58 +47,58 @@ public class Region {
 	private String nomResponsable;
 
 	/**
-	 * Getter for code.
+	 * Accesseur de 'code'.
 	 *
-	 * @return value of {@link #code code}.
+	 * @return Valeur de {@link #code code}.
 	 */
 	public RegionCode getCode() {
 		return this.code;
 	}
 
 	/**
-	 * Getter for libelle.
+	 * Accesseur de 'libelle'.
 	 *
-	 * @return value of {@link #libelle libelle}.
+	 * @return Valeur de {@link #libelle libelle}.
 	 */
 	public String getLibelle() {
 		return this.libelle;
 	}
 
 	/**
-	 * Getter for nomResponsable.
+	 * Accesseur de 'nomResponsable'.
 	 *
-	 * @return value of {@link #nomResponsable nomResponsable}.
+	 * @return Valeur de {@link #nomResponsable nomResponsable}.
 	 */
 	public String getNomResponsable() {
 		return this.nomResponsable;
 	}
 
 	/**
-	 * Set the value of {@link #code code}.
-	 * @param code value to set.
+	 * Définit la valeur de {@link #code code}.
+	 * @param code Valeur à définir.
 	 */
 	public void setCode(RegionCode code) {
 		this.code = code;
 	}
 
 	/**
-	 * Set the value of {@link #libelle libelle}.
-	 * @param libelle value to set.
+	 * Définit la valeur de {@link #libelle libelle}.
+	 * @param libelle Valeur à définir.
 	 */
 	public void setLibelle(String libelle) {
 		this.libelle = libelle;
 	}
 
 	/**
-	 * Set the value of {@link #nomResponsable nomResponsable}.
-	 * @param nomResponsable value to set.
+	 * Définit la valeur de {@link #nomResponsable nomResponsable}.
+	 * @param nomResponsable Valeur à définir.
 	 */
 	public void setNomResponsable(String nomResponsable) {
 		this.nomResponsable = nomResponsable;
 	}
 
 	/**
-	 * Enumération des champs de la classe {@link restaurant.jpa_server.entities.restaurant.Region Region}.
+	 * Énumération des champs de la classe {@link restaurant.jpa_server.entities.restaurant.Region Region}.
 	 */
 	public enum Fields {
 		CODE(RegionCode.class),
@@ -112,9 +112,9 @@ public class Region {
 		}
 
 		/**
-		 * Getter for type.
+		 * Accesseur de 'type'.
 		 *
-		 * @return value of {@link #type type}.
+		 * @return Valeur de {@link #type type}.
 		 */
 		public Class<?> getType() {
 			return this.type;

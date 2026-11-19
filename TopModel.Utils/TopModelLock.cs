@@ -123,11 +123,8 @@ public class TopModelLock : TopModelLockFile
                 _config,
                 Path.Combine(_config.ConfigRoot, _config.LockFileName),
                 _logger,
-                encoderShouldEmitUTF8Identifier: true
-            )
-            {
-                StartCommentToken = "#",
-            };
+                new() { StartCommentToken = "#" }
+            );
 
             fw.Write(_serializer.Serialize(this));
         }

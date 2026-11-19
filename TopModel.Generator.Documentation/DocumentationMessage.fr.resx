@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -117,10 +117,94 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Diagram" xml:space="preserve">
+    <value>Diagramme global</value>
+  </data>
+  <data name="DiagramFile" xml:space="preserve">
+    <value>Diagramme du fichier {0}</value>
+  </data>
+  <data name="DiagramModule" xml:space="preserve">
+    <value>Diagramme du module {0}</value>
+  </data>
+  <data name="EndpointHeaderAuthorization" xml:space="preserve">
+    <value>Autorisation</value>
+  </data>
+  <data name="EndpointHeaderDescription" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="EndpointHeaderMethod" xml:space="preserve">
+    <value>Méthode</value>
+  </data>
+  <data name="EndpointHeaderModule" xml:space="preserve">
+    <value>Module</value>
+  </data>
+  <data name="EndpointHeaderName" xml:space="preserve">
+    <value>Nom</value>
+  </data>
+  <data name="EndpointHeaderRoute" xml:space="preserve">
+    <value>Route</value>
+  </data>
   <data name="InvalidTitleLevel" xml:space="preserve">
     <value>Le niveau de titre doit être compris entre 1 et 6.</value>
   </data>
   <data name="MultipleLevel1Titles" xml:space="preserve">
     <value>Un document Markdown ne peut contenir qu'un seul titre de niveau 1.</value>
+  </data>
+  <data name="SchemaConstraints" xml:space="preserve">
+    <value>Contraintes</value>
+  </data>
+  <data name="SchemaDataDictionary" xml:space="preserve">
+    <value>Dictionnaire de données</value>
+  </data>
+  <data name="SchemaDataDictionaryFile" xml:space="preserve">
+    <value>Dictionnaire de données du fichier {0}</value>
+  </data>
+  <data name="SchemaDataDictionaryModule" xml:space="preserve">
+    <value>Dictionnaire de données du module {0}</value>
+  </data>
+  <data name="SchemaDesignation" xml:space="preserve">
+    <value>Désignation</value>
+  </data>
+  <data name="SchemaEndpointList" xml:space="preserve">
+    <value>Liste des endpoints</value>
+  </data>
+  <data name="SchemaEndpointListFile" xml:space="preserve">
+    <value>Liste des endpoints du fichier {0}</value>
+  </data>
+  <data name="SchemaEndpointListModule" xml:space="preserve">
+    <value>Liste des endpoints du module {0}</value>
+  </data>
+  <data name="SchemaForeignKey" xml:space="preserve">
+    <value>Clé étrangère</value>
+  </data>
+  <data name="SchemaLabel" xml:space="preserve">
+    <value>Libellé</value>
+  </data>
+  <data name="SchemaLength" xml:space="preserve">
+    <value>Longueur</value>
+  </data>
+  <data name="SchemaPossibleValues" xml:space="preserve">
+    <value>Valeurs possibles</value>
+  </data>
+  <data name="SchemaPrimaryKey" xml:space="preserve">
+    <value>Clé primaire</value>
+  </data>
+  <data name="SchemaRequired" xml:space="preserve">
+    <value>Obligatoire</value>
+  </data>
+  <data name="SchemaSchema" xml:space="preserve">
+    <value>Schéma</value>
+  </data>
+  <data name="SchemaSqlName" xml:space="preserve">
+    <value>Nom SQL</value>
+  </data>
+  <data name="SchemaSqlType" xml:space="preserve">
+    <value>Type SQL</value>
+  </data>
+  <data name="SchemaTable" xml:space="preserve">
+    <value>Table</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Oui</value>
   </data>
 </root>

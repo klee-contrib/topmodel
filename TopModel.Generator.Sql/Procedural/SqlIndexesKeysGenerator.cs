@@ -53,9 +53,10 @@ public class SqlIndexesKeysGenerator(ILogger<SqlIndexesKeysGenerator> logger, IF
         var appName = classes.First().Namespace.App;
 
         writer.WriteSqlFileHeader(
+            Config,
             appName,
             fileName.Split('/')[^1],
-            "Script de création des indexes et des clés étrangères et uniques."
+            Config.GetMessage(SqlMessage.SqlIndexesHeader)
         );
 
         foreach (var fkProperty in classes.OrderBy(c => c.SqlName).SelectMany(GetForeignKeys))
@@ -111,10 +112,12 @@ public class SqlIndexesKeysGenerator(ILogger<SqlIndexesKeysGenerator> logger, IF
         writer.WriteLine();
         writer.WriteLine("/**");
         writer.WriteLine(
-            "  * Génération de la contrainte de clef étrangère pour "
-                + Config.GetSqlName(sourceProperty.Class, tag, noQuote: true)
-                + "."
-                + Config.GetSqlName(sourceProperty, tag, noQuote: true)
+            "  * "
+                + Config.GetMessage(
+                    SqlMessage.ForeignKeyConstraintCreation,
+                    Config.GetSqlName(sourceProperty.Class, tag, noQuote: true),
+                    Config.GetSqlName(sourceProperty, tag, noQuote: true)
+                )
         );
         writer.WriteLine(" **/");
         writer.WriteLine("alter table " + Config.GetSqlName(sourceProperty.Class, tag));
@@ -149,10 +152,12 @@ public class SqlIndexesKeysGenerator(ILogger<SqlIndexesKeysGenerator> logger, IF
         writer.WriteLine();
         writer.WriteLine("/**");
         writer.WriteLine(
-            "  * Création de l'index de clef étrangère pour "
-                + Config.GetSqlName(property.Class, tag, noQuote: true)
-                + "."
-                + Config.GetSqlName(property, tag, noQuote: true)
+            "  * "
+                + Config.GetMessage(
+                    SqlMessage.ForeignKeyIndexCreation,
+                    Config.GetSqlName(property.Class, tag, noQuote: true),
+                    Config.GetSqlName(property, tag, noQuote: true)
+                )
         );
         writer.WriteLine(" **/");
         writer.WriteLine(
@@ -174,7 +179,9 @@ public class SqlIndexesKeysGenerator(ILogger<SqlIndexesKeysGenerator> logger, IF
 
         writer.WriteLine();
         writer.WriteLine("/**");
-        writer.WriteLine($"  * Création de l'index {Config.GetSqlName(index, tag)} sur {tableName}.");
+        writer.WriteLine(
+            $"  * {Config.GetMessage(SqlMessage.IndexCreation, Config.GetSqlName(index, tag), tableName)}"
+        );
         writer.WriteLine(" **/");
 
         if (index.Unique)

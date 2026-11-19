@@ -332,6 +332,10 @@ Nous nous plaçons dans le cadre de la génération du tag `tag-a` d'une classe 
 
   _Valeur par défaut_ : `topmodel.lock`
 
+- **`language`**
+
+  Langue des libellés techniques écrits dans le contenu généré. Ce paramètre est indépendant de la section `i18n` (qui contrôle la localisation des libellés métier) et de la langue des messages en console (qui est toujours celle de l'OS).
+
 - **`ignoredFiles`**
 
   Liste des fichiers à ignorer après première génération (relatif au fichier de config).

@@ -3,7 +3,7 @@
 ----
 
 -- ===========================================================================================
---   Description		:	Création de la table TABLE.
+--  Description          : Création de la table TABLE.
 -- ===========================================================================================
 
 create table [TABLE] (
@@ -18,7 +18,7 @@ create table [TABLE] (
 	constraint UK_TABLE_LIE_ID_TAB_NUMERO unique nonclustered (LIE_ID asc, TAB_NUMERO asc))
 go
 
-/* Index on foreign key column for [TABLE].LIE_ID */
+/* Index sur la colonne de clé étrangère [TABLE].LIE_ID */
 create nonclustered index IDX_TAB_LIE_ID_FK
 	on [TABLE] (LIE_ID asc)
 go

@@ -38,41 +38,41 @@ public class Paiement {
 	private Integer swileCardId;
 
 	/**
-	 * Getter for facture.
+	 * Accesseur de 'facture'.
 	 *
-	 * @return value of {@link #facture facture}.
+	 * @return Valeur de {@link #facture facture}.
 	 */
 	public Facture getFacture() {
 		return this.facture;
 	}
 
 	/**
-	 * Getter for swileCardId.
+	 * Accesseur de 'swileCardId'.
 	 *
-	 * @return value of {@link #swileCardId swileCardId}.
+	 * @return Valeur de {@link #swileCardId swileCardId}.
 	 */
 	public Integer getSwileCardId() {
 		return this.swileCardId;
 	}
 
 	/**
-	 * Set the value of {@link #facture facture}.
-	 * @param facture value to set.
+	 * Définit la valeur de {@link #facture facture}.
+	 * @param facture Valeur à définir.
 	 */
 	public void setFacture(Facture facture) {
 		this.facture = facture;
 	}
 
 	/**
-	 * Set the value of {@link #swileCardId swileCardId}.
-	 * @param swileCardId value to set.
+	 * Définit la valeur de {@link #swileCardId swileCardId}.
+	 * @param swileCardId Valeur à définir.
 	 */
 	public void setSwileCardId(Integer swileCardId) {
 		this.swileCardId = swileCardId;
 	}
 
 	/**
-	 * Enumération des champs de la classe {@link restaurant.jpa_feign.entities.restaurant.Paiement Paiement}.
+	 * Énumération des champs de la classe {@link restaurant.jpa_feign.entities.restaurant.Paiement Paiement}.
 	 */
 	public enum Fields {
 		FACTURE(Facture.class),
@@ -85,9 +85,9 @@ public class Paiement {
 		}
 
 		/**
-		 * Getter for type.
+		 * Accesseur de 'type'.
 		 *
-		 * @return value of {@link #type type}.
+		 * @return Valeur de {@link #type type}.
 		 */
 		public Class<?> getType() {
 			return this.type;
@@ -104,34 +104,34 @@ public class Paiement {
 		private Integer swileCardId;
 
 		/**
-		 * Getter for facture.
+		 * Accesseur de 'facture'.
 		 *
-		 * @return value of {@link #facture facture}.
+		 * @return Valeur de {@link #facture facture}.
 		 */
 		public Facture getFacture() {
 			return this.facture;
 		}
 
 		/**
-		 * Set the value of {@link #facture facture}.
-		 * @param facture value to set.
+		 * Définit la valeur de {@link #facture facture}.
+		 * @param facture Valeur à définir.
 		 */
 		public void setFacture(Facture facture) {
 			this.facture = facture;
 		}
 
 		/**
-		 * Getter for swileCardId.
+		 * Accesseur de 'swileCardId'.
 		 *
-		 * @return value of {@link #swileCardId swileCardId}.
+		 * @return Valeur de {@link #swileCardId swileCardId}.
 		 */
 		public Integer getSwileCardId() {
 			return this.swileCardId;
 		}
 
 		/**
-		 * Set the value of {@link #swileCardId swileCardId}.
-		 * @param swileCardId value to set.
+		 * Définit la valeur de {@link #swileCardId swileCardId}.
+		 * @param swileCardId Valeur à définir.
 		 */
 		public void setSwileCardId(Integer swileCardId) {
 			this.swileCardId = swileCardId;

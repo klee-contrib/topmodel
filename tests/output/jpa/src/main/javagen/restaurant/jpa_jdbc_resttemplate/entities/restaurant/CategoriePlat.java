@@ -35,7 +35,7 @@ public class CategoriePlat {
 	public static final CategoriePlat PRINCIPAL = new CategoriePlat(CategoriePlatCode.Principal, "restaurant.categoriePlat.values.Principal", CategoriePlatOrdre.Principal, new BigDecimal(10));
 
 	/**
-	 * Liste de toutes les valeurs de l'énumération CategoriePlat.
+	 * Liste de toutes les valeurs de l'énumération 'CategoriePlat'.
 	 */
 	public static final List<CategoriePlat> VALUES = List.of(BOISSON, ENTREE, PRINCIPAL, DESSERT, AUTRE);
 
@@ -67,7 +67,7 @@ public class CategoriePlat {
 	private BigDecimal prixMoyen;
 
 	/**
-	 * All args constructor for 'CategoriePlat'.
+	 * Constructeur tout arguments pour 'CategoriePlat'.
 	 * @param code Code de la catégorie.
 	 * @param libelle Libellé de la catégorie.
 	 * @param ordre Ordre d'affichage dans le menu.
@@ -81,36 +81,36 @@ public class CategoriePlat {
 	}
 
 	/**
-	 * Getter for code.
+	 * Accesseur de 'code'.
 	 *
-	 * @return value of {@link #code code}.
+	 * @return Valeur de {@link #code code}.
 	 */
 	public String getCode() {
 		return this.code;
 	}
 
 	/**
-	 * Getter for libelle.
+	 * Accesseur de 'libelle'.
 	 *
-	 * @return value of {@link #libelle libelle}.
+	 * @return Valeur de {@link #libelle libelle}.
 	 */
 	public String getLibelle() {
 		return this.libelle;
 	}
 
 	/**
-	 * Getter for ordre.
+	 * Accesseur de 'ordre'.
 	 *
-	 * @return value of {@link #ordre ordre}.
+	 * @return Valeur de {@link #ordre ordre}.
 	 */
 	public Integer getOrdre() {
 		return this.ordre;
 	}
 
 	/**
-	 * Getter for prixMoyen.
+	 * Accesseur de 'prixMoyen'.
 	 *
-	 * @return value of {@link #prixMoyen prixMoyen}.
+	 * @return Valeur de {@link #prixMoyen prixMoyen}.
 	 */
 	public BigDecimal getPrixMoyen() {
 		return this.prixMoyen;

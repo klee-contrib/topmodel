@@ -36,12 +36,12 @@ public class JavaEnumEnumGenerator(ILogger<JavaEnumEnumGenerator> logger, IFileW
         var field = GetField(property, tag);
         var method = new JavaMethod(field.Type, Config.GetGetterName(property, tag))
         {
-            Comment = $"Getter for {field.Name}",
+            Comment = Config.GetMessage(JpaMessage.Getter, field.Name),
             Body =
             {
                 new WriterLine() { Line = $"return this.{field.Name};", Indent = 0 },
             },
-            ReturnComment = $"value of {{@link #{field.Name} {field.Name}}}",
+            ReturnComment = Config.GetMessage(JpaMessage.GetterValue, field.Name),
             Visibility = "public",
         };
         method.AddImports(property.GetTypeImports(Config, tag));
@@ -107,7 +107,7 @@ public class JavaEnumEnumGenerator(ILogger<JavaEnumEnumGenerator> logger, IFileW
 
         var javaClass = InitClass(classe, tag);
 
-        await using var fw = this.OpenJavaWriter(fileName, packageName, codePage: null);
+        await using var fw = this.OpenJavaWriter(fileName, packageName);
         fw.Write(javaClass);
     }
 

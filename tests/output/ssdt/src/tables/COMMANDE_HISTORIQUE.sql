@@ -3,7 +3,7 @@
 ----
 
 -- ===========================================================================================
---   Description		:	Création de la table COMMANDE_HISTORIQUE.
+--  Description          : Création de la table COMMANDE_HISTORIQUE.
 -- ===========================================================================================
 
 create table COMMANDE_HISTORIQUE (

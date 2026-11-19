@@ -3,7 +3,7 @@
 ----
 
 -- ===========================================================================================
---   Description		:	Insertion des valeurs de la table DEPARTEMENT.
+--  Description          : Insertion des valeurs de la table DEPARTEMENT.
 -- ===========================================================================================
 
 insert into DEPARTEMENT(DEP_CODE, DEP_LIBELLE, REG_CODE) values(N'75', N'restaurant.departement.values.Paris', N'IDF');

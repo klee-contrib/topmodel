@@ -33,6 +33,7 @@ public class TmdGenWorker : TopModelWorker<ModelGeneratorConfig, TmdGenFileCheck
             {
                 DirectoryName = ConfigDirectoryName,
                 ModelRoot = Config.ModelRoot,
+                Language = Config.Language,
                 Number = Config.OpenApi.IndexOf(conf) + 1,
             });
         }
@@ -50,6 +51,7 @@ public class TmdGenWorker : TopModelWorker<ModelGeneratorConfig, TmdGenFileCheck
                 {
                     DirectoryName = ConfigDirectoryName,
                     ModelRoot = Config.ModelRoot,
+                    Language = Config.Language,
                     Number = Config.Database.IndexOf(conf) + 1,
                     Passwords = _passwords,
                 });
@@ -64,6 +66,7 @@ public class TmdGenWorker : TopModelWorker<ModelGeneratorConfig, TmdGenFileCheck
                 {
                     DirectoryName = ConfigDirectoryName,
                     ModelRoot = Config.ModelRoot,
+                    Language = Config.Language,
                     Number = Config.Database.IndexOf(conf) + 1,
                     Passwords = _passwords,
                 });
@@ -78,6 +81,7 @@ public class TmdGenWorker : TopModelWorker<ModelGeneratorConfig, TmdGenFileCheck
                 {
                     DirectoryName = ConfigDirectoryName,
                     ModelRoot = Config.ModelRoot,
+                    Language = Config.Language,
                     Number = Config.Database.IndexOf(conf) + 1,
                     Passwords = _passwords,
                 });
@@ -92,6 +96,7 @@ public class TmdGenWorker : TopModelWorker<ModelGeneratorConfig, TmdGenFileCheck
                 {
                     DirectoryName = ConfigDirectoryName,
                     ModelRoot = Config.ModelRoot,
+                    Language = Config.Language,
                     Number = Config.Database.IndexOf(conf) + 1,
                     Passwords = _passwords,
                 });

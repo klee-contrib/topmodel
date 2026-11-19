@@ -18,133 +18,133 @@ import jakarta.validation.constraints.NotNull;
 public class LigneCommandeWrite implements Serializable {
 
 	/**
-	 * Serial ID.
+	 * ID de sérialisation.
 	 */
 	@Serial
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Quantité commandée.
-	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.LigneCommande#getQuantite() LigneCommande#getQuantite()}
+	 * Alias de {@link restaurant.jpa_feign.entities.restaurant.LigneCommande#getQuantite() LigneCommande#getQuantite()}
 	 */
 	@NotNull
 	private Integer quantite;
 
 	/**
 	 * Prix unitaire au moment de la commande.
-	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.LigneCommande#getPrixUnitaire() LigneCommande#getPrixUnitaire()}
+	 * Alias de {@link restaurant.jpa_feign.entities.restaurant.LigneCommande#getPrixUnitaire() LigneCommande#getPrixUnitaire()}
 	 */
 	@NotNull
 	private BigDecimal prixUnitaire;
 
 	/**
 	 * Prix total de la ligne.
-	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.LigneCommande#getPrixTotal() LigneCommande#getPrixTotal()}
+	 * Alias de {@link restaurant.jpa_feign.entities.restaurant.LigneCommande#getPrixTotal() LigneCommande#getPrixTotal()}
 	 */
 	@NotNull
 	private BigDecimal prixTotal;
 
 	/**
 	 * Commande à laquelle appartient la ligne.
-	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.LigneCommande#getCommande() LigneCommande#getCommande()}
+	 * Alias de {@link restaurant.jpa_feign.entities.restaurant.LigneCommande#getCommande() LigneCommande#getCommande()}
 	 */
 	@NotNull
 	private Integer commandeId;
 
 	/**
 	 * Plat commandé.
-	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.LigneCommande#getPlat() LigneCommande#getPlat()}
+	 * Alias de {@link restaurant.jpa_feign.entities.restaurant.LigneCommande#getPlat() LigneCommande#getPlat()}
 	 */
 	@NotNull
 	private Integer platId;
 
 	/**
-	 * Getter for quantite.
+	 * Accesseur de 'quantite'.
 	 *
-	 * @return value of {@link #quantite quantite}.
+	 * @return Valeur de {@link #quantite quantite}.
 	 */
 	public Integer getQuantite() {
 		return this.quantite;
 	}
 
 	/**
-	 * Getter for prixUnitaire.
+	 * Accesseur de 'prixUnitaire'.
 	 *
-	 * @return value of {@link #prixUnitaire prixUnitaire}.
+	 * @return Valeur de {@link #prixUnitaire prixUnitaire}.
 	 */
 	public BigDecimal getPrixUnitaire() {
 		return this.prixUnitaire;
 	}
 
 	/**
-	 * Getter for prixTotal.
+	 * Accesseur de 'prixTotal'.
 	 *
-	 * @return value of {@link #prixTotal prixTotal}.
+	 * @return Valeur de {@link #prixTotal prixTotal}.
 	 */
 	public BigDecimal getPrixTotal() {
 		return this.prixTotal;
 	}
 
 	/**
-	 * Getter for commandeId.
+	 * Accesseur de 'commandeId'.
 	 *
-	 * @return value of {@link #commandeId commandeId}.
+	 * @return Valeur de {@link #commandeId commandeId}.
 	 */
 	public Integer getCommandeId() {
 		return this.commandeId;
 	}
 
 	/**
-	 * Getter for platId.
+	 * Accesseur de 'platId'.
 	 *
-	 * @return value of {@link #platId platId}.
+	 * @return Valeur de {@link #platId platId}.
 	 */
 	public Integer getPlatId() {
 		return this.platId;
 	}
 
 	/**
-	 * Set the value of {@link #quantite quantite}.
-	 * @param quantite value to set.
+	 * Définit la valeur de {@link #quantite quantite}.
+	 * @param quantite Valeur à définir.
 	 */
 	public void setQuantite(Integer quantite) {
 		this.quantite = quantite;
 	}
 
 	/**
-	 * Set the value of {@link #prixUnitaire prixUnitaire}.
-	 * @param prixUnitaire value to set.
+	 * Définit la valeur de {@link #prixUnitaire prixUnitaire}.
+	 * @param prixUnitaire Valeur à définir.
 	 */
 	public void setPrixUnitaire(BigDecimal prixUnitaire) {
 		this.prixUnitaire = prixUnitaire;
 	}
 
 	/**
-	 * Set the value of {@link #prixTotal prixTotal}.
-	 * @param prixTotal value to set.
+	 * Définit la valeur de {@link #prixTotal prixTotal}.
+	 * @param prixTotal Valeur à définir.
 	 */
 	public void setPrixTotal(BigDecimal prixTotal) {
 		this.prixTotal = prixTotal;
 	}
 
 	/**
-	 * Set the value of {@link #commandeId commandeId}.
-	 * @param commandeId value to set.
+	 * Définit la valeur de {@link #commandeId commandeId}.
+	 * @param commandeId Valeur à définir.
 	 */
 	public void setCommandeId(Integer commandeId) {
 		this.commandeId = commandeId;
 	}
 
 	/**
-	 * Set the value of {@link #platId platId}.
-	 * @param platId value to set.
+	 * Définit la valeur de {@link #platId platId}.
+	 * @param platId Valeur à définir.
 	 */
 	public void setPlatId(Integer platId) {
 		this.platId = platId;
 	}
 
 	/**
-	 * Enumération des champs de la classe {@link restaurant.jpa_feign.dtos.restaurant.LigneCommandeWrite LigneCommandeWrite}.
+	 * Énumération des champs de la classe {@link restaurant.jpa_feign.dtos.restaurant.LigneCommandeWrite LigneCommandeWrite}.
 	 */
 	public enum Fields {
 		QUANTITE(Integer.class),
@@ -160,9 +160,9 @@ public class LigneCommandeWrite implements Serializable {
 		}
 
 		/**
-		 * Getter for type.
+		 * Accesseur de 'type'.
 		 *
-		 * @return value of {@link #type type}.
+		 * @return Valeur de {@link #type type}.
 		 */
 		public Class<?> getType() {
 			return this.type;

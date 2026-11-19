@@ -550,6 +550,7 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
 
                         genConfig.Name ??= $"{configName}@{number}";
                         genConfig.InitVariables(Config.App, number, _logger);
+                        genConfig.ConfigLanguage = Config.Language;
 
                         genConfig.ExcludedTags = ExcludedTags.ToList();
 

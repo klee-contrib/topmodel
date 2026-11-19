@@ -268,8 +268,10 @@ public class {className} : Controller
             controller = controller.WithOpenBraceToken(controller.OpenBraceToken.WithoutTrivia());
         }
 
-        await using var fw = OpenFileWriter(filePath);
-        fw.HeaderMessage = "ATTENTION, CE FICHIER EST PARTIELLEMENT GENERE AUTOMATIQUEMENT !";
+        await using var fw = OpenFileWriter(
+            filePath,
+            new() { HeaderMessage = Config.GetMessage(CsharpMessage.PartiallyGeneratedFileHeader) }
+        );
         fw.Write((await syntaxTree.GetRootAsync(ct)).ReplaceNode(existingController, controller).ToString());
     }
 }

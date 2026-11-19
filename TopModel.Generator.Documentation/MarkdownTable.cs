@@ -1,4 +1,4 @@
-namespace TopModel.Generator.Documentation;
+﻿namespace TopModel.Generator.Documentation;
 
 /// <summary>
 /// Représente un tableau Markdown : un ensemble de colonnes et des lignes associées.

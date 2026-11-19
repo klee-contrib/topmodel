@@ -288,7 +288,7 @@ public static class ModelUtils
         var indentValue = string.Empty;
         for (var i = 0; i < indentationLevel; ++i)
         {
-            indentValue += fw.IndentValue;
+            indentValue += fw.Options.IndentValue;
         }
 
         value = value.Replace("\n", "\n" + indentValue);
@@ -316,7 +316,7 @@ public static class ModelUtils
         var indentValue = string.Empty;
         for (var i = 0; i < indentationLevel; ++i)
         {
-            indentValue += fw.IndentValue;
+            indentValue += fw.Options.IndentValue;
         }
 
         value = value.Replace("\n", "\n" + indentValue);

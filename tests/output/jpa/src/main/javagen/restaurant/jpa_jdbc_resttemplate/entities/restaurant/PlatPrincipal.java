@@ -25,17 +25,17 @@ public class PlatPrincipal extends Plat {
 	private Boolean vegetarien;
 
 	/**
-	 * Getter for vegetarien.
+	 * Accesseur de 'vegetarien'.
 	 *
-	 * @return value of {@link #vegetarien vegetarien}.
+	 * @return Valeur de {@link #vegetarien vegetarien}.
 	 */
 	public Boolean getVegetarien() {
 		return this.vegetarien;
 	}
 
 	/**
-	 * Set the value of {@link #vegetarien vegetarien}.
-	 * @param vegetarien value to set.
+	 * Définit la valeur de {@link #vegetarien vegetarien}.
+	 * @param vegetarien Valeur à définir.
 	 */
 	public void setVegetarien(Boolean vegetarien) {
 		this.vegetarien = vegetarien;

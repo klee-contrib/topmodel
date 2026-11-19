@@ -24,24 +24,24 @@ public class Verre extends Vaisselle {
 	private Boolean aPied;
 
 	/**
-	 * Getter for aPied.
+	 * Accesseur de 'aPied'.
 	 *
-	 * @return value of {@link #aPied aPied}.
+	 * @return Valeur de {@link #aPied aPied}.
 	 */
 	public Boolean getAPied() {
 		return this.aPied;
 	}
 
 	/**
-	 * Set the value of {@link #aPied aPied}.
-	 * @param aPied value to set.
+	 * Définit la valeur de {@link #aPied aPied}.
+	 * @param aPied Valeur à définir.
 	 */
 	public void setAPied(Boolean aPied) {
 		this.aPied = aPied;
 	}
 
 	/**
-	 * Enumération des champs de la classe {@link restaurant.jpa_server.entities.restaurant.Verre Verre}.
+	 * Énumération des champs de la classe {@link restaurant.jpa_server.entities.restaurant.Verre Verre}.
 	 */
 	public enum Fields {
 		A_PIED(Boolean.class);
@@ -53,9 +53,9 @@ public class Verre extends Vaisselle {
 		}
 
 		/**
-		 * Getter for type.
+		 * Accesseur de 'type'.
 		 *
-		 * @return value of {@link #type type}.
+		 * @return Valeur de {@link #type type}.
 		 */
 		public Class<?> getType() {
 			return this.type;

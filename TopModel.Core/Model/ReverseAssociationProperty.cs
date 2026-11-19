@@ -1,4 +1,5 @@
 ﻿using TopModel.Core.FileModel;
+using TopModel.Utils;
 
 namespace TopModel.Core.Model;
 
@@ -24,7 +25,11 @@ internal class ReverseAssociationProperty(Declaration declaration) : Association
 
     public override string Comment =>
         ReverseProperty.WithReverse?.Comment
-        ?? $"Association réciproque de {ReverseProperty.Class.NamePascal}.{ReverseProperty.Name}";
+        ?? CoreMessage.ReverseAssociationComment.GetLocalizedMessage(
+            ReverseProperty.Class.ModelFile.Language,
+            ReverseProperty.Class.NamePascal,
+            ReverseProperty.Name
+        );
 
     public override ReverseAssociationDefinition WithReverse => new(ReverseProperty.Declaration) { Property = this };
 

@@ -916,6 +916,7 @@ public class ModelStore(
 
     private void UpdateFile(string fileName, ModelFile modelFile)
     {
+        modelFile.Language = config.Language;
         _modelFiles[fileName] = modelFile;
 
         foreach (var genConfig in config.Configs.Values)

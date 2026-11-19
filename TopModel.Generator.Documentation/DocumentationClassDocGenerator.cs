@@ -39,12 +39,15 @@ public class DocumentationClassDocGenerator(
 
         var title = Config.ClassesMode switch
         {
-            DocumentationGenerationMode.All => "Dictionnaire de données",
-            DocumentationGenerationMode.File => $"Dictionnaire de données du fichier {classList[0].ModelFile.Name}",
-            _ => $"Dictionnaire de données du module {classList[0].Namespace.Module}",
+            DocumentationGenerationMode.All => Config.GetMessage(DocumentationMessage.SchemaDataDictionary),
+            DocumentationGenerationMode.File => Config.GetMessage(
+                DocumentationMessage.SchemaDataDictionaryFile,
+                classList[0].ModelFile.Name
+            ),
+            _ => Config.GetMessage(DocumentationMessage.SchemaDataDictionaryModule, classList[0].Namespace.Module),
         };
 
-        await using var md = new MarkdownWriter(OpenFileWriter(fileName));
+        await using var md = new MarkdownWriter(OpenFileWriter(fileName, new() { EnableHeader = false }));
         md.WriteTitle(1, title);
         md.WriteLine();
 
@@ -59,12 +62,12 @@ public class DocumentationClassDocGenerator(
                 List<string> constraints = [];
                 if (property is { Association: not null })
                 {
-                    constraints.Add("Clé étrangère");
+                    constraints.Add(Config.GetMessage(DocumentationMessage.SchemaForeignKey));
                 }
 
                 if (property.PrimaryKey)
                 {
-                    constraints.Add("Clé primaire");
+                    constraints.Add(Config.GetMessage(DocumentationMessage.SchemaPrimaryKey));
                 }
 
                 table.AddRow([
@@ -77,7 +80,7 @@ public class DocumentationClassDocGenerator(
                     $"{property.Domain?.Length}",
                     property.Comment,
                     string.Join("<br>", constraints),
-                    property.Required ? "Oui" : string.Empty,
+                    property.Required ? Config.GetMessage(DocumentationMessage.Yes) : string.Empty,
                     string.Join(
                         ", ",
                         property.Class.Values.Select(v =>
@@ -94,21 +97,21 @@ public class DocumentationClassDocGenerator(
         md.WriteTable(table);
     }
 
-    private static string[] GetColumns()
+    private string[] GetColumns()
     {
         return
         [
-            "Schéma",
-            "Table",
-            "Désignation",
-            "Nom SQL",
-            "Libellé",
-            "Type SQL",
-            "Longueur",
-            "Description",
-            "Contraintes",
-            "Obligatoire",
-            "Valeurs possibles",
+            Config.GetMessage(DocumentationMessage.SchemaSchema),
+            Config.GetMessage(DocumentationMessage.SchemaTable),
+            Config.GetMessage(DocumentationMessage.SchemaDesignation),
+            Config.GetMessage(DocumentationMessage.SchemaSqlName),
+            Config.GetMessage(DocumentationMessage.SchemaLabel),
+            Config.GetMessage(DocumentationMessage.SchemaSqlType),
+            Config.GetMessage(DocumentationMessage.SchemaLength),
+            Config.GetMessage(DocumentationMessage.EndpointHeaderDescription),
+            Config.GetMessage(DocumentationMessage.SchemaConstraints),
+            Config.GetMessage(DocumentationMessage.SchemaRequired),
+            Config.GetMessage(DocumentationMessage.SchemaPossibleValues),
         ];
     }
 }

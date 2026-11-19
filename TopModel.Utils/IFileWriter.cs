@@ -6,29 +6,19 @@
 public interface IFileWriter : IAsyncDisposable
 {
     /// <summary>
-    /// Active la lecture et l'écriture d'un entête avec un hash du fichier.
-    /// </summary>
-    bool EnableHeader { get; set; }
-
-    /// <summary>
     /// Nom du fichier à écrire.
     /// </summary>
     string FileName { get; }
 
     /// <summary>
-    /// Message à mettre dans le header.
+    /// Langue technique du contenu généré.
     /// </summary>
-    string HeaderMessage { get; set; }
+    string? Language { get; }
 
     /// <summary>
-    /// Indentation.
+    /// Options pour le FileWriter.
     /// </summary>
-    string IndentValue { get; set; }
-
-    /// <summary>
-    /// Renvoie le token de début de ligne de commentaire dans le langage du fichier.
-    /// </summary>
-    string StartCommentToken { get; set; }
+    FileWriterOptions Options { get; }
 
     /// <summary>
     /// Ecrit un string dans le stream.

@@ -39,31 +39,31 @@ public interface TableItem {
 
 	/**
 	 * Identifiant de la table.
-	 * @param id value to set.
+	 * @param id Valeur à définir.
 	 */
 	void setId(Integer id);
 
 	/**
 	 * Numéro de la table.
-	 * @param numero value to set.
+	 * @param numero Valeur à définir.
 	 */
 	void setNumero(String numero);
 
 	/**
 	 * Capacité de la table (nombre de places).
-	 * @param capacite value to set.
+	 * @param capacite Valeur à définir.
 	 */
 	void setCapacite(Integer capacite);
 
 	/**
 	 * Indique si la table est disponible.
-	 * @param disponible value to set.
+	 * @param disponible Valeur à définir.
 	 */
 	void setDisponible(Boolean disponible);
 
 	/**
 	 * Restaurant auquel appartient la table.
-	 * @param restaurantId value to set.
+	 * @param restaurantId Valeur à définir.
 	 */
 	void setRestaurantId(Integer restaurantId);
 }

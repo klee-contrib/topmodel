@@ -38,51 +38,51 @@ public class Translation {
 	private String lang;
 
 	/**
-	 * Getter for resourceKey.
+	 * Accesseur de 'resourceKey'.
 	 *
-	 * @return value of {@link #resourceKey resourceKey}.
+	 * @return Valeur de {@link #resourceKey resourceKey}.
 	 */
 	public String getResourceKey() {
 		return this.resourceKey;
 	}
 
 	/**
-	 * Getter for value.
+	 * Accesseur de 'value'.
 	 *
-	 * @return value of {@link #value value}.
+	 * @return Valeur de {@link #value value}.
 	 */
 	public String getValue() {
 		return this.value;
 	}
 
 	/**
-	 * Getter for lang.
+	 * Accesseur de 'lang'.
 	 *
-	 * @return value of {@link #lang lang}.
+	 * @return Valeur de {@link #lang lang}.
 	 */
 	public String getLang() {
 		return this.lang;
 	}
 
 	/**
-	 * Set the value of {@link #resourceKey resourceKey}.
-	 * @param resourceKey value to set.
+	 * Définit la valeur de {@link #resourceKey resourceKey}.
+	 * @param resourceKey Valeur à définir.
 	 */
 	public void setResourceKey(String resourceKey) {
 		this.resourceKey = resourceKey;
 	}
 
 	/**
-	 * Set the value of {@link #value value}.
-	 * @param value value to set.
+	 * Définit la valeur de {@link #value value}.
+	 * @param value Valeur à définir.
 	 */
 	public void setValue(String value) {
 		this.value = value;
 	}
 
 	/**
-	 * Set the value of {@link #lang lang}.
-	 * @param lang value to set.
+	 * Définit la valeur de {@link #lang lang}.
+	 * @param lang Valeur à définir.
 	 */
 	public void setLang(String lang) {
 		this.lang = lang;

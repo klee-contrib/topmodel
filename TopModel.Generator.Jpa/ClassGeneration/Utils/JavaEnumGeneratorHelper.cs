@@ -1,4 +1,4 @@
-﻿using TopModel.Core.Model;
+using TopModel.Core.Model;
 using TopModel.Utils;
 
 namespace TopModel.Generator.Jpa.ClassGeneration.Utils;
@@ -82,13 +82,13 @@ public class JavaEnumGeneratorHelper(JpaConfig config) : JavaConstructorGenerato
         {
             Static = true,
             Visibility = "public",
-            Comment = $"Retourne la valeur de l'énumération pour la clé spécifiée.",
-            ReturnComment = $"La valeur de l'énumération correspondant à la clé '{key}'.",
+            Comment = Config.GetMessage(JpaMessage.EnumReturn),
+            ReturnComment = Config.GetMessage(JpaMessage.EnumValueForKey, key),
         };
         method.AddParameter(
             new JavaMethodParameter(Config.GetType(key, tag), key.NameCamel)
             {
-                Comment = $"La clé de l'énumération pour laquelle obtenir la valeur.",
+                Comment = Config.GetMessage(JpaMessage.EnumValueKey),
             }
         );
         method.AddBodyLine(@$"return switch ({key.NameCamel}) {{");
@@ -106,7 +106,7 @@ public class JavaEnumGeneratorHelper(JpaConfig config) : JavaConstructorGenerato
         {
             method.AddBodyLine(
                 1,
-                @"default -> throw new IllegalArgumentException(""Clé d'énumération inconnue : "" + "
+                $"default -> throw new IllegalArgumentException(\"{Config.GetMessage(JpaMessage.EnumUnknownKey)}\" + "
                     + key.NameCamel
                     + ");"
             );
@@ -150,7 +150,7 @@ public class JavaEnumGeneratorHelper(JpaConfig config) : JavaConstructorGenerato
             Visibility = "public",
             DefaultValue = $"List.of({stringValues})",
         }
-            .AddCommentLine($"Liste de toutes les valeurs de l'énumération {classe.NamePascal}.")
+            .AddCommentLine(Config.GetMessage(JpaMessage.EnumAllValues, classe.NamePascal))
             .AddImports("java.util.List");
         return field;
     }

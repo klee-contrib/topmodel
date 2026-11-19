@@ -34,7 +34,12 @@ public class SqlTablesGenerator(ILogger<SqlTablesGenerator> logger, IFileWriterP
 
         var appName = classes.First().Namespace.App;
 
-        writer.WriteSqlFileHeader(appName, fileName.Split('/')[^1], "Script de création des tables.");
+        writer.WriteSqlFileHeader(
+            Config,
+            appName,
+            fileName.Split('/')[^1],
+            Config.GetMessage(SqlMessage.SqlTablesHeader)
+        );
 
         foreach (
             var classe in CoreUtils.Sort(classes.OrderBy(c => c.SqlName), c =>
@@ -128,7 +133,9 @@ public class SqlTablesGenerator(ILogger<SqlTablesGenerator> logger, IFileWriterP
 
         writer.WriteLine();
         writer.WriteLine("/**");
-        writer.WriteLine($"  * Création de la table {Config.GetSqlName(classe, tag, noQuote: true)}");
+        writer.WriteLine(
+            $"  * {Config.GetMessage(SqlMessage.SqlTableCreation, Config.GetSqlName(classe, tag, noQuote: true))}"
+        );
         writer.WriteLine(" **/");
 
         if (classe.Enum == EnumMode.Enum)

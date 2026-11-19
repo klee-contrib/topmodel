@@ -3,7 +3,7 @@
 ----
 
 -- ===========================================================================================
---   Description		:	Création de la table RESERVATION.
+--  Description          : Création de la table RESERVATION.
 -- ===========================================================================================
 
 create table RESERVATION (
@@ -29,17 +29,17 @@ go
 create sequence SEQ_RESERVATION as int start with 1000 increment by 50
 go
 
-/* Index on foreign key column for RESERVATION.PER_ID */
+/* Index sur la colonne de clé étrangère RESERVATION.PER_ID */
 create nonclustered index IDX_REV_PER_ID_FK
 	on RESERVATION (PER_ID asc)
 go
 
-/* Index on foreign key column for RESERVATION.TAB_ID */
+/* Index sur la colonne de clé étrangère RESERVATION.TAB_ID */
 create nonclustered index IDX_REV_TAB_ID_FK
 	on RESERVATION (TAB_ID asc)
 go
 
-/* Index on foreign key column for RESERVATION.LIE_ID */
+/* Index sur la colonne de clé étrangère RESERVATION.LIE_ID */
 create nonclustered index IDX_REV_LIE_ID_FK
 	on RESERVATION (LIE_ID asc)
 go

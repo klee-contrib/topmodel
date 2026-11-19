@@ -52,68 +52,68 @@ public class MenuPlat {
 	private LocalDateTime dateCreation;
 
 	/**
-	 * Getter for menu.
+	 * Accesseur de 'menu'.
 	 *
-	 * @return value of {@link #menu menu}.
+	 * @return Valeur de {@link #menu menu}.
 	 */
 	public Integer getMenu() {
 		return this.menu;
 	}
 
 	/**
-	 * Getter for plat.
+	 * Accesseur de 'plat'.
 	 *
-	 * @return value of {@link #plat plat}.
+	 * @return Valeur de {@link #plat plat}.
 	 */
 	public Integer getPlat() {
 		return this.plat;
 	}
 
 	/**
-	 * Getter for ordre.
+	 * Accesseur de 'ordre'.
 	 *
-	 * @return value of {@link #ordre ordre}.
+	 * @return Valeur de {@link #ordre ordre}.
 	 */
 	public Integer getOrdre() {
 		return this.ordre;
 	}
 
 	/**
-	 * Getter for dateCreation.
+	 * Accesseur de 'dateCreation'.
 	 *
-	 * @return value of {@link #dateCreation dateCreation}.
+	 * @return Valeur de {@link #dateCreation dateCreation}.
 	 */
 	public LocalDateTime getDateCreation() {
 		return this.dateCreation;
 	}
 
 	/**
-	 * Set the value of {@link #menu menu}.
-	 * @param menu value to set.
+	 * Définit la valeur de {@link #menu menu}.
+	 * @param menu Valeur à définir.
 	 */
 	public void setMenu(Integer menu) {
 		this.menu = menu;
 	}
 
 	/**
-	 * Set the value of {@link #plat plat}.
-	 * @param plat value to set.
+	 * Définit la valeur de {@link #plat plat}.
+	 * @param plat Valeur à définir.
 	 */
 	public void setPlat(Integer plat) {
 		this.plat = plat;
 	}
 
 	/**
-	 * Set the value of {@link #ordre ordre}.
-	 * @param ordre value to set.
+	 * Définit la valeur de {@link #ordre ordre}.
+	 * @param ordre Valeur à définir.
 	 */
 	public void setOrdre(Integer ordre) {
 		this.ordre = ordre;
 	}
 
 	/**
-	 * Set the value of {@link #dateCreation dateCreation}.
-	 * @param dateCreation value to set.
+	 * Définit la valeur de {@link #dateCreation dateCreation}.
+	 * @param dateCreation Valeur à définir.
 	 */
 	public void setDateCreation(LocalDateTime dateCreation) {
 		this.dateCreation = dateCreation;

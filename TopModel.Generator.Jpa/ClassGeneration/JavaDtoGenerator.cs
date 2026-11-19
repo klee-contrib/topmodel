@@ -70,7 +70,7 @@ public class JavaDtoGenerator(ILogger<JavaDtoGenerator> logger, IFileWriterProvi
                 Final = true,
                 DefaultValue = "1L",
             }
-                .AddCommentLine("Serial ID")
+                .AddCommentLine(Config.GetMessage(JpaMessage.SerialId))
                 .Add(new JavaAnnotation("Serial", imports: "java.io.Serial"));
         }
 

@@ -20,7 +20,7 @@ import jakarta.validation.constraints.NotNull;
 public class StatistiquesRestaurant implements Serializable {
 
 	/**
-	 * Serial ID.
+	 * ID de sérialisation.
 	 */
 	@Serial
 	private static final long serialVersionUID = 1L;
@@ -60,85 +60,85 @@ public class StatistiquesRestaurant implements Serializable {
 	private BigDecimal noteMoyenne;
 
 	/**
-	 * Getter for restaurantId.
+	 * Accesseur de 'restaurantId'.
 	 *
-	 * @return value of {@link #restaurantId restaurantId}.
+	 * @return Valeur de {@link #restaurantId restaurantId}.
 	 */
 	public Integer getRestaurantId() {
 		return this.restaurantId;
 	}
 
 	/**
-	 * Getter for nombreCommandes.
+	 * Accesseur de 'nombreCommandes'.
 	 *
-	 * @return value of {@link #nombreCommandes nombreCommandes}.
+	 * @return Valeur de {@link #nombreCommandes nombreCommandes}.
 	 */
 	public Integer getNombreCommandes() {
 		return this.nombreCommandes;
 	}
 
 	/**
-	 * Getter for chiffreAffaires.
+	 * Accesseur de 'chiffreAffaires'.
 	 *
-	 * @return value of {@link #chiffreAffaires chiffreAffaires}.
+	 * @return Valeur de {@link #chiffreAffaires chiffreAffaires}.
 	 */
 	public BigDecimal getChiffreAffaires() {
 		return this.chiffreAffaires;
 	}
 
 	/**
-	 * Getter for nombreClients.
+	 * Accesseur de 'nombreClients'.
 	 *
-	 * @return value of {@link #nombreClients nombreClients}.
+	 * @return Valeur de {@link #nombreClients nombreClients}.
 	 */
 	public Integer getNombreClients() {
 		return this.nombreClients;
 	}
 
 	/**
-	 * Getter for noteMoyenne.
+	 * Accesseur de 'noteMoyenne'.
 	 *
-	 * @return value of {@link #noteMoyenne noteMoyenne}.
+	 * @return Valeur de {@link #noteMoyenne noteMoyenne}.
 	 */
 	public BigDecimal getNoteMoyenne() {
 		return this.noteMoyenne;
 	}
 
 	/**
-	 * Set the value of {@link #restaurantId restaurantId}.
-	 * @param restaurantId value to set.
+	 * Définit la valeur de {@link #restaurantId restaurantId}.
+	 * @param restaurantId Valeur à définir.
 	 */
 	public void setRestaurantId(Integer restaurantId) {
 		this.restaurantId = restaurantId;
 	}
 
 	/**
-	 * Set the value of {@link #nombreCommandes nombreCommandes}.
-	 * @param nombreCommandes value to set.
+	 * Définit la valeur de {@link #nombreCommandes nombreCommandes}.
+	 * @param nombreCommandes Valeur à définir.
 	 */
 	public void setNombreCommandes(Integer nombreCommandes) {
 		this.nombreCommandes = nombreCommandes;
 	}
 
 	/**
-	 * Set the value of {@link #chiffreAffaires chiffreAffaires}.
-	 * @param chiffreAffaires value to set.
+	 * Définit la valeur de {@link #chiffreAffaires chiffreAffaires}.
+	 * @param chiffreAffaires Valeur à définir.
 	 */
 	public void setChiffreAffaires(BigDecimal chiffreAffaires) {
 		this.chiffreAffaires = chiffreAffaires;
 	}
 
 	/**
-	 * Set the value of {@link #nombreClients nombreClients}.
-	 * @param nombreClients value to set.
+	 * Définit la valeur de {@link #nombreClients nombreClients}.
+	 * @param nombreClients Valeur à définir.
 	 */
 	public void setNombreClients(Integer nombreClients) {
 		this.nombreClients = nombreClients;
 	}
 
 	/**
-	 * Set the value of {@link #noteMoyenne noteMoyenne}.
-	 * @param noteMoyenne value to set.
+	 * Définit la valeur de {@link #noteMoyenne noteMoyenne}.
+	 * @param noteMoyenne Valeur à définir.
 	 */
 	public void setNoteMoyenne(BigDecimal noteMoyenne) {
 		this.noteMoyenne = noteMoyenne;

@@ -3,7 +3,7 @@
 ----
 
 -- ===========================================================================================
---   Description		:	Création de la table PROMOTION.
+--  Description          : Création de la table PROMOTION.
 -- ===========================================================================================
 
 create table PROMOTION (
@@ -26,7 +26,7 @@ go
 create sequence SEQ_PROMOTION as int start with 1000 increment by 50
 go
 
-/* Index on foreign key column for PROMOTION.LIE_ID */
+/* Index sur la colonne de clé étrangère PROMOTION.LIE_ID */
 create nonclustered index IDX_PRO_LIE_ID_FK
 	on PROMOTION (LIE_ID asc)
 go

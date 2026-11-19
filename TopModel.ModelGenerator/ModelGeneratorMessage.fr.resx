@@ -123,8 +123,14 @@
   <data name="DbConnectionSuccess" xml:space="preserve">
     <value>Connexion à la base de données {0} réussie !</value>
   </data>
+  <data name="EnumValuesDescription" xml:space="preserve">
+    <value>Enum pour les valeurs de '{0}'.</value>
+  </data>
   <data name="GeneratingPleaseWait" xml:space="preserve">
     <value>Génération en cours, veuillez patienter...</value>
+  </data>
+  <data name="NotDocumented" xml:space="preserve">
+    <value>Non documenté</value>
   </data>
   <data name="PasswordPrompt" xml:space="preserve">
     <value>Mot de passe pour l'utilisateur {0} : </value>

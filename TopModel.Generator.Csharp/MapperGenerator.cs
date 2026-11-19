@@ -357,7 +357,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
         }
 
         w.WriteNamespace(mapperNs);
-        w.WriteSummary($"Mappers pour le module '{mapperModule}'.");
+        w.WriteSummary(Config.GetMessage(CsharpMessage.MapperModule, mapperModule));
         w.WriteLine($"public static class {mapperName}");
         w.WriteLine("{");
 
@@ -369,14 +369,14 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
 
             w.WriteSummary(
                 1,
-                $"Crée une nouvelle instance de '{Config.GetTypeName(classe)}'{(mapper.Comment != null ? $"{Environment.NewLine}{mapper.Comment}" : string.Empty)}"
+                $"{Config.GetMessage(CsharpMessage.MapperCreateInstance, Config.GetTypeName(classe))}{(mapper.Comment != null ? $"{Environment.NewLine}{mapper.Comment}" : string.Empty)}"
             );
             foreach (var param in mapper.Params)
             {
                 w.WriteParam(param.NameCamel, param.Comment);
             }
 
-            w.WriteReturns(1, $"Une nouvelle instance de '{Config.GetTypeName(classe)}'");
+            w.WriteReturns(1, Config.GetMessage(CsharpMessage.NewInstanceOf, Config.GetTypeName(classe)));
 
             w.Write(
                 1,
@@ -528,9 +528,9 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
 
             w.WriteSummary(
                 1,
-                $"Mappe '{Config.GetTypeName(classe)}' vers '{Config.GetTypeName(mapper.Class)}'{(mapper.Comment != null ? $"{Environment.NewLine}{mapper.Comment}" : string.Empty)}"
+                $"{Config.GetMessage(CsharpMessage.MapperMaps, Config.GetTypeName(classe), Config.GetTypeName(mapper.Class))}{(mapper.Comment != null ? $"{Environment.NewLine}{mapper.Comment}" : string.Empty)}"
             );
-            w.WriteParam("source", $"Instance de '{Config.GetTypeName(classe)}'");
+            w.WriteParam("source", Config.GetMessage(CsharpMessage.ModelInstance, Config.GetTypeName(classe)));
 
             var missingRequiredProperties = GetMissingRequiredProperties(mapper, tag);
 
@@ -539,7 +539,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                 w.WriteParam(mrp.NameCamel, mrp.Comment);
             }
 
-            w.WriteReturns(1, $"Une nouvelle instance de '{Config.GetTypeName(mapper.Class)}'");
+            w.WriteReturns(1, Config.GetMessage(CsharpMessage.NewInstanceOf, Config.GetTypeName(mapper.Class)));
 
             var extraParams = string.Empty;
             if (missingRequiredProperties.Count > 0)
@@ -638,11 +638,17 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
 
             w.WriteSummary(
                 1,
-                $"Mappe '{Config.GetTypeName(classe)}' vers '{Config.GetTypeName(mapper.Class)}'{(mapper.Comment != null ? $"{Environment.NewLine}{mapper.Comment}" : string.Empty)}"
+                $"{Config.GetMessage(CsharpMessage.MapperMaps, Config.GetTypeName(classe), Config.GetTypeName(mapper.Class))}{(mapper.Comment != null ? $"{Environment.NewLine}{mapper.Comment}" : string.Empty)}"
             );
-            w.WriteParam("source", $"Instance de '{Config.GetTypeName(classe)}'");
-            w.WriteParam("dest", $"Instance pré-existante de '{Config.GetTypeName(mapper.Class)}'.");
-            w.WriteReturns(1, $"L'instance pré-existante de '{Config.GetTypeName(mapper.Class)}'");
+            w.WriteParam("source", Config.GetMessage(CsharpMessage.ModelInstance, Config.GetTypeName(classe)));
+            w.WriteParam(
+                "dest",
+                Config.GetMessage(CsharpMessage.PreexistingInstanceParam, Config.GetTypeName(mapper.Class))
+            );
+            w.WriteReturns(
+                1,
+                Config.GetMessage(CsharpMessage.PreexistingInstanceReturn, Config.GetTypeName(mapper.Class))
+            );
             w.WriteLine(
                 1,
                 $"public static {Config.GetTypeName(mapper.Class)} {mapper.Name}(this {Config.GetTypeName(classe)} source, {Config.GetTypeName(mapper.Class)} dest)"

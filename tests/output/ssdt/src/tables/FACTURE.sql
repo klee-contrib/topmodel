@@ -3,7 +3,7 @@
 ----
 
 -- ===========================================================================================
---   Description		:	Création de la table FACTURE.
+--  Description          : Création de la table FACTURE.
 -- ===========================================================================================
 
 create table FACTURE (
@@ -14,12 +14,12 @@ create table FACTURE (
 	constraint FK_FACTURE_COM_ID foreign key (COM_ID) references COMMANDE (COM_ID))
 go
 
-/* Index on foreign key column for FACTURE.COM_ID */
+/* Index sur la colonne de clé étrangère FACTURE.COM_ID */
 create nonclustered index IDX_FACTURE_COM_ID_FK
 	on FACTURE (COM_ID asc)
 go
 
-/* Index on foreign key column for FACTURE.TFA_CODE */
+/* Index sur la colonne de clé étrangère FACTURE.TFA_CODE */
 create nonclustered index IDX_FACTURE_TFA_CODE_FK
 	on FACTURE (TFA_CODE asc)
 go

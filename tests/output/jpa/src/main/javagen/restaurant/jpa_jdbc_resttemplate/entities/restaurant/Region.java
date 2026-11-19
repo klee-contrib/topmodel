@@ -39,27 +39,27 @@ public class Region {
 	private String nomResponsable;
 
 	/**
-	 * Getter for code.
+	 * Accesseur de 'code'.
 	 *
-	 * @return value of {@link #code code}.
+	 * @return Valeur de {@link #code code}.
 	 */
 	public String getCode() {
 		return this.code;
 	}
 
 	/**
-	 * Getter for libelle.
+	 * Accesseur de 'libelle'.
 	 *
-	 * @return value of {@link #libelle libelle}.
+	 * @return Valeur de {@link #libelle libelle}.
 	 */
 	public String getLibelle() {
 		return this.libelle;
 	}
 
 	/**
-	 * Getter for nomResponsable.
+	 * Accesseur de 'nomResponsable'.
 	 *
-	 * @return value of {@link #nomResponsable nomResponsable}.
+	 * @return Valeur de {@link #nomResponsable nomResponsable}.
 	 */
 	public String getNomResponsable() {
 		return this.nomResponsable;

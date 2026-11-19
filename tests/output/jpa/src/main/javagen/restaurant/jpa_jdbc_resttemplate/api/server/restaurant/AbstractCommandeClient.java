@@ -44,12 +44,12 @@ public abstract class AbstractCommandeClient {
 
 	/**
 	 * Méthode de récupération des headers.
-	 * @return les headers à ajouter à la requête
+	 * @return Headers à ajouter à la requête
 	 */
 	protected abstract HttpHeaders getHeaders();
 
 	/**
-	 * UriComponentsBuilder pour la méthode addCommande.
+	 * UriComponentsBuilder pour la méthode 'addCommande'.
 	 * @return uriBuilder avec les query params remplis
 	 */
 	protected UriComponentsBuilder addCommandeUriComponentsBuilder() {
@@ -69,7 +69,7 @@ public abstract class AbstractCommandeClient {
 	}
 
 	/**
-	 * UriComponentsBuilder pour la méthode createReservation.
+	 * UriComponentsBuilder pour la méthode 'createReservation'.
 	 * @return uriBuilder avec les query params remplis
 	 */
 	protected UriComponentsBuilder createReservationUriComponentsBuilder() {
@@ -89,7 +89,7 @@ public abstract class AbstractCommandeClient {
 	}
 
 	/**
-	 * UriComponentsBuilder pour la méthode deleteCommande.
+	 * UriComponentsBuilder pour la méthode 'deleteCommande'.
 	 * @param comId Identifiant de la commande
 	 */
 	protected UriComponentsBuilder deleteCommandeUriComponentsBuilder(Integer comId) {
@@ -108,7 +108,7 @@ public abstract class AbstractCommandeClient {
 	}
 
 	/**
-	 * UriComponentsBuilder pour la méthode deleteCommandeWithBody.
+	 * UriComponentsBuilder pour la méthode 'deleteCommandeWithBody'.
 	 * @return uriBuilder avec les query params remplis
 	 */
 	protected UriComponentsBuilder deleteCommandeWithBodyUriComponentsBuilder() {
@@ -128,7 +128,7 @@ public abstract class AbstractCommandeClient {
 	}
 
 	/**
-	 * UriComponentsBuilder pour la méthode exportCommandes.
+	 * UriComponentsBuilder pour la méthode 'exportCommandes'.
 	 * @param dateDebut Date et heure de la commande
 	 * @param dateFin Date et heure de la commande
 	 * @return uriBuilder avec les query params remplis
@@ -154,7 +154,7 @@ public abstract class AbstractCommandeClient {
 	}
 
 	/**
-	 * UriComponentsBuilder pour la méthode getCommande.
+	 * UriComponentsBuilder pour la méthode 'getCommande'.
 	 * @param comId Identifiant de la commande
 	 * @return uriBuilder avec les query params remplis
 	 */
@@ -175,7 +175,7 @@ public abstract class AbstractCommandeClient {
 	}
 
 	/**
-	 * UriComponentsBuilder pour la méthode getCommandes.
+	 * UriComponentsBuilder pour la méthode 'getCommandes'.
 	 * @param clientId Client ayant passé la commande
 	 * @param statutCommande Statut de la commande
 	 * @param tableId Table associée à la commande
@@ -207,7 +207,7 @@ public abstract class AbstractCommandeClient {
 	}
 
 	/**
-	 * UriComponentsBuilder pour la méthode getCommandesByDate.
+	 * UriComponentsBuilder pour la méthode 'getCommandesByDate'.
 	 * @param dateCommande Date et heure de la commande
 	 * @return uriBuilder avec les query params remplis
 	 */
@@ -230,7 +230,7 @@ public abstract class AbstractCommandeClient {
 	}
 
 	/**
-	 * UriComponentsBuilder pour la méthode getStatutCommandes.
+	 * UriComponentsBuilder pour la méthode 'getStatutCommandes'.
 	 * @return uriBuilder avec les query params remplis
 	 */
 	protected UriComponentsBuilder getStatutCommandesUriComponentsBuilder() {
@@ -249,7 +249,7 @@ public abstract class AbstractCommandeClient {
 	}
 
 	/**
-	 * UriComponentsBuilder pour la méthode patchCommande.
+	 * UriComponentsBuilder pour la méthode 'patchCommande'.
 	 * @param comId Identifiant de la commande
 	 * @return uriBuilder avec les query params remplis
 	 */
@@ -271,7 +271,7 @@ public abstract class AbstractCommandeClient {
 	}
 
 	/**
-	 * UriComponentsBuilder pour la méthode updateCommande.
+	 * UriComponentsBuilder pour la méthode 'updateCommande'.
 	 * @param comId Identifiant de la commande
 	 * @return uriBuilder avec les query params remplis
 	 */
@@ -293,7 +293,7 @@ public abstract class AbstractCommandeClient {
 	}
 
 	/**
-	 * UriComponentsBuilder pour la méthode updateCommandeStatut.
+	 * UriComponentsBuilder pour la méthode 'updateCommandeStatut'.
 	 * @param comId Identifiant de la commande
 	 * @param statutCommande Statut de la commande
 	 * @return uriBuilder avec les query params remplis

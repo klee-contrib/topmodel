@@ -40,9 +40,8 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
         {
             Static = true,
             Visibility = "public",
-            ReturnComment =
-                $"Une nouvelle instance de '{classe.NamePascal}' sur laquelle les champs sources ont été mappés",
-            Comment = $"Crée une nouvelle instance de la classe '{classe.NamePascal}' en mappant les champs sources.",
+            ReturnComment = Config.GetMessage(JpaMessage.ApiNewInstance, classe.NamePascal),
+            Comment = Config.GetMessage(JpaMessage.MapperCreateInstance, classe.NamePascal),
         };
 
         fromMapperMethod.AddParameters(GetFromMappersParameters(classe, mapper, tag));
@@ -59,16 +58,15 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
         {
             Static = true,
             Visibility = "public",
-            ReturnComment =
-                $"L'instance de '{classe.NamePascal}' passée en paramètres sur lesquels les champs sources ont été mappés",
-            Comment = $"Mappe les champs sources sur l'instance de la classe '{classe.NamePascal}' passée en paramètre",
+            ReturnComment = Config.GetMessage(JpaMessage.ApiPreexistingInstance, classe.NamePascal),
+            Comment = Config.GetMessage(JpaMessage.MapperInstanceMapped, classe.NamePascal),
         };
 
         fromMapperMethod.AddParameters(GetFromMappersParameters(classe, mapper, tag));
         fromMapperMethod.AddParameter(
             new JavaMethodParameter(classe.NamePascal, "target")
             {
-                Comment = $"Instance de '{classe.NamePascal}' cible",
+                Comment = Config.GetMessage(JpaMessage.TargetInstance, classe.NamePascal),
             }
         );
 
@@ -251,9 +249,8 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
         {
             Static = true,
             Visibility = "public",
-            ReturnComment =
-                $"Une nouvelle instance de '{classe.NamePascal}' sur laquelle les champs sources ont été mappés",
-            Comment = $"Crée une nouvelle instance de la classe '{classe.NamePascal}' en mappant les champs sources.",
+            ReturnComment = Config.GetMessage(JpaMessage.ApiPreexistingInstance, classe.NamePascal),
+            Comment = Config.GetMessage(JpaMessage.MapperInstanceMapped, classe.NamePascal),
         };
 
         fromMapperMethod.AddParameters(GetFromMappersParameters(classe, mapper, tag));
@@ -357,13 +354,12 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
         {
             Static = true,
             Visibility = "public",
-            ReturnComment =
-                $"Une nouvelle instance de '{targetClass.NamePascal}' sur lesquels les champs sources ont été mappés",
-            Comment = $"Mappe les champs sources sur une nouvelle instance de la classe '{targetClass.NamePascal}'",
+            ReturnComment = Config.GetMessage(JpaMessage.NewRecordInstance, targetClass.NamePascal),
+            Comment = Config.GetMessage(JpaMessage.MapperCreateInstance, targetClass.NamePascal),
         }.AddParameter(
             new JavaMethodParameter(classe.GetImport(Config, tag), classe.NamePascal, "source")
             {
-                Comment = $"Instance de '{classe.NamePascal}' à mapper",
+                Comment = Config.GetMessage(JpaMessage.MapperParameterInstance, classe.NamePascal),
             }
         );
 
@@ -582,12 +578,12 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
         {
             Visibility = "public",
             Static = true,
-            Comment = $"Mappe '{mapper.Class.NamePascal}' vers une nouvelle instance de '{classe}'",
-            ReturnComment = $"Nouvelle instance de '{classe}' mappée depuis '{mapper.Class.NameCamel}'",
+            Comment = Config.GetMessage(JpaMessage.MapperToNewInstance, mapper.Class.NamePascal, classe),
+            ReturnComment = Config.GetMessage(JpaMessage.NewInstanceMapped, classe, mapper.Class.NameCamel),
         }.AddParameter(
             new JavaMethodParameter(classe.GetImport(Config, tag), classe.NamePascal, "source")
             {
-                Comment = $"Instance de '{classe.NamePascal}' à mapper",
+                Comment = Config.GetMessage(JpaMessage.MapperParameterInstance, classe.NamePascal),
             }
         );
 
@@ -603,15 +599,13 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
         toMapperMethod.AddParameter(
             new JavaMethodParameter(mapper.Class.GetImport(Config, tag), mapper.Class.NamePascal, "target")
             {
-                Comment = $"Instance de '{mapper.Class.NamePascal}' sur laquelle mapper",
+                Comment = Config.GetMessage(JpaMessage.MapperTargetInstance, mapper.Class.NamePascal),
             }
         );
 
         toMapperMethod.Body.Clear();
-        toMapperMethod.Comment =
-            $"Mappe '{mapper.Class.NamePascal}' vers une nouvelle instance ou bien sur l'instance passée en paramètres";
-        toMapperMethod.ReturnComment =
-            $"Nouvelle instance ou bien l'instance passée en paramètres mappée depuis '{mapper.Class.NameCamel}'";
+        toMapperMethod.Comment = Config.GetMessage(JpaMessage.MapperNewOrExistingInstance, mapper.Class.NamePascal);
+        toMapperMethod.ReturnComment = Config.GetMessage(JpaMessage.MapperNewOrExistingReturn, mapper.Class.NameCamel);
         toMapperMethod.AddBodyLine("if (source == null) {");
         toMapperMethod.AddBodyLine(1, $"throw new IllegalArgumentException(\"source cannot be null\");");
         toMapperMethod.AddBodyLine("}");
@@ -698,7 +692,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
     )
     {
         var mapperClass = GetMapperClass(tag, fromMappers, toMappers);
-        await using var fw = this.OpenJavaWriter(fileName, mapperClass.Package ?? "", codePage: null);
+        await using var fw = this.OpenJavaWriter(fileName, mapperClass.Package ?? "");
         fw.Write(mapperClass);
     }
 
@@ -726,7 +720,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
         {
             var methodParameter = new JavaMethodParameter(param.Class.NamePascal, param.Name.ToCamelCase())
             {
-                Comment = param.Comment ?? $"Instance de '{param.Class.NamePascal}' source",
+                Comment = param.Comment ?? Config.GetMessage(JpaMessage.SourceInstance, param.Class.NamePascal),
             };
             methodParameter.Imports.Add(param.Class.GetImport(Config, tag));
             methodParameter.Imports.Add(classe.GetImport(Config, tag));
@@ -773,7 +767,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
         {
             Visibility = "private",
         };
-        emptyConstructor.AddBodyLine("// private constructor to hide implicite public one");
+        emptyConstructor.AddBodyLine("// " + Config.GetMessage(JpaMessage.PrivateConstructorComment));
 
         mapperClass.Add(emptyConstructor);
         foreach (var (classe1, mapper) in fromMappers)

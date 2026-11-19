@@ -81,136 +81,136 @@ public class Promotion {
 	private LocalDateTime dateCreation;
 
 	/**
-	 * Getter for plat.
+	 * Accesseur de 'plat'.
 	 *
-	 * @return value of {@link #plat plat}.
+	 * @return Valeur de {@link #plat plat}.
 	 */
 	public Integer getPlat() {
 		return this.plat;
 	}
 
 	/**
-	 * Getter for libelle.
+	 * Accesseur de 'libelle'.
 	 *
-	 * @return value of {@link #libelle libelle}.
+	 * @return Valeur de {@link #libelle libelle}.
 	 */
 	public String getLibelle() {
 		return this.libelle;
 	}
 
 	/**
-	 * Getter for pourcentageReduction.
+	 * Accesseur de 'pourcentageReduction'.
 	 *
-	 * @return value of {@link #pourcentageReduction pourcentageReduction}.
+	 * @return Valeur de {@link #pourcentageReduction pourcentageReduction}.
 	 */
 	public Integer getPourcentageReduction() {
 		return this.pourcentageReduction;
 	}
 
 	/**
-	 * Getter for dateDebut.
+	 * Accesseur de 'dateDebut'.
 	 *
-	 * @return value of {@link #dateDebut dateDebut}.
+	 * @return Valeur de {@link #dateDebut dateDebut}.
 	 */
 	public LocalDateTime getDateDebut() {
 		return this.dateDebut;
 	}
 
 	/**
-	 * Getter for dateFin.
+	 * Accesseur de 'dateFin'.
 	 *
-	 * @return value of {@link #dateFin dateFin}.
+	 * @return Valeur de {@link #dateFin dateFin}.
 	 */
 	public LocalDateTime getDateFin() {
 		return this.dateFin;
 	}
 
 	/**
-	 * Getter for active.
+	 * Accesseur de 'active'.
 	 *
-	 * @return value of {@link #active active}.
+	 * @return Valeur de {@link #active active}.
 	 */
 	public Boolean getActive() {
 		return this.active;
 	}
 
 	/**
-	 * Getter for restaurant.
+	 * Accesseur de 'restaurant'.
 	 *
-	 * @return value of {@link #restaurant restaurant}.
+	 * @return Valeur de {@link #restaurant restaurant}.
 	 */
 	public Integer getRestaurant() {
 		return this.restaurant;
 	}
 
 	/**
-	 * Getter for dateCreation.
+	 * Accesseur de 'dateCreation'.
 	 *
-	 * @return value of {@link #dateCreation dateCreation}.
+	 * @return Valeur de {@link #dateCreation dateCreation}.
 	 */
 	public LocalDateTime getDateCreation() {
 		return this.dateCreation;
 	}
 
 	/**
-	 * Set the value of {@link #plat plat}.
-	 * @param plat value to set.
+	 * Définit la valeur de {@link #plat plat}.
+	 * @param plat Valeur à définir.
 	 */
 	public void setPlat(Integer plat) {
 		this.plat = plat;
 	}
 
 	/**
-	 * Set the value of {@link #libelle libelle}.
-	 * @param libelle value to set.
+	 * Définit la valeur de {@link #libelle libelle}.
+	 * @param libelle Valeur à définir.
 	 */
 	public void setLibelle(String libelle) {
 		this.libelle = libelle;
 	}
 
 	/**
-	 * Set the value of {@link #pourcentageReduction pourcentageReduction}.
-	 * @param pourcentageReduction value to set.
+	 * Définit la valeur de {@link #pourcentageReduction pourcentageReduction}.
+	 * @param pourcentageReduction Valeur à définir.
 	 */
 	public void setPourcentageReduction(Integer pourcentageReduction) {
 		this.pourcentageReduction = pourcentageReduction;
 	}
 
 	/**
-	 * Set the value of {@link #dateDebut dateDebut}.
-	 * @param dateDebut value to set.
+	 * Définit la valeur de {@link #dateDebut dateDebut}.
+	 * @param dateDebut Valeur à définir.
 	 */
 	public void setDateDebut(LocalDateTime dateDebut) {
 		this.dateDebut = dateDebut;
 	}
 
 	/**
-	 * Set the value of {@link #dateFin dateFin}.
-	 * @param dateFin value to set.
+	 * Définit la valeur de {@link #dateFin dateFin}.
+	 * @param dateFin Valeur à définir.
 	 */
 	public void setDateFin(LocalDateTime dateFin) {
 		this.dateFin = dateFin;
 	}
 
 	/**
-	 * Set the value of {@link #active active}.
-	 * @param active value to set.
+	 * Définit la valeur de {@link #active active}.
+	 * @param active Valeur à définir.
 	 */
 	public void setActive(Boolean active) {
 		this.active = active;
 	}
 
 	/**
-	 * Set the value of {@link #restaurant restaurant}.
-	 * @param restaurant value to set.
+	 * Définit la valeur de {@link #restaurant restaurant}.
+	 * @param restaurant Valeur à définir.
 	 */
 	public void setRestaurant(Integer restaurant) {
 		this.restaurant = restaurant;
 	}
 
 	/**
-	 * Set the value of {@link #dateCreation dateCreation}.
-	 * @param dateCreation value to set.
+	 * Définit la valeur de {@link #dateCreation dateCreation}.
+	 * @param dateCreation Valeur à définir.
 	 */
 	public void setDateCreation(LocalDateTime dateCreation) {
 		this.dateCreation = dateCreation;

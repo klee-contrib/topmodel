@@ -1,4 +1,4 @@
-namespace TopModel.Generator.Documentation;
+﻿namespace TopModel.Generator.Documentation;
 
 using Microsoft.Extensions.Logging;
 using TopModel.Core.Model;
@@ -42,12 +42,15 @@ public class DocumentationMermaidGenerator(
 
         var title = Config.MermaidMode switch
         {
-            DocumentationGenerationMode.All => "Diagramme global",
-            DocumentationGenerationMode.File => $"Diagramme du fichier {classList[0].ModelFile.Name}",
-            _ => $"Diagramme du module {classList[0].Namespace.Module}",
+            DocumentationGenerationMode.All => Config.GetMessage(DocumentationMessage.Diagram),
+            DocumentationGenerationMode.File => Config.GetMessage(
+                DocumentationMessage.DiagramFile,
+                classList[0].ModelFile.Name
+            ),
+            _ => Config.GetMessage(DocumentationMessage.DiagramModule, classList[0].Namespace.Module),
         };
 
-        await using var md = new MarkdownWriter(OpenFileWriter(fileName));
+        await using var md = new MarkdownWriter(OpenFileWriter(fileName, new() { EnableHeader = false }));
         md.WriteTitle(1, title);
         md.WriteLine();
         md.WriteLine("```mermaid");

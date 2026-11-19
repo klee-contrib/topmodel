@@ -101,7 +101,7 @@ public class OpenApiTmdGenerator : TmdGenerator
         };
 
         await using var tmdFileWriter = new TmdWriter(
-            _writerProvider.OpenFileWriter(modelFileName, _logger),
+            _writerProvider.OpenFileWriter(modelFileName, _logger, new() { StartCommentToken = "####" }),
             tmdFile,
             Path.GetFullPath(ModelRoot)
         );
@@ -205,7 +205,7 @@ public class OpenApiTmdGenerator : TmdGenerator
             };
 
             await using var tmdEndpointFileWriter = new TmdWriter(
-                _writerProvider.OpenFileWriter(endpointFileName, _logger),
+                _writerProvider.OpenFileWriter(endpointFileName, _logger, new() { StartCommentToken = "####" }),
                 tmdFileEnpoint,
                 ModelRoot
             );
@@ -288,7 +288,7 @@ public class OpenApiTmdGenerator : TmdGenerator
                             cp.Required = true;
                         }
 
-                        if (p.Comment == TmdProperty.DefaultComment)
+                        if (p.Comment is null)
                         {
                             var description = operation.Value.RequestBody?.Description.Format();
                             if (!string.IsNullOrEmpty(description))
@@ -471,7 +471,7 @@ public class OpenApiTmdGenerator : TmdGenerator
             {
                 File = tmdFile,
                 Name = $"{sourceClassName?.ToPascalCase()}{sourcePropertyName.ToPascalCase()}",
-                Comment = $"Enum pour les valeurs de '{sourcePropertyName}'.",
+                Comment = ModelGeneratorMessage.EnumValuesDescription.GetLocalizedMessage(Language, sourcePropertyName),
                 PreservePropertyCasing = _config.PreservePropertyCasing,
             };
 

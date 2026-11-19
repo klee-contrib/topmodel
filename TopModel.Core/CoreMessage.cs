@@ -3,6 +3,7 @@ namespace TopModel.Core;
 public enum CoreMessage
 {
     CircularDependency,
+    DiscriminatorPropertyComment,
     FileCreated,
     FileDeleted,
     FileModified,
@@ -11,10 +12,12 @@ public enum CoreMessage
     InvalidFile,
     LoadingModel,
     MapperFromParametersInvalid,
+    ModelInstanceComment,
     ModelLoaded,
     ModelLoadError,
     NoWatchersRegistered,
     NoYamlDocument,
+    ParentAssociationComment,
     PropertyInvalidForAlias,
     PropertyInvalidForClass,
     PropertyInvalidForDataFlow,
@@ -23,6 +26,7 @@ public enum CoreMessage
     PropertyInvalidForIndex,
     PropertyInvalidForProperty,
     PropertyTypeUnknown,
+    ReverseAssociationComment,
     UndefinedConfigVariable,
     UndefinedGlobalVariable,
     UnknownDocumentType,

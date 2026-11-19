@@ -34,25 +34,25 @@ public interface RestaurantItem {
 
 	/**
 	 * Identifiant du restaurant.
-	 * @param id value to set.
+	 * @param id Valeur à définir.
 	 */
 	void setId(Integer id);
 
 	/**
 	 * Nom du restaurant.
-	 * @param nom value to set.
+	 * @param nom Valeur à définir.
 	 */
 	void setNom(String nom);
 
 	/**
 	 * Adresse du restaurant.
-	 * @param adresse value to set.
+	 * @param adresse Valeur à définir.
 	 */
 	void setAdresse(String adresse);
 
 	/**
 	 * Numéro de téléphone.
-	 * @param telephone value to set.
+	 * @param telephone Valeur à définir.
 	 */
 	void setTelephone(String telephone);
 }

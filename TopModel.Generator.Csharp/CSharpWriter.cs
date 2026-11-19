@@ -15,18 +15,6 @@ public class CSharpWriter(IFileWriter writer) : IAsyncDisposable
     private WriterLine? _currentLine;
     private string? _namespace;
 
-    public bool EnableHeader
-    {
-        get => writer.EnableHeader;
-        set => writer.EnableHeader = value;
-    }
-
-    public string HeaderMessage
-    {
-        get => writer.HeaderMessage;
-        set => writer.HeaderMessage = value;
-    }
-
     /// <summary>
     /// Ajoute un using au fichier.
     /// </summary>

@@ -84,8 +84,7 @@ public static class ScriptUtils
     /// <returns>Writer.</returns>
     public static IFileWriter OpenSqlWriter(this GeneratorBase<SqlConfig> generator, string fileName)
     {
-        var writer = generator.OpenFileWriter(fileName);
-        writer.StartCommentToken = "----";
+        var writer = generator.OpenFileWriter(fileName, new() { StartCommentToken = "----" });
         return writer;
     }
 
@@ -192,7 +191,9 @@ public static class ScriptUtils
     public static void WriteComments(this IFileWriter writer, Class classe, SqlConfig config, string tag)
     {
         writer.WriteLine("/**");
-        writer.WriteLine($"  * Commentaires pour la table {config.GetSqlName(classe, tag, noQuote: true)}");
+        writer.WriteLine(
+            $"  * {config.GetMessage(SqlMessage.SqlTableComments, config.GetSqlName(classe, tag, noQuote: true))}"
+        );
         writer.WriteLine(" **/");
 
         if (config.TargetDBMS == TargetDBMS.Sqlserver)
@@ -328,7 +329,11 @@ public static class ScriptUtils
             writer.WriteLine();
             writer.WriteLine("/**");
             writer.WriteLine(
-                $"  * Création de la séquence pour la clé primaire de la table {config.GetSqlName(classeForSequence, tag, noQuote: true)}"
+                "  * "
+                    + config.GetMessage(
+                        SqlMessage.SequenceCreation,
+                        config.GetSqlName(classeForSequence, tag, noQuote: true)
+                    )
             );
             writer.WriteLine(" **/");
 
@@ -368,6 +373,7 @@ public static class ScriptUtils
     /// <param name="description">Description du script.</param>
     public static void WriteSqlFileHeader(
         this IFileWriter writer,
+        SqlConfig config,
         string? appName = null,
         string? scriptName = null,
         string? description = null
@@ -376,19 +382,28 @@ public static class ScriptUtils
         writer.WriteLine(
             "-- ==========================================================================================="
         );
+
+        var applicationNameLabel = config.GetMessage(SqlMessage.ApplicationName);
+        var scriptNameLabel = config.GetMessage(SqlMessage.ScriptName);
+        var descriptionLabel = config.GetMessage(SqlMessage.Description);
+        var labelWidth = Math.Max(
+            applicationNameLabel.Length,
+            Math.Max(scriptNameLabel.Length, descriptionLabel.Length)
+        );
+
         if (appName != null)
         {
-            writer.WriteLine($"--   Application Name\t:\t{appName} ");
+            writer.WriteLine($"--  {applicationNameLabel.PadRight(labelWidth)} : {appName} ");
         }
 
         if (scriptName != null)
         {
-            writer.WriteLine($"--   Script Name\t\t:\t{scriptName}");
+            writer.WriteLine($"--  {scriptNameLabel.PadRight(labelWidth)} : {scriptName}");
         }
 
         if (description != null)
         {
-            writer.WriteLine($"--   Description\t\t:\t{description}");
+            writer.WriteLine($"--  {descriptionLabel.PadRight(labelWidth)} : {description}");
         }
 
         writer.WriteLine(

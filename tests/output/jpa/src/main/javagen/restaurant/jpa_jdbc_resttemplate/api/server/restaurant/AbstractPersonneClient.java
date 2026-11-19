@@ -45,12 +45,12 @@ public abstract class AbstractPersonneClient {
 
 	/**
 	 * Méthode de récupération des headers.
-	 * @return les headers à ajouter à la requête
+	 * @return Headers à ajouter à la requête
 	 */
 	protected abstract HttpHeaders getHeaders();
 
 	/**
-	 * UriComponentsBuilder pour la méthode addClient.
+	 * UriComponentsBuilder pour la méthode 'addClient'.
 	 * @return uriBuilder avec les query params remplis
 	 */
 	protected UriComponentsBuilder addClientUriComponentsBuilder() {
@@ -70,7 +70,7 @@ public abstract class AbstractPersonneClient {
 	}
 
 	/**
-	 * UriComponentsBuilder pour la méthode addEmploye.
+	 * UriComponentsBuilder pour la méthode 'addEmploye'.
 	 * @param token Token
 	 * @return uriBuilder avec les query params remplis
 	 */
@@ -97,7 +97,7 @@ public abstract class AbstractPersonneClient {
 	}
 
 	/**
-	 * UriComponentsBuilder pour la méthode deleteClient.
+	 * UriComponentsBuilder pour la méthode 'deleteClient'.
 	 * @param perId Identifiant de la personne
 	 */
 	protected UriComponentsBuilder deleteClientUriComponentsBuilder(Integer perId) {
@@ -116,7 +116,7 @@ public abstract class AbstractPersonneClient {
 	}
 
 	/**
-	 * UriComponentsBuilder pour la méthode getAvisClients.
+	 * UriComponentsBuilder pour la méthode 'getAvisClients'.
 	 * @param resId Identifiant du restaurant
 	 * @param noteMin Note sur 5
 	 * @param approuve Indique si l'avis est approuvé par le restaurant
@@ -160,7 +160,7 @@ public abstract class AbstractPersonneClient {
 	}
 
 	/**
-	 * UriComponentsBuilder pour la méthode getClient.
+	 * UriComponentsBuilder pour la méthode 'getClient'.
 	 * @param perId Identifiant de la personne
 	 * @return uriBuilder avec les query params remplis
 	 */
@@ -181,7 +181,7 @@ public abstract class AbstractPersonneClient {
 	}
 
 	/**
-	 * UriComponentsBuilder pour la méthode getClientAvecCommandes.
+	 * UriComponentsBuilder pour la méthode 'getClientAvecCommandes'.
 	 * @param perId Identifiant de la personne
 	 * @return uriBuilder avec les query params remplis
 	 */
@@ -202,7 +202,7 @@ public abstract class AbstractPersonneClient {
 	}
 
 	/**
-	 * UriComponentsBuilder pour la méthode getClientCommandes.
+	 * UriComponentsBuilder pour la méthode 'getClientCommandes'.
 	 * @param perId Identifiant de la personne
 	 * @return uriBuilder avec les query params remplis
 	 */
@@ -223,7 +223,7 @@ public abstract class AbstractPersonneClient {
 	}
 
 	/**
-	 * UriComponentsBuilder pour la méthode getClients.
+	 * UriComponentsBuilder pour la méthode 'getClients'.
 	 * @param nom Nom de la personne
 	 * @param email Adresse email du client
 	 * @return uriBuilder avec les query params remplis
@@ -252,7 +252,7 @@ public abstract class AbstractPersonneClient {
 	}
 
 	/**
-	 * UriComponentsBuilder pour la méthode patchClient.
+	 * UriComponentsBuilder pour la méthode 'patchClient'.
 	 * @param perId Identifiant de la personne
 	 * @return uriBuilder avec les query params remplis
 	 */
@@ -274,7 +274,7 @@ public abstract class AbstractPersonneClient {
 	}
 
 	/**
-	 * UriComponentsBuilder pour la méthode updateClient.
+	 * UriComponentsBuilder pour la méthode 'updateClient'.
 	 * @param perId Identifiant de la personne
 	 * @return uriBuilder avec les query params remplis
 	 */

@@ -128,7 +128,7 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
     /// <param name="tableName">Nom de la table.</param>
     protected virtual void WriteHeader(IFileWriter writer, string tableName)
     {
-        writer.WriteSqlFileHeader(description: $"Création de la table {tableName}.");
+        writer.WriteSqlFileHeader(Config, description: Config.GetMessage(SqlMessage.SqlTableCreation, tableName) + ".");
         writer.WriteLine();
     }
 
@@ -187,7 +187,13 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
         {
             writer.WriteLine();
             writer.WriteLine(
-                $"/* Index on foreign key column for {Config.GetSqlName(classe, tag)}.{Config.GetSqlName(property, tag)} */"
+                "/* "
+                    + Config.GetMessage(
+                        SqlMessage.SqlForeignKeyIndexDescription,
+                        Config.GetSqlName(classe, tag),
+                        Config.GetSqlName(property, tag)
+                    )
+                    + " */"
             );
             WriteIndex(
                 writer,

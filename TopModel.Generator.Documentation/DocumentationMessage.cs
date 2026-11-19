@@ -1,7 +1,35 @@
-namespace TopModel.Generator.Documentation;
+﻿namespace TopModel.Generator.Documentation;
 
 public enum DocumentationMessage
 {
+    Diagram,
+    DiagramFile,
+    DiagramModule,
+    EndpointHeaderAuthorization,
+    EndpointHeaderDescription,
+    EndpointHeaderMethod,
+    EndpointHeaderModule,
+    EndpointHeaderName,
+    EndpointHeaderRoute,
     InvalidTitleLevel,
     MultipleLevel1Titles,
+    SchemaConstraints,
+    SchemaDataDictionary,
+    SchemaDataDictionaryFile,
+    SchemaDataDictionaryModule,
+    SchemaDesignation,
+    SchemaEndpointList,
+    SchemaEndpointListFile,
+    SchemaEndpointListModule,
+    SchemaForeignKey,
+    SchemaLabel,
+    SchemaLength,
+    SchemaPossibleValues,
+    SchemaPrimaryKey,
+    SchemaRequired,
+    SchemaSchema,
+    SchemaSqlName,
+    SchemaSqlType,
+    SchemaTable,
+    Yes,
 }

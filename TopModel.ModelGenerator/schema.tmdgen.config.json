@@ -11,10 +11,7 @@
           "type": "object",
           "description": "Correspondance entre le nom de la propriété et un modèle dans le modèle cible",
           "additionalProperties": false,
-          "required": [
-            "domain",
-            "name"
-          ],
+          "required": ["domain", "name"],
           "properties": {
             "name": {
               "type": "string",
@@ -38,10 +35,7 @@
           "type": "object",
           "description": "Correspondance entre le type de données et un modèle dans le modèle cible",
           "additionalProperties": false,
-          "required": [
-            "type",
-            "domain"
-          ],
+          "required": ["type", "domain"],
           "properties": {
             "type": {
               "type": "string",
@@ -74,16 +68,17 @@
       "description": "Nom du fichier de lock",
       "default": "tmdgen.lock"
     },
+    "language": {
+      "type": "string",
+      "description": "Langue des libellés techniques écrits dans le contenu généré. Ce paramètre est indépendant de la langue des messages en console (qui est toujours celle de l'OS)."
+    },
     "noWarn": {
       "type": "array",
       "description": "Liste des warnings à ignorer.",
       "items": {
         "type": "string",
         "description": "Code du warning (TMDXXXX) à ignorer ",
-        "enum": [
-          "TMD1004",
-          "TMD1005"
-        ]
+        "enum": ["TMD1004", "TMD1005"]
       }
     },
     "ignoredFiles": {
@@ -92,7 +87,7 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": [ "path", "comment" ],
+        "required": ["path", "comment"],
         "properties": {
           "path": {
             "type": "string",
@@ -112,7 +107,7 @@
         "type": "object",
         "description": "Configuration de la génération de fichiers Topmodel à partir d'une base de données",
         "additionalProperties": false,
-        "required": [ "source" ],
+        "required": ["source"],
         "properties": {
           "tags": {
             "type": "array",
@@ -137,10 +132,7 @@
               "type": "object",
               "description": "Module contenant des classes",
               "additionalProperties": false,
-              "required": [
-                "name",
-                "classes"
-              ],
+              "required": ["name", "classes"],
               "properties": {
                 "name": {
                   "type": "string",
@@ -196,7 +188,7 @@
             "type": "object",
             "description": "Informations de connexion à la base de données",
             "additionalProperties": false,
-            "required": [ "dbType" ],
+            "required": ["dbType"],
             "properties": {
               "host": {
                 "type": "string",
@@ -231,12 +223,7 @@
               "dbType": {
                 "type": "string",
                 "description": "Type de la base de données : postgresql, oracle, mySql, msSql",
-                "enum": [
-                  "oracle",
-                  "postgresql",
-                  "mySql",
-                  "msSql"
-                ]
+                "enum": ["oracle", "postgresql", "mySql", "msSql"]
               }
             }
           }

@@ -41,7 +41,7 @@ public class SpringClientApiGenerator(ILogger<SpringClientApiGenerator> logger, 
     {
         var className = GetClassName(fileName, tag);
         var packageName = Config.GetPackageName(endpoints[0], tag);
-        await using var fw = this.OpenJavaWriter(filePath, packageName, codePage: null);
+        await using var fw = this.OpenJavaWriter(filePath, packageName);
 
         WriteImports(endpoints, fw, tag);
         fw.WriteLine();
@@ -90,7 +90,7 @@ public class SpringClientApiGenerator(ILogger<SpringClientApiGenerator> logger, 
         )
         {
             Comment = endpoint.Description,
-            ReturnComment = returns != null ? returns.Comment : "Aucun retour",
+            ReturnComment = returns != null ? returns.Comment : Config.GetMessage(JpaMessage.NoReturn),
         };
         if (returns != null)
         {

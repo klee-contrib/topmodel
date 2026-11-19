@@ -29,19 +29,19 @@ public interface PersonneBase {
 
 	/**
 	 * Identifiant de la personne.
-	 * @param id value to set.
+	 * @param id Valeur à définir.
 	 */
 	void setId(Integer id);
 
 	/**
 	 * Nom de la personne.
-	 * @param nom value to set.
+	 * @param nom Valeur à définir.
 	 */
 	void setNom(String nom);
 
 	/**
 	 * Prénom de la personne.
-	 * @param prenom value to set.
+	 * @param prenom Valeur à définir.
 	 */
 	void setPrenom(String prenom);
 }

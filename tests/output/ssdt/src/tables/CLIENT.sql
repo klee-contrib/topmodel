@@ -3,7 +3,7 @@
 ----
 
 -- ===========================================================================================
---   Description		:	Création de la table CLIENT.
+--  Description          : Création de la table CLIENT.
 -- ===========================================================================================
 
 create table CLIENT (
@@ -14,12 +14,12 @@ create table CLIENT (
 	constraint FK_CLIENT_PER_ID foreign key (PER_ID) references PERSONNE (PER_ID))
 go
 
-/* Index on foreign key column for CLIENT.SWI_ID */
+/* Index sur la colonne de clé étrangère CLIENT.SWI_ID */
 create nonclustered index IDX_CLI_SWI_ID_FK
 	on CLIENT (SWI_ID asc)
 go
 
-/* Index on foreign key column for CLIENT.PER_ID */
+/* Index sur la colonne de clé étrangère CLIENT.PER_ID */
 create nonclustered index IDX_CLI_PER_ID_FK
 	on CLIENT (PER_ID asc)
 go

@@ -21,21 +21,21 @@ import jakarta.validation.constraints.Size;
 public class ClientRead implements Serializable {
 
 	/**
-	 * Serial ID.
+	 * ID de sérialisation.
 	 */
 	@Serial
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Identifiant de la personne.
-	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.Personne#getId() Personne#getId()}
+	 * Alias de {@link restaurant.jpa_feign.entities.restaurant.Personne#getId() Personne#getId()}
 	 */
 	@NotNull
 	private Integer id;
 
 	/**
 	 * Nom de la personne.
-	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.Personne#getNom() Personne#getNom()}
+	 * Alias de {@link restaurant.jpa_feign.entities.restaurant.Personne#getNom() Personne#getNom()}
 	 */
 	@NotNull
 	@Size(max = 100)
@@ -43,7 +43,7 @@ public class ClientRead implements Serializable {
 
 	/**
 	 * Prénom de la personne.
-	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.Personne#getPrenom() Personne#getPrenom()}
+	 * Alias de {@link restaurant.jpa_feign.entities.restaurant.Personne#getPrenom() Personne#getPrenom()}
 	 */
 	@NotNull
 	@Size(max = 100)
@@ -51,14 +51,14 @@ public class ClientRead implements Serializable {
 
 	/**
 	 * Département de résidence de la personne.
-	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.Personne#getDepartementCode() Personne#getDepartementCode()}
+	 * Alias de {@link restaurant.jpa_feign.entities.restaurant.Personne#getDepartementCode() Personne#getDepartementCode()}
 	 */
 	@Size(max = 10)
 	private String departementCode;
 
 	/**
 	 * Date de création de l'enregistrement.
-	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.Personne#getDateCreation() Personne#getDateCreation()}
+	 * Alias de {@link restaurant.jpa_feign.entities.restaurant.Personne#getDateCreation() Personne#getDateCreation()}
 	 */
 	@NotNull
 	@PastOrPresent
@@ -66,162 +66,162 @@ public class ClientRead implements Serializable {
 
 	/**
 	 * Adresse email du client.
-	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.Client#getEmail() Client#getEmail()}
+	 * Alias de {@link restaurant.jpa_feign.entities.restaurant.Client#getEmail() Client#getEmail()}
 	 */
 	@Size(max = 100)
 	private String email;
 
 	/**
 	 * Carte Swile du client.
-	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.Client#getSwileCard() Client#getSwileCard()}
+	 * Alias de {@link restaurant.jpa_feign.entities.restaurant.Client#getSwileCard() Client#getSwileCard()}
 	 */
 	private Integer swileCardId;
 
 	/**
 	 * Association réciproque de AvisClient.Client.
-	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.Client#getAvisClients() Client#getAvisClients()}
+	 * Alias de {@link restaurant.jpa_feign.entities.restaurant.Client#getAvisClients() Client#getAvisClients()}
 	 */
 	@NotNull
 	private List<Integer> avisClients;
 
 	/**
-	 * Getter for id.
+	 * Accesseur de 'id'.
 	 *
-	 * @return value of {@link #id id}.
+	 * @return Valeur de {@link #id id}.
 	 */
 	public Integer getId() {
 		return this.id;
 	}
 
 	/**
-	 * Getter for nom.
+	 * Accesseur de 'nom'.
 	 *
-	 * @return value of {@link #nom nom}.
+	 * @return Valeur de {@link #nom nom}.
 	 */
 	public String getNom() {
 		return this.nom;
 	}
 
 	/**
-	 * Getter for prenom.
+	 * Accesseur de 'prenom'.
 	 *
-	 * @return value of {@link #prenom prenom}.
+	 * @return Valeur de {@link #prenom prenom}.
 	 */
 	public String getPrenom() {
 		return this.prenom;
 	}
 
 	/**
-	 * Getter for departementCode.
+	 * Accesseur de 'departementCode'.
 	 *
-	 * @return value of {@link #departementCode departementCode}.
+	 * @return Valeur de {@link #departementCode departementCode}.
 	 */
 	public String getDepartementCode() {
 		return this.departementCode;
 	}
 
 	/**
-	 * Getter for dateCreation.
+	 * Accesseur de 'dateCreation'.
 	 *
-	 * @return value of {@link #dateCreation dateCreation}.
+	 * @return Valeur de {@link #dateCreation dateCreation}.
 	 */
 	public LocalDateTime getDateCreation() {
 		return this.dateCreation;
 	}
 
 	/**
-	 * Getter for email.
+	 * Accesseur de 'email'.
 	 *
-	 * @return value of {@link #email email}.
+	 * @return Valeur de {@link #email email}.
 	 */
 	public String getEmail() {
 		return this.email;
 	}
 
 	/**
-	 * Getter for swileCardId.
+	 * Accesseur de 'swileCardId'.
 	 *
-	 * @return value of {@link #swileCardId swileCardId}.
+	 * @return Valeur de {@link #swileCardId swileCardId}.
 	 */
 	public Integer getSwileCardId() {
 		return this.swileCardId;
 	}
 
 	/**
-	 * Getter for avisClients.
+	 * Accesseur de 'avisClients'.
 	 *
-	 * @return value of {@link #avisClients avisClients}.
+	 * @return Valeur de {@link #avisClients avisClients}.
 	 */
 	public List<Integer> getAvisClients() {
 		return this.avisClients;
 	}
 
 	/**
-	 * Set the value of {@link #id id}.
-	 * @param id value to set.
+	 * Définit la valeur de {@link #id id}.
+	 * @param id Valeur à définir.
 	 */
 	public void setId(Integer id) {
 		this.id = id;
 	}
 
 	/**
-	 * Set the value of {@link #nom nom}.
-	 * @param nom value to set.
+	 * Définit la valeur de {@link #nom nom}.
+	 * @param nom Valeur à définir.
 	 */
 	public void setNom(String nom) {
 		this.nom = nom;
 	}
 
 	/**
-	 * Set the value of {@link #prenom prenom}.
-	 * @param prenom value to set.
+	 * Définit la valeur de {@link #prenom prenom}.
+	 * @param prenom Valeur à définir.
 	 */
 	public void setPrenom(String prenom) {
 		this.prenom = prenom;
 	}
 
 	/**
-	 * Set the value of {@link #departementCode departementCode}.
-	 * @param departementCode value to set.
+	 * Définit la valeur de {@link #departementCode departementCode}.
+	 * @param departementCode Valeur à définir.
 	 */
 	public void setDepartementCode(String departementCode) {
 		this.departementCode = departementCode;
 	}
 
 	/**
-	 * Set the value of {@link #dateCreation dateCreation}.
-	 * @param dateCreation value to set.
+	 * Définit la valeur de {@link #dateCreation dateCreation}.
+	 * @param dateCreation Valeur à définir.
 	 */
 	public void setDateCreation(LocalDateTime dateCreation) {
 		this.dateCreation = dateCreation;
 	}
 
 	/**
-	 * Set the value of {@link #email email}.
-	 * @param email value to set.
+	 * Définit la valeur de {@link #email email}.
+	 * @param email Valeur à définir.
 	 */
 	public void setEmail(String email) {
 		this.email = email;
 	}
 
 	/**
-	 * Set the value of {@link #swileCardId swileCardId}.
-	 * @param swileCardId value to set.
+	 * Définit la valeur de {@link #swileCardId swileCardId}.
+	 * @param swileCardId Valeur à définir.
 	 */
 	public void setSwileCardId(Integer swileCardId) {
 		this.swileCardId = swileCardId;
 	}
 
 	/**
-	 * Set the value of {@link #avisClients avisClients}.
-	 * @param avisClients value to set.
+	 * Définit la valeur de {@link #avisClients avisClients}.
+	 * @param avisClients Valeur à définir.
 	 */
 	public void setAvisClients(List<Integer> avisClients) {
 		this.avisClients = avisClients;
 	}
 
 	/**
-	 * Enumération des champs de la classe {@link restaurant.jpa_feign.dtos.restaurant.ClientRead ClientRead}.
+	 * Énumération des champs de la classe {@link restaurant.jpa_feign.dtos.restaurant.ClientRead ClientRead}.
 	 */
 	public enum Fields {
 		ID(Integer.class),
@@ -240,9 +240,9 @@ public class ClientRead implements Serializable {
 		}
 
 		/**
-		 * Getter for type.
+		 * Accesseur de 'type'.
 		 *
-		 * @return value of {@link #type type}.
+		 * @return Valeur de {@link #type type}.
 		 */
 		public Class<?> getType() {
 			return this.type;

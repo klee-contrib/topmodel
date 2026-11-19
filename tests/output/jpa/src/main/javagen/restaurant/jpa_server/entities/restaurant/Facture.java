@@ -50,58 +50,58 @@ public class Facture {
 	private TypeFactureCode typeFactureCode;
 
 	/**
-	 * Getter for id.
+	 * Accesseur de 'id'.
 	 *
-	 * @return value of {@link #id id}.
+	 * @return Valeur de {@link #id id}.
 	 */
 	public Integer getId() {
 		return this.id;
 	}
 
 	/**
-	 * Getter for commande.
+	 * Accesseur de 'commande'.
 	 *
-	 * @return value of {@link #commande commande}.
+	 * @return Valeur de {@link #commande commande}.
 	 */
 	public Commande getCommande() {
 		return this.commande;
 	}
 
 	/**
-	 * Getter for typeFactureCode.
+	 * Accesseur de 'typeFactureCode'.
 	 *
-	 * @return value of {@link #typeFactureCode typeFactureCode}.
+	 * @return Valeur de {@link #typeFactureCode typeFactureCode}.
 	 */
 	public TypeFactureCode getTypeFactureCode() {
 		return this.typeFactureCode;
 	}
 
 	/**
-	 * Set the value of {@link #id id}.
-	 * @param id value to set.
+	 * Définit la valeur de {@link #id id}.
+	 * @param id Valeur à définir.
 	 */
 	public void setId(Integer id) {
 		this.id = id;
 	}
 
 	/**
-	 * Set the value of {@link #commande commande}.
-	 * @param commande value to set.
+	 * Définit la valeur de {@link #commande commande}.
+	 * @param commande Valeur à définir.
 	 */
 	public void setCommande(Commande commande) {
 		this.commande = commande;
 	}
 
 	/**
-	 * Set the value of {@link #typeFactureCode typeFactureCode}.
-	 * @param typeFactureCode value to set.
+	 * Définit la valeur de {@link #typeFactureCode typeFactureCode}.
+	 * @param typeFactureCode Valeur à définir.
 	 */
 	public void setTypeFactureCode(TypeFactureCode typeFactureCode) {
 		this.typeFactureCode = typeFactureCode;
 	}
 
 	/**
-	 * Enumération des champs de la classe {@link restaurant.jpa_server.entities.restaurant.Facture Facture}.
+	 * Énumération des champs de la classe {@link restaurant.jpa_server.entities.restaurant.Facture Facture}.
 	 */
 	public enum Fields {
 		ID(Integer.class),
@@ -115,9 +115,9 @@ public class Facture {
 		}
 
 		/**
-		 * Getter for type.
+		 * Accesseur de 'type'.
 		 *
-		 * @return value of {@link #type type}.
+		 * @return Valeur de {@link #type type}.
 		 */
 		public Class<?> getType() {
 			return this.type;

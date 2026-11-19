@@ -1,4 +1,4 @@
-namespace TopModel.Generator;
+﻿namespace TopModel.Generator;
 
 public enum GeneratorMessage
 {
@@ -7,12 +7,12 @@ public enum GeneratorMessage
     BuildInProgress,
     ConfigNameAlreadyInUse,
     CustomModuleWrongLockfileVersion,
-    ExcludeOptionDescription,
     ExcludedTags,
-    GeneratorsInUse,
+    ExcludeOptionDescription,
     GeneratorModuleBadMajorVersion,
     GeneratorModuleNewerVersion,
     GeneratorModuleNotBuilt,
+    GeneratorsInUse,
     GeneratorUpdatesAvailable,
     ModgenUpdateCommand,
     ModuleBadMajorVersion,

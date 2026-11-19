@@ -67,102 +67,102 @@ public class Table {
 	private LocalDateTime dateCreation;
 
 	/**
-	 * Getter for id.
+	 * Accesseur de 'id'.
 	 *
-	 * @return value of {@link #id id}.
+	 * @return Valeur de {@link #id id}.
 	 */
 	public Integer getId() {
 		return this.id;
 	}
 
 	/**
-	 * Getter for numero.
+	 * Accesseur de 'numero'.
 	 *
-	 * @return value of {@link #numero numero}.
+	 * @return Valeur de {@link #numero numero}.
 	 */
 	public String getNumero() {
 		return this.numero;
 	}
 
 	/**
-	 * Getter for capacite.
+	 * Accesseur de 'capacite'.
 	 *
-	 * @return value of {@link #capacite capacite}.
+	 * @return Valeur de {@link #capacite capacite}.
 	 */
 	public Integer getCapacite() {
 		return this.capacite;
 	}
 
 	/**
-	 * Getter for disponible.
+	 * Accesseur de 'disponible'.
 	 *
-	 * @return value of {@link #disponible disponible}.
+	 * @return Valeur de {@link #disponible disponible}.
 	 */
 	public Boolean getDisponible() {
 		return this.disponible;
 	}
 
 	/**
-	 * Getter for restaurantId.
+	 * Accesseur de 'restaurantId'.
 	 *
-	 * @return value of {@link #restaurantId restaurantId}.
+	 * @return Valeur de {@link #restaurantId restaurantId}.
 	 */
 	public Integer getRestaurantId() {
 		return this.restaurantId;
 	}
 
 	/**
-	 * Getter for dateCreation.
+	 * Accesseur de 'dateCreation'.
 	 *
-	 * @return value of {@link #dateCreation dateCreation}.
+	 * @return Valeur de {@link #dateCreation dateCreation}.
 	 */
 	public LocalDateTime getDateCreation() {
 		return this.dateCreation;
 	}
 
 	/**
-	 * Set the value of {@link #id id}.
-	 * @param id value to set.
+	 * Définit la valeur de {@link #id id}.
+	 * @param id Valeur à définir.
 	 */
 	public void setId(Integer id) {
 		this.id = id;
 	}
 
 	/**
-	 * Set the value of {@link #numero numero}.
-	 * @param numero value to set.
+	 * Définit la valeur de {@link #numero numero}.
+	 * @param numero Valeur à définir.
 	 */
 	public void setNumero(String numero) {
 		this.numero = numero;
 	}
 
 	/**
-	 * Set the value of {@link #capacite capacite}.
-	 * @param capacite value to set.
+	 * Définit la valeur de {@link #capacite capacite}.
+	 * @param capacite Valeur à définir.
 	 */
 	public void setCapacite(Integer capacite) {
 		this.capacite = capacite;
 	}
 
 	/**
-	 * Set the value of {@link #disponible disponible}.
-	 * @param disponible value to set.
+	 * Définit la valeur de {@link #disponible disponible}.
+	 * @param disponible Valeur à définir.
 	 */
 	public void setDisponible(Boolean disponible) {
 		this.disponible = disponible;
 	}
 
 	/**
-	 * Set the value of {@link #restaurantId restaurantId}.
-	 * @param restaurantId value to set.
+	 * Définit la valeur de {@link #restaurantId restaurantId}.
+	 * @param restaurantId Valeur à définir.
 	 */
 	public void setRestaurantId(Integer restaurantId) {
 		this.restaurantId = restaurantId;
 	}
 
 	/**
-	 * Set the value of {@link #dateCreation dateCreation}.
-	 * @param dateCreation value to set.
+	 * Définit la valeur de {@link #dateCreation dateCreation}.
+	 * @param dateCreation Valeur à définir.
 	 */
 	public void setDateCreation(LocalDateTime dateCreation) {
 		this.dateCreation = dateCreation;

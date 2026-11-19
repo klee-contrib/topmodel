@@ -41,31 +41,31 @@ public interface PlatItem {
 
 	/**
 	 * Identifiant du plat.
-	 * @param id value to set.
+	 * @param id Valeur à définir.
 	 */
 	void setId(Integer id);
 
 	/**
 	 * Nom du plat.
-	 * @param nom value to set.
+	 * @param nom Valeur à définir.
 	 */
 	void setNom(String nom);
 
 	/**
 	 * Prix du plat.
-	 * @param prix value to set.
+	 * @param prix Valeur à définir.
 	 */
 	void setPrix(BigDecimal prix);
 
 	/**
 	 * Indique si le plat est disponible.
-	 * @param disponible value to set.
+	 * @param disponible Valeur à définir.
 	 */
 	void setDisponible(Boolean disponible);
 
 	/**
 	 * Catégorie du plat.
-	 * @param categoriePlatCode value to set.
+	 * @param categoriePlatCode Valeur à définir.
 	 */
 	void setCategoriePlatCode(String categoriePlatCode);
 }

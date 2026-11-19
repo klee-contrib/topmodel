@@ -23,6 +23,11 @@ public abstract class ConfigBase
     public string LockFileName { get; set; } = null!;
 
     /// <summary>
+    /// Langue des libellés techniques écrits dans le contenu généré.
+    /// </summary>
+    public string? Language { get; set; }
+
+    /// <summary>
     /// Si renseigné, seuls les fichiers de modèle matchant les patterns (globs) listés (relativement au <c>modelRoot</c>) seront chargés par TopModel.
     /// </summary>
     public GlobCollection ModelFilePaths =>

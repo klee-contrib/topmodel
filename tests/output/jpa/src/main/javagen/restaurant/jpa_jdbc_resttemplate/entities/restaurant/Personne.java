@@ -62,85 +62,85 @@ public class Personne implements PersonneBase {
 	private LocalDateTime dateCreation;
 
 	/**
-	 * Getter for id.
+	 * Accesseur de 'id'.
 	 *
-	 * @return value of {@link #id id}.
+	 * @return Valeur de {@link #id id}.
 	 */
 	public Integer getId() {
 		return this.id;
 	}
 
 	/**
-	 * Getter for nom.
+	 * Accesseur de 'nom'.
 	 *
-	 * @return value of {@link #nom nom}.
+	 * @return Valeur de {@link #nom nom}.
 	 */
 	public String getNom() {
 		return this.nom;
 	}
 
 	/**
-	 * Getter for prenom.
+	 * Accesseur de 'prenom'.
 	 *
-	 * @return value of {@link #prenom prenom}.
+	 * @return Valeur de {@link #prenom prenom}.
 	 */
 	public String getPrenom() {
 		return this.prenom;
 	}
 
 	/**
-	 * Getter for departementCode.
+	 * Accesseur de 'departementCode'.
 	 *
-	 * @return value of {@link #departementCode departementCode}.
+	 * @return Valeur de {@link #departementCode departementCode}.
 	 */
 	public String getDepartementCode() {
 		return this.departementCode;
 	}
 
 	/**
-	 * Getter for dateCreation.
+	 * Accesseur de 'dateCreation'.
 	 *
-	 * @return value of {@link #dateCreation dateCreation}.
+	 * @return Valeur de {@link #dateCreation dateCreation}.
 	 */
 	public LocalDateTime getDateCreation() {
 		return this.dateCreation;
 	}
 
 	/**
-	 * Set the value of {@link #id id}.
-	 * @param id value to set.
+	 * Définit la valeur de {@link #id id}.
+	 * @param id Valeur à définir.
 	 */
 	public void setId(Integer id) {
 		this.id = id;
 	}
 
 	/**
-	 * Set the value of {@link #nom nom}.
-	 * @param nom value to set.
+	 * Définit la valeur de {@link #nom nom}.
+	 * @param nom Valeur à définir.
 	 */
 	public void setNom(String nom) {
 		this.nom = nom;
 	}
 
 	/**
-	 * Set the value of {@link #prenom prenom}.
-	 * @param prenom value to set.
+	 * Définit la valeur de {@link #prenom prenom}.
+	 * @param prenom Valeur à définir.
 	 */
 	public void setPrenom(String prenom) {
 		this.prenom = prenom;
 	}
 
 	/**
-	 * Set the value of {@link #departementCode departementCode}.
-	 * @param departementCode value to set.
+	 * Définit la valeur de {@link #departementCode departementCode}.
+	 * @param departementCode Valeur à définir.
 	 */
 	public void setDepartementCode(String departementCode) {
 		this.departementCode = departementCode;
 	}
 
 	/**
-	 * Set the value of {@link #dateCreation dateCreation}.
-	 * @param dateCreation value to set.
+	 * Définit la valeur de {@link #dateCreation dateCreation}.
+	 * @param dateCreation Valeur à définir.
 	 */
 	public void setDateCreation(LocalDateTime dateCreation) {
 		this.dateCreation = dateCreation;

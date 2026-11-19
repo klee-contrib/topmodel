@@ -25,14 +25,14 @@ import restaurant.jpa_jdbc_resttemplate.enums.restaurant.StatutCommande;
 public class CommandeWrite implements Serializable {
 
 	/**
-	 * Serial ID.
+	 * ID de sérialisation.
 	 */
 	@Serial
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Date et heure de la commande.
-	 * Alias of {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.Commande#getDateCommande() Commande#getDateCommande()}
+	 * Alias de {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.Commande#getDateCommande() Commande#getDateCommande()}
 	 */
 	@NotNull
 	@Column("com_date_commande")
@@ -40,14 +40,14 @@ public class CommandeWrite implements Serializable {
 
 	/**
 	 * Date et heure de livraison.
-	 * Alias of {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.Commande#getDateLivraison() Commande#getDateLivraison()}
+	 * Alias de {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.Commande#getDateLivraison() Commande#getDateLivraison()}
 	 */
 	@Column("com_date_livraison")
 	private LocalDateTime dateLivraison;
 
 	/**
 	 * Montant total de la commande.
-	 * Alias of {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.Commande#getMontantTotal() Commande#getMontantTotal()}
+	 * Alias de {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.Commande#getMontantTotal() Commande#getMontantTotal()}
 	 */
 	@NotNull
 	@Column("com_montant_total")
@@ -55,14 +55,14 @@ public class CommandeWrite implements Serializable {
 
 	/**
 	 * Table associée à la commande.
-	 * Alias of {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.Commande#getTableId() Commande#getTableId()}
+	 * Alias de {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.Commande#getTableId() Commande#getTableId()}
 	 */
 	@Column("tab_id")
 	private Integer tableId;
 
 	/**
 	 * Statut de la commande.
-	 * Alias of {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.Commande#getStatutCommande() Commande#getStatutCommande()}
+	 * Alias de {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.Commande#getStatutCommande() Commande#getStatutCommande()}
 	 */
 	@NotNull
 	@Column("stc_code")
@@ -70,14 +70,14 @@ public class CommandeWrite implements Serializable {
 
 	/**
 	 * Avis laissé par le client sur la commande.
-	 * Alias of {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.Commande#getAvisClient() Commande#getAvisClient()}
+	 * Alias de {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.Commande#getAvisClient() Commande#getAvisClient()}
 	 */
 	@Column("avi_id")
 	private Integer avisClientId;
 
 	/**
 	 * Client ayant passé la commande.
-	 * Alias of {@link restaurant.jpa_jdbc_resttemplate.dtos.restaurant.CommandeRead#getClient() CommandeRead#getClient()}
+	 * Alias de {@link restaurant.jpa_jdbc_resttemplate.dtos.restaurant.CommandeRead#getClient() CommandeRead#getClient()}
 	 */
 	@Valid
 	@NotNull
@@ -85,167 +85,167 @@ public class CommandeWrite implements Serializable {
 
 	/**
 	 * Réservation.
-	 * Alias of {@link restaurant.jpa_jdbc_resttemplate.dtos.restaurant.CommandeRead#getReservation() CommandeRead#getReservation()}
+	 * Alias de {@link restaurant.jpa_jdbc_resttemplate.dtos.restaurant.CommandeRead#getReservation() CommandeRead#getReservation()}
 	 */
 	@Valid
 	private ReservationWrite reservation;
 
 	/**
 	 * Association réciproque de LigneCommande.Commande.
-	 * Alias of {@link restaurant.jpa_jdbc_resttemplate.dtos.restaurant.CommandeRead#getLignes() CommandeRead#getLignes()}
+	 * Alias de {@link restaurant.jpa_jdbc_resttemplate.dtos.restaurant.CommandeRead#getLignes() CommandeRead#getLignes()}
 	 */
 	@Valid
 	@NotNull
 	private List<LigneCommandeWrite> lignes;
 
 	/**
-	 * Getter for dateCommande.
+	 * Accesseur de 'dateCommande'.
 	 *
-	 * @return value of {@link #dateCommande dateCommande}.
+	 * @return Valeur de {@link #dateCommande dateCommande}.
 	 */
 	public LocalDateTime getDateCommande() {
 		return this.dateCommande;
 	}
 
 	/**
-	 * Getter for dateLivraison.
+	 * Accesseur de 'dateLivraison'.
 	 *
-	 * @return value of {@link #dateLivraison dateLivraison}.
+	 * @return Valeur de {@link #dateLivraison dateLivraison}.
 	 */
 	public LocalDateTime getDateLivraison() {
 		return this.dateLivraison;
 	}
 
 	/**
-	 * Getter for montantTotal.
+	 * Accesseur de 'montantTotal'.
 	 *
-	 * @return value of {@link #montantTotal montantTotal}.
+	 * @return Valeur de {@link #montantTotal montantTotal}.
 	 */
 	public BigDecimal getMontantTotal() {
 		return this.montantTotal;
 	}
 
 	/**
-	 * Getter for tableId.
+	 * Accesseur de 'tableId'.
 	 *
-	 * @return value of {@link #tableId tableId}.
+	 * @return Valeur de {@link #tableId tableId}.
 	 */
 	public Integer getTableId() {
 		return this.tableId;
 	}
 
 	/**
-	 * Getter for statutCommande.
+	 * Accesseur de 'statutCommande'.
 	 *
-	 * @return value of {@link #statutCommande statutCommande}.
+	 * @return Valeur de {@link #statutCommande statutCommande}.
 	 */
 	public StatutCommande getStatutCommande() {
 		return this.statutCommande;
 	}
 
 	/**
-	 * Getter for avisClientId.
+	 * Accesseur de 'avisClientId'.
 	 *
-	 * @return value of {@link #avisClientId avisClientId}.
+	 * @return Valeur de {@link #avisClientId avisClientId}.
 	 */
 	public Integer getAvisClientId() {
 		return this.avisClientId;
 	}
 
 	/**
-	 * Getter for client.
+	 * Accesseur de 'client'.
 	 *
-	 * @return value of {@link #client client}.
+	 * @return Valeur de {@link #client client}.
 	 */
 	public ClientWrite getClient() {
 		return this.client;
 	}
 
 	/**
-	 * Getter for reservation.
+	 * Accesseur de 'reservation'.
 	 *
-	 * @return value of {@link #reservation reservation}.
+	 * @return Valeur de {@link #reservation reservation}.
 	 */
 	public ReservationWrite getReservation() {
 		return this.reservation;
 	}
 
 	/**
-	 * Getter for lignes.
+	 * Accesseur de 'lignes'.
 	 *
-	 * @return value of {@link #lignes lignes}.
+	 * @return Valeur de {@link #lignes lignes}.
 	 */
 	public List<LigneCommandeWrite> getLignes() {
 		return this.lignes;
 	}
 
 	/**
-	 * Set the value of {@link #dateCommande dateCommande}.
-	 * @param dateCommande value to set.
+	 * Définit la valeur de {@link #dateCommande dateCommande}.
+	 * @param dateCommande Valeur à définir.
 	 */
 	public void setDateCommande(LocalDateTime dateCommande) {
 		this.dateCommande = dateCommande;
 	}
 
 	/**
-	 * Set the value of {@link #dateLivraison dateLivraison}.
-	 * @param dateLivraison value to set.
+	 * Définit la valeur de {@link #dateLivraison dateLivraison}.
+	 * @param dateLivraison Valeur à définir.
 	 */
 	public void setDateLivraison(LocalDateTime dateLivraison) {
 		this.dateLivraison = dateLivraison;
 	}
 
 	/**
-	 * Set the value of {@link #montantTotal montantTotal}.
-	 * @param montantTotal value to set.
+	 * Définit la valeur de {@link #montantTotal montantTotal}.
+	 * @param montantTotal Valeur à définir.
 	 */
 	public void setMontantTotal(BigDecimal montantTotal) {
 		this.montantTotal = montantTotal;
 	}
 
 	/**
-	 * Set the value of {@link #tableId tableId}.
-	 * @param tableId value to set.
+	 * Définit la valeur de {@link #tableId tableId}.
+	 * @param tableId Valeur à définir.
 	 */
 	public void setTableId(Integer tableId) {
 		this.tableId = tableId;
 	}
 
 	/**
-	 * Set the value of {@link #statutCommande statutCommande}.
-	 * @param statutCommande value to set.
+	 * Définit la valeur de {@link #statutCommande statutCommande}.
+	 * @param statutCommande Valeur à définir.
 	 */
 	public void setStatutCommande(StatutCommande statutCommande) {
 		this.statutCommande = statutCommande;
 	}
 
 	/**
-	 * Set the value of {@link #avisClientId avisClientId}.
-	 * @param avisClientId value to set.
+	 * Définit la valeur de {@link #avisClientId avisClientId}.
+	 * @param avisClientId Valeur à définir.
 	 */
 	public void setAvisClientId(Integer avisClientId) {
 		this.avisClientId = avisClientId;
 	}
 
 	/**
-	 * Set the value of {@link #client client}.
-	 * @param client value to set.
+	 * Définit la valeur de {@link #client client}.
+	 * @param client Valeur à définir.
 	 */
 	public void setClient(ClientWrite client) {
 		this.client = client;
 	}
 
 	/**
-	 * Set the value of {@link #reservation reservation}.
-	 * @param reservation value to set.
+	 * Définit la valeur de {@link #reservation reservation}.
+	 * @param reservation Valeur à définir.
 	 */
 	public void setReservation(ReservationWrite reservation) {
 		this.reservation = reservation;
 	}
 
 	/**
-	 * Set the value of {@link #lignes lignes}.
-	 * @param lignes value to set.
+	 * Définit la valeur de {@link #lignes lignes}.
+	 * @param lignes Valeur à définir.
 	 */
 	public void setLignes(List<LigneCommandeWrite> lignes) {
 		this.lignes = lignes;

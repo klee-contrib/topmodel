@@ -22,14 +22,14 @@ import jakarta.validation.Valid;
 public class EmployeItem extends PersonneItem implements Serializable {
 
 	/**
-	 * Serial ID.
+	 * ID de sérialisation.
 	 */
 	@Serial
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Matricule de l'employé.
-	 * Alias of {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.Employe#getMatricule() Employe#getMatricule()}
+	 * Alias de {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.Employe#getMatricule() Employe#getMatricule()}
 	 */
 	@NotNull
 	@Size(max = 10)
@@ -38,7 +38,7 @@ public class EmployeItem extends PersonneItem implements Serializable {
 
 	/**
 	 * Restaurant où travaille l'employé.
-	 * Alias of {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.Employe#getRestaurant() Employe#getRestaurant()}
+	 * Alias de {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.Employe#getRestaurant() Employe#getRestaurant()}
 	 */
 	@NotNull
 	@Column("lie_id")
@@ -52,51 +52,51 @@ public class EmployeItem extends PersonneItem implements Serializable {
 	private List<EmployeItem> autresEmployes;
 
 	/**
-	 * Getter for matricule.
+	 * Accesseur de 'matricule'.
 	 *
-	 * @return value of {@link #matricule matricule}.
+	 * @return Valeur de {@link #matricule matricule}.
 	 */
 	public String getMatricule() {
 		return this.matricule;
 	}
 
 	/**
-	 * Getter for restaurantId.
+	 * Accesseur de 'restaurantId'.
 	 *
-	 * @return value of {@link #restaurantId restaurantId}.
+	 * @return Valeur de {@link #restaurantId restaurantId}.
 	 */
 	public Integer getRestaurantId() {
 		return this.restaurantId;
 	}
 
 	/**
-	 * Getter for autresEmployes.
+	 * Accesseur de 'autresEmployes'.
 	 *
-	 * @return value of {@link #autresEmployes autresEmployes}.
+	 * @return Valeur de {@link #autresEmployes autresEmployes}.
 	 */
 	public List<EmployeItem> getAutresEmployes() {
 		return this.autresEmployes;
 	}
 
 	/**
-	 * Set the value of {@link #matricule matricule}.
-	 * @param matricule value to set.
+	 * Définit la valeur de {@link #matricule matricule}.
+	 * @param matricule Valeur à définir.
 	 */
 	public void setMatricule(String matricule) {
 		this.matricule = matricule;
 	}
 
 	/**
-	 * Set the value of {@link #restaurantId restaurantId}.
-	 * @param restaurantId value to set.
+	 * Définit la valeur de {@link #restaurantId restaurantId}.
+	 * @param restaurantId Valeur à définir.
 	 */
 	public void setRestaurantId(Integer restaurantId) {
 		this.restaurantId = restaurantId;
 	}
 
 	/**
-	 * Set the value of {@link #autresEmployes autresEmployes}.
-	 * @param autresEmployes value to set.
+	 * Définit la valeur de {@link #autresEmployes autresEmployes}.
+	 * @param autresEmployes Valeur à définir.
 	 */
 	public void setAutresEmployes(List<EmployeItem> autresEmployes) {
 		this.autresEmployes = autresEmployes;

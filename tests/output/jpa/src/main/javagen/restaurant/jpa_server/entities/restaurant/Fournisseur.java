@@ -30,41 +30,41 @@ public class Fournisseur extends Lieu {
 	private Boolean bio;
 
 	/**
-	 * Getter for telephone.
+	 * Accesseur de 'telephone'.
 	 *
-	 * @return value of {@link #telephone telephone}.
+	 * @return Valeur de {@link #telephone telephone}.
 	 */
 	public String getTelephone() {
 		return this.telephone;
 	}
 
 	/**
-	 * Getter for bio.
+	 * Accesseur de 'bio'.
 	 *
-	 * @return value of {@link #bio bio}.
+	 * @return Valeur de {@link #bio bio}.
 	 */
 	public Boolean getBio() {
 		return this.bio;
 	}
 
 	/**
-	 * Set the value of {@link #telephone telephone}.
-	 * @param telephone value to set.
+	 * Définit la valeur de {@link #telephone telephone}.
+	 * @param telephone Valeur à définir.
 	 */
 	public void setTelephone(String telephone) {
 		this.telephone = telephone;
 	}
 
 	/**
-	 * Set the value of {@link #bio bio}.
-	 * @param bio value to set.
+	 * Définit la valeur de {@link #bio bio}.
+	 * @param bio Valeur à définir.
 	 */
 	public void setBio(Boolean bio) {
 		this.bio = bio;
 	}
 
 	/**
-	 * Enumération des champs de la classe {@link restaurant.jpa_server.entities.restaurant.Fournisseur Fournisseur}.
+	 * Énumération des champs de la classe {@link restaurant.jpa_server.entities.restaurant.Fournisseur Fournisseur}.
 	 */
 	public enum Fields {
 		TELEPHONE(String.class),
@@ -77,9 +77,9 @@ public class Fournisseur extends Lieu {
 		}
 
 		/**
-		 * Getter for type.
+		 * Accesseur de 'type'.
 		 *
-		 * @return value of {@link #type type}.
+		 * @return Valeur de {@link #type type}.
 		 */
 		public Class<?> getType() {
 			return this.type;

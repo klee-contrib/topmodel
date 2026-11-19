@@ -7,7 +7,7 @@ package restaurant.jpa_server.enums.restaurant;
 import jakarta.annotation.Generated;
 
 /**
- * Valeurs connues de la propriété Ordre de la classe CategoriePlat.
+ * Valeurs connues de la propriété 'Ordre' de la classe 'CategoriePlat'.
  */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class CategoriePlatOrdre {
@@ -38,6 +38,6 @@ public class CategoriePlatOrdre {
 	public static final Integer Principal = 3;
 
 	private CategoriePlatOrdre() {
-		// private constructor to hide implicite public one
+		// Constructeur privé pour masquer le constructeur public implicite
 	}
 }

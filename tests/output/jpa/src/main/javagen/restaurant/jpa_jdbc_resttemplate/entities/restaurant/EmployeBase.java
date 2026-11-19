@@ -19,7 +19,7 @@ public interface EmployeBase extends PersonneBase {
 
 	/**
 	 * Numéro de téléphone de l'employé.
-	 * @param telephone value to set.
+	 * @param telephone Valeur à définir.
 	 */
 	void setTelephone(String telephone);
 }

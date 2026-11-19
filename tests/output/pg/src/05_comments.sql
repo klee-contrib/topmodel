@@ -3,9 +3,9 @@
 ----
 
 -- ===========================================================================================
---   Application Name	:	Restaurant 
---   Script Name		:	05_comments.sql
---   Description		:	Script de création de commentaires sur les tables et les colonnes.
+--  Nom de l'application : Restaurant 
+--  Nom du script        : 05_comments.sql
+--  Description          : Script de création de commentaires sur les tables et les colonnes.
 -- ===========================================================================================
 
 /**

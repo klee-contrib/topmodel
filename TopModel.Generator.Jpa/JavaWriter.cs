@@ -25,7 +25,6 @@ public class JavaWriter(IFileWriter writer, string packageName) : IAsyncDisposab
     /// <inheritdoc cref="IAsyncDisposable.DisposeAsync" />
     public async ValueTask DisposeAsync()
     {
-        writer.IndentValue = "\t";
         writer.WriteLine($"package {packageName};");
         WriteImports();
         _toWrite.ForEach(l => writer.WriteLine(l.Indent, l.Line));

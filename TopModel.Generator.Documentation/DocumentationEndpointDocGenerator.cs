@@ -37,12 +37,15 @@ public class DocumentationEndpointDocGenerator(
         var file = endpoints[0].ModelFile;
         var title = Config.EndpointsMode switch
         {
-            DocumentationGenerationMode.All => "Liste des endpoints",
-            DocumentationGenerationMode.File => $"Liste des endpoints du fichier {file.Name}",
-            _ => $"Liste des endpoints du module {file.Namespace.Module}",
+            DocumentationGenerationMode.All => Config.GetMessage(DocumentationMessage.SchemaEndpointList),
+            DocumentationGenerationMode.File => Config.GetMessage(
+                DocumentationMessage.SchemaEndpointListFile,
+                file.Name
+            ),
+            _ => Config.GetMessage(DocumentationMessage.SchemaEndpointListModule, file.Namespace.Module),
         };
 
-        await using var md = new MarkdownWriter(OpenFileWriter(filePath));
+        await using var md = new MarkdownWriter(OpenFileWriter(filePath, new() { EnableHeader = false }));
         md.WriteTitle(1, title);
         md.WriteLine();
 
@@ -83,23 +86,23 @@ public class DocumentationEndpointDocGenerator(
         md.WriteTable(table);
     }
 
-    private static string[] GetColumns(bool includeModule, bool includeAuthorization)
+    private string[] GetColumns(bool includeModule, bool includeAuthorization)
     {
         var columns = new List<string>();
 
         if (includeModule)
         {
-            columns.Add("Module");
+            columns.Add(Config.GetMessage(DocumentationMessage.EndpointHeaderModule));
         }
 
-        columns.Add("Nom");
-        columns.Add("Méthode");
-        columns.Add("Route");
-        columns.Add("Description");
+        columns.Add(Config.GetMessage(DocumentationMessage.EndpointHeaderName));
+        columns.Add(Config.GetMessage(DocumentationMessage.EndpointHeaderMethod));
+        columns.Add(Config.GetMessage(DocumentationMessage.EndpointHeaderRoute));
+        columns.Add(Config.GetMessage(DocumentationMessage.EndpointHeaderDescription));
 
         if (includeAuthorization)
         {
-            columns.Add("Autorisation");
+            columns.Add(Config.GetMessage(DocumentationMessage.EndpointHeaderAuthorization));
         }
 
         return [.. columns];

@@ -1,11 +1,14 @@
-﻿namespace TopModel.Core.Model;
+﻿using TopModel.Utils;
+
+namespace TopModel.Core.Model;
 
 public readonly union MapperParam(ClassMappings, PropertyMapping)
 {
     public string Comment =>
         this switch
         {
-            ClassMappings c => c.Comment ?? $"Instance de '{c.Class.NamePascal}'",
+            ClassMappings c => c.Comment
+                ?? CoreMessage.ModelInstanceComment.GetLocalizedMessage(c.Class.ModelFile.Language, c.Class.NamePascal),
             PropertyMapping p => p.Property.Comment,
         };
 

@@ -74,18 +74,18 @@ public class Restaurant extends Lieu {
 	private LocalDateTime dateCreation;
 
 	/**
-	 * Getter for telephone.
+	 * Accesseur de 'telephone'.
 	 *
-	 * @return value of {@link #telephone telephone}.
+	 * @return Valeur de {@link #telephone telephone}.
 	 */
 	public String getTelephone() {
 		return this.telephone;
 	}
 
 	/**
-	 * Getter for menus.
+	 * Accesseur de 'menus'.
 	 *
-	 * @return value of {@link #menus menus}.
+	 * @return Valeur de {@link #menus menus}.
 	 */
 	public List<Menu> getMenus() {
 		if (this.menus == null) {
@@ -95,9 +95,9 @@ public class Restaurant extends Lieu {
 	}
 
 	/**
-	 * Getter for plats.
+	 * Accesseur de 'plats'.
 	 *
-	 * @return value of {@link #plats plats}.
+	 * @return Valeur de {@link #plats plats}.
 	 */
 	public List<Plat> getPlats() {
 		if (this.plats == null) {
@@ -107,9 +107,9 @@ public class Restaurant extends Lieu {
 	}
 
 	/**
-	 * Getter for promotions.
+	 * Accesseur de 'promotions'.
 	 *
-	 * @return value of {@link #promotions promotions}.
+	 * @return Valeur de {@link #promotions promotions}.
 	 */
 	public List<Promotion> getPromotions() {
 		if (this.promotions == null) {
@@ -119,9 +119,9 @@ public class Restaurant extends Lieu {
 	}
 
 	/**
-	 * Getter for avisClients.
+	 * Accesseur de 'avisClients'.
 	 *
-	 * @return value of {@link #avisClients avisClients}.
+	 * @return Valeur de {@link #avisClients avisClients}.
 	 */
 	public List<AvisClient> getAvisClients() {
 		if (this.avisClients == null) {
@@ -131,9 +131,9 @@ public class Restaurant extends Lieu {
 	}
 
 	/**
-	 * Getter for tableIds.
+	 * Accesseur de 'tableIds'.
 	 *
-	 * @return value of {@link #tableIds tableIds}.
+	 * @return Valeur de {@link #tableIds tableIds}.
 	 */
 	public List<Integer> getTableIds() {
 		if (this.tableIds == null) {
@@ -143,73 +143,73 @@ public class Restaurant extends Lieu {
 	}
 
 	/**
-	 * Getter for dateCreation.
+	 * Accesseur de 'dateCreation'.
 	 *
-	 * @return value of {@link #dateCreation dateCreation}.
+	 * @return Valeur de {@link #dateCreation dateCreation}.
 	 */
 	public LocalDateTime getDateCreation() {
 		return this.dateCreation;
 	}
 
 	/**
-	 * Set the value of {@link #telephone telephone}.
-	 * @param telephone value to set.
+	 * Définit la valeur de {@link #telephone telephone}.
+	 * @param telephone Valeur à définir.
 	 */
 	public void setTelephone(String telephone) {
 		this.telephone = telephone;
 	}
 
 	/**
-	 * Set the value of {@link #menus menus}.
-	 * @param menus value to set.
+	 * Définit la valeur de {@link #menus menus}.
+	 * @param menus Valeur à définir.
 	 */
 	public void setMenus(List<Menu> menus) {
 		this.menus = menus;
 	}
 
 	/**
-	 * Set the value of {@link #plats plats}.
-	 * @param plats value to set.
+	 * Définit la valeur de {@link #plats plats}.
+	 * @param plats Valeur à définir.
 	 */
 	public void setPlats(List<Plat> plats) {
 		this.plats = plats;
 	}
 
 	/**
-	 * Set the value of {@link #promotions promotions}.
-	 * @param promotions value to set.
+	 * Définit la valeur de {@link #promotions promotions}.
+	 * @param promotions Valeur à définir.
 	 */
 	public void setPromotions(List<Promotion> promotions) {
 		this.promotions = promotions;
 	}
 
 	/**
-	 * Set the value of {@link #avisClients avisClients}.
-	 * @param avisClients value to set.
+	 * Définit la valeur de {@link #avisClients avisClients}.
+	 * @param avisClients Valeur à définir.
 	 */
 	public void setAvisClients(List<AvisClient> avisClients) {
 		this.avisClients = avisClients;
 	}
 
 	/**
-	 * Set the value of {@link #tableIds tableIds}.
-	 * @param tableIds value to set.
+	 * Définit la valeur de {@link #tableIds tableIds}.
+	 * @param tableIds Valeur à définir.
 	 */
 	public void setTableIds(List<Integer> tableIds) {
 		this.tableIds = tableIds;
 	}
 
 	/**
-	 * Set the value of {@link #dateCreation dateCreation}.
-	 * @param dateCreation value to set.
+	 * Définit la valeur de {@link #dateCreation dateCreation}.
+	 * @param dateCreation Valeur à définir.
 	 */
 	public void setDateCreation(LocalDateTime dateCreation) {
 		this.dateCreation = dateCreation;
 	}
 
 	/**
-	 * Add a value to {@link restaurant.jpa_feign.entities.restaurant.Restaurant#menus menus}.
-	 * @param menu value to add to restaurant.
+	 * Ajoute une valeur à {@link restaurant.jpa_feign.entities.restaurant.Restaurant#menus menus}.
+	 * @param menu Valeur à ajouter à 'restaurant'.
 	 */
 	void addMenu(Menu menu) {
 		this.menus.add(menu);
@@ -217,8 +217,8 @@ public class Restaurant extends Lieu {
 	}
 
 	/**
-	 * Add a value to {@link restaurant.jpa_feign.entities.restaurant.Restaurant#plats plats}.
-	 * @param plat value to add to restaurant.
+	 * Ajoute une valeur à {@link restaurant.jpa_feign.entities.restaurant.Restaurant#plats plats}.
+	 * @param plat Valeur à ajouter à 'restaurant'.
 	 */
 	void addPlat(Plat plat) {
 		this.plats.add(plat);
@@ -226,8 +226,8 @@ public class Restaurant extends Lieu {
 	}
 
 	/**
-	 * Add a value to {@link restaurant.jpa_feign.entities.restaurant.Restaurant#promotions promotions}.
-	 * @param promotion value to add to restaurant.
+	 * Ajoute une valeur à {@link restaurant.jpa_feign.entities.restaurant.Restaurant#promotions promotions}.
+	 * @param promotion Valeur à ajouter à 'restaurant'.
 	 */
 	void addPromotion(Promotion promotion) {
 		this.promotions.add(promotion);
@@ -235,8 +235,8 @@ public class Restaurant extends Lieu {
 	}
 
 	/**
-	 * Add a value to {@link restaurant.jpa_feign.entities.restaurant.Restaurant#avisClients avisClients}.
-	 * @param avisClient value to add to restaurant.
+	 * Ajoute une valeur à {@link restaurant.jpa_feign.entities.restaurant.Restaurant#avisClients avisClients}.
+	 * @param avisClient Valeur à ajouter à 'restaurant'.
 	 */
 	void addAvisClient(AvisClient avisClient) {
 		this.avisClients.add(avisClient);
@@ -244,8 +244,8 @@ public class Restaurant extends Lieu {
 	}
 
 	/**
-	 * Remove a value from {@link restaurant.jpa_feign.entities.restaurant.Restaurant#menus menus}.
-	 * @param menu menu value to remove.
+	 * Supprime une valeur de {@link restaurant.jpa_feign.entities.restaurant.Restaurant#menus menus}.
+	 * @param menu Valeur de 'menu' à supprimer.
 	 */
 	void removeMenu(Menu menu) {
 		this.menus.remove(menu);
@@ -253,8 +253,8 @@ public class Restaurant extends Lieu {
 	}
 
 	/**
-	 * Remove a value from {@link restaurant.jpa_feign.entities.restaurant.Restaurant#plats plats}.
-	 * @param plat plat value to remove.
+	 * Supprime une valeur de {@link restaurant.jpa_feign.entities.restaurant.Restaurant#plats plats}.
+	 * @param plat Valeur de 'plat' à supprimer.
 	 */
 	void removePlat(Plat plat) {
 		this.plats.remove(plat);
@@ -262,8 +262,8 @@ public class Restaurant extends Lieu {
 	}
 
 	/**
-	 * Remove a value from {@link restaurant.jpa_feign.entities.restaurant.Restaurant#promotions promotions}.
-	 * @param promotion promotion value to remove.
+	 * Supprime une valeur de {@link restaurant.jpa_feign.entities.restaurant.Restaurant#promotions promotions}.
+	 * @param promotion Valeur de 'promotion' à supprimer.
 	 */
 	void removePromotion(Promotion promotion) {
 		this.promotions.remove(promotion);
@@ -271,8 +271,8 @@ public class Restaurant extends Lieu {
 	}
 
 	/**
-	 * Remove a value from {@link restaurant.jpa_feign.entities.restaurant.Restaurant#avisClients avisClients}.
-	 * @param avisClient avisClient value to remove.
+	 * Supprime une valeur de {@link restaurant.jpa_feign.entities.restaurant.Restaurant#avisClients avisClients}.
+	 * @param avisClient Valeur de 'avisClient' à supprimer.
 	 */
 	void removeAvisClient(AvisClient avisClient) {
 		this.avisClients.remove(avisClient);
@@ -280,7 +280,7 @@ public class Restaurant extends Lieu {
 	}
 
 	/**
-	 * Enumération des champs de la classe {@link restaurant.jpa_feign.entities.restaurant.Restaurant Restaurant}.
+	 * Énumération des champs de la classe {@link restaurant.jpa_feign.entities.restaurant.Restaurant Restaurant}.
 	 */
 	public enum Fields {
 		TELEPHONE(String.class),
@@ -298,9 +298,9 @@ public class Restaurant extends Lieu {
 		}
 
 		/**
-		 * Getter for type.
+		 * Accesseur de 'type'.
 		 *
-		 * @return value of {@link #type type}.
+		 * @return Valeur de {@link #type type}.
 		 */
 		public Class<?> getType() {
 			return this.type;

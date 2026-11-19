@@ -104,81 +104,81 @@ public class Menu {
 	private LocalDateTime dateCreation;
 
 	/**
-	 * Getter for id.
+	 * Accesseur de 'id'.
 	 *
-	 * @return value of {@link #id id}.
+	 * @return Valeur de {@link #id id}.
 	 */
 	public Integer getId() {
 		return this.id;
 	}
 
 	/**
-	 * Getter for nom.
+	 * Accesseur de 'nom'.
 	 *
-	 * @return value of {@link #nom nom}.
+	 * @return Valeur de {@link #nom nom}.
 	 */
 	public String getNom() {
 		return this.nom;
 	}
 
 	/**
-	 * Getter for description.
+	 * Accesseur de 'description'.
 	 *
-	 * @return value of {@link #description description}.
+	 * @return Valeur de {@link #description description}.
 	 */
 	public String getDescription() {
 		return this.description;
 	}
 
 	/**
-	 * Getter for prix.
+	 * Accesseur de 'prix'.
 	 *
-	 * @return value of {@link #prix prix}.
+	 * @return Valeur de {@link #prix prix}.
 	 */
 	public BigDecimal getPrix() {
 		return this.prix;
 	}
 
 	/**
-	 * Getter for disponible.
+	 * Accesseur de 'disponible'.
 	 *
-	 * @return value of {@link #disponible disponible}.
+	 * @return Valeur de {@link #disponible disponible}.
 	 */
 	public Boolean getDisponible() {
 		return this.disponible;
 	}
 
 	/**
-	 * Getter for dateDebut.
+	 * Accesseur de 'dateDebut'.
 	 *
-	 * @return value of {@link #dateDebut dateDebut}.
+	 * @return Valeur de {@link #dateDebut dateDebut}.
 	 */
 	public LocalDateTime getDateDebut() {
 		return this.dateDebut;
 	}
 
 	/**
-	 * Getter for dateFin.
+	 * Accesseur de 'dateFin'.
 	 *
-	 * @return value of {@link #dateFin dateFin}.
+	 * @return Valeur de {@link #dateFin dateFin}.
 	 */
 	public LocalDateTime getDateFin() {
 		return this.dateFin;
 	}
 
 	/**
-	 * Getter for restaurant.
+	 * Accesseur de 'restaurant'.
 	 *
-	 * @return value of {@link #restaurant restaurant}.
+	 * @return Valeur de {@link #restaurant restaurant}.
 	 */
 	public Restaurant getRestaurant() {
 		return this.restaurant;
 	}
 
 	/**
-	 * Getter for plats.
+	 * Accesseur de 'plats'.
 	 *
-	 * @return value of {@link #plats plats}.
+	 * @return Valeur de {@link #plats plats}.
 	 */
 	public List<MenuPlat> getPlats() {
 		if (this.plats == null) {
@@ -188,96 +188,96 @@ public class Menu {
 	}
 
 	/**
-	 * Getter for dateCreation.
+	 * Accesseur de 'dateCreation'.
 	 *
-	 * @return value of {@link #dateCreation dateCreation}.
+	 * @return Valeur de {@link #dateCreation dateCreation}.
 	 */
 	public LocalDateTime getDateCreation() {
 		return this.dateCreation;
 	}
 
 	/**
-	 * Set the value of {@link #id id}.
-	 * @param id value to set.
+	 * Définit la valeur de {@link #id id}.
+	 * @param id Valeur à définir.
 	 */
 	public void setId(Integer id) {
 		this.id = id;
 	}
 
 	/**
-	 * Set the value of {@link #nom nom}.
-	 * @param nom value to set.
+	 * Définit la valeur de {@link #nom nom}.
+	 * @param nom Valeur à définir.
 	 */
 	public void setNom(String nom) {
 		this.nom = nom;
 	}
 
 	/**
-	 * Set the value of {@link #description description}.
-	 * @param description value to set.
+	 * Définit la valeur de {@link #description description}.
+	 * @param description Valeur à définir.
 	 */
 	public void setDescription(String description) {
 		this.description = description;
 	}
 
 	/**
-	 * Set the value of {@link #prix prix}.
-	 * @param prix value to set.
+	 * Définit la valeur de {@link #prix prix}.
+	 * @param prix Valeur à définir.
 	 */
 	public void setPrix(BigDecimal prix) {
 		this.prix = prix;
 	}
 
 	/**
-	 * Set the value of {@link #disponible disponible}.
-	 * @param disponible value to set.
+	 * Définit la valeur de {@link #disponible disponible}.
+	 * @param disponible Valeur à définir.
 	 */
 	public void setDisponible(Boolean disponible) {
 		this.disponible = disponible;
 	}
 
 	/**
-	 * Set the value of {@link #dateDebut dateDebut}.
-	 * @param dateDebut value to set.
+	 * Définit la valeur de {@link #dateDebut dateDebut}.
+	 * @param dateDebut Valeur à définir.
 	 */
 	public void setDateDebut(LocalDateTime dateDebut) {
 		this.dateDebut = dateDebut;
 	}
 
 	/**
-	 * Set the value of {@link #dateFin dateFin}.
-	 * @param dateFin value to set.
+	 * Définit la valeur de {@link #dateFin dateFin}.
+	 * @param dateFin Valeur à définir.
 	 */
 	public void setDateFin(LocalDateTime dateFin) {
 		this.dateFin = dateFin;
 	}
 
 	/**
-	 * Set the value of {@link #restaurant restaurant}.
-	 * @param restaurant value to set.
+	 * Définit la valeur de {@link #restaurant restaurant}.
+	 * @param restaurant Valeur à définir.
 	 */
 	public void setRestaurant(Restaurant restaurant) {
 		this.restaurant = restaurant;
 	}
 
 	/**
-	 * Set the value of {@link #plats plats}.
-	 * @param plats value to set.
+	 * Définit la valeur de {@link #plats plats}.
+	 * @param plats Valeur à définir.
 	 */
 	public void setPlats(List<MenuPlat> plats) {
 		this.plats = plats;
 	}
 
 	/**
-	 * Set the value of {@link #dateCreation dateCreation}.
-	 * @param dateCreation value to set.
+	 * Définit la valeur de {@link #dateCreation dateCreation}.
+	 * @param dateCreation Valeur à définir.
 	 */
 	public void setDateCreation(LocalDateTime dateCreation) {
 		this.dateCreation = dateCreation;
 	}
 
 	/**
-	 * Enumération des champs de la classe {@link restaurant.jpa_server.entities.restaurant.Menu Menu}.
+	 * Énumération des champs de la classe {@link restaurant.jpa_server.entities.restaurant.Menu Menu}.
 	 */
 	public enum Fields {
 		ID(Integer.class),
@@ -298,9 +298,9 @@ public class Menu {
 		}
 
 		/**
-		 * Getter for type.
+		 * Accesseur de 'type'.
 		 *
-		 * @return value of {@link #type type}.
+		 * @return Valeur de {@link #type type}.
 		 */
 		public Class<?> getType() {
 			return this.type;

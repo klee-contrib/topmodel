@@ -21,14 +21,14 @@ import jakarta.validation.constraints.Size;
 public class PromotionWrite implements Serializable {
 
 	/**
-	 * Serial ID.
+	 * ID de sérialisation.
 	 */
 	@Serial
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Libellé de la promotion.
-	 * Alias of {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.Promotion#getLibelle() Promotion#getLibelle()}
+	 * Alias de {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.Promotion#getLibelle() Promotion#getLibelle()}
 	 */
 	@NotNull
 	@Size(max = 100)
@@ -37,7 +37,7 @@ public class PromotionWrite implements Serializable {
 
 	/**
 	 * Pourcentage de réduction (0-100).
-	 * Alias of {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.Promotion#getPourcentageReduction() Promotion#getPourcentageReduction()}
+	 * Alias de {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.Promotion#getPourcentageReduction() Promotion#getPourcentageReduction()}
 	 */
 	@NotNull
 	@Column("pro_pourcentage_reduction")
@@ -45,7 +45,7 @@ public class PromotionWrite implements Serializable {
 
 	/**
 	 * Date de début de la promotion.
-	 * Alias of {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.Promotion#getDateDebut() Promotion#getDateDebut()}
+	 * Alias de {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.Promotion#getDateDebut() Promotion#getDateDebut()}
 	 */
 	@NotNull
 	@Column("pro_date_debut")
@@ -53,7 +53,7 @@ public class PromotionWrite implements Serializable {
 
 	/**
 	 * Date de fin de la promotion.
-	 * Alias of {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.Promotion#getDateFin() Promotion#getDateFin()}
+	 * Alias de {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.Promotion#getDateFin() Promotion#getDateFin()}
 	 */
 	@NotNull
 	@Column("pro_date_fin")
@@ -61,7 +61,7 @@ public class PromotionWrite implements Serializable {
 
 	/**
 	 * Indique si la promotion est active.
-	 * Alias of {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.Promotion#getActive() Promotion#getActive()}
+	 * Alias de {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.Promotion#getActive() Promotion#getActive()}
 	 */
 	@NotNull
 	@Column("pro_active")
@@ -69,108 +69,108 @@ public class PromotionWrite implements Serializable {
 
 	/**
 	 * Restaurant concerné par la promotion (null si globale).
-	 * Alias of {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.Promotion#getRestaurant() Promotion#getRestaurant()}
+	 * Alias de {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.Promotion#getRestaurant() Promotion#getRestaurant()}
 	 */
 	@Column("lie_id")
 	private Integer restaurantId;
 
 	/**
-	 * Getter for libelle.
+	 * Accesseur de 'libelle'.
 	 *
-	 * @return value of {@link #libelle libelle}.
+	 * @return Valeur de {@link #libelle libelle}.
 	 */
 	public String getLibelle() {
 		return this.libelle;
 	}
 
 	/**
-	 * Getter for pourcentageReduction.
+	 * Accesseur de 'pourcentageReduction'.
 	 *
-	 * @return value of {@link #pourcentageReduction pourcentageReduction}.
+	 * @return Valeur de {@link #pourcentageReduction pourcentageReduction}.
 	 */
 	public Integer getPourcentageReduction() {
 		return this.pourcentageReduction;
 	}
 
 	/**
-	 * Getter for dateDebut.
+	 * Accesseur de 'dateDebut'.
 	 *
-	 * @return value of {@link #dateDebut dateDebut}.
+	 * @return Valeur de {@link #dateDebut dateDebut}.
 	 */
 	public LocalDateTime getDateDebut() {
 		return this.dateDebut;
 	}
 
 	/**
-	 * Getter for dateFin.
+	 * Accesseur de 'dateFin'.
 	 *
-	 * @return value of {@link #dateFin dateFin}.
+	 * @return Valeur de {@link #dateFin dateFin}.
 	 */
 	public LocalDateTime getDateFin() {
 		return this.dateFin;
 	}
 
 	/**
-	 * Getter for active.
+	 * Accesseur de 'active'.
 	 *
-	 * @return value of {@link #active active}.
+	 * @return Valeur de {@link #active active}.
 	 */
 	public Boolean getActive() {
 		return this.active;
 	}
 
 	/**
-	 * Getter for restaurantId.
+	 * Accesseur de 'restaurantId'.
 	 *
-	 * @return value of {@link #restaurantId restaurantId}.
+	 * @return Valeur de {@link #restaurantId restaurantId}.
 	 */
 	public Integer getRestaurantId() {
 		return this.restaurantId;
 	}
 
 	/**
-	 * Set the value of {@link #libelle libelle}.
-	 * @param libelle value to set.
+	 * Définit la valeur de {@link #libelle libelle}.
+	 * @param libelle Valeur à définir.
 	 */
 	public void setLibelle(String libelle) {
 		this.libelle = libelle;
 	}
 
 	/**
-	 * Set the value of {@link #pourcentageReduction pourcentageReduction}.
-	 * @param pourcentageReduction value to set.
+	 * Définit la valeur de {@link #pourcentageReduction pourcentageReduction}.
+	 * @param pourcentageReduction Valeur à définir.
 	 */
 	public void setPourcentageReduction(Integer pourcentageReduction) {
 		this.pourcentageReduction = pourcentageReduction;
 	}
 
 	/**
-	 * Set the value of {@link #dateDebut dateDebut}.
-	 * @param dateDebut value to set.
+	 * Définit la valeur de {@link #dateDebut dateDebut}.
+	 * @param dateDebut Valeur à définir.
 	 */
 	public void setDateDebut(LocalDateTime dateDebut) {
 		this.dateDebut = dateDebut;
 	}
 
 	/**
-	 * Set the value of {@link #dateFin dateFin}.
-	 * @param dateFin value to set.
+	 * Définit la valeur de {@link #dateFin dateFin}.
+	 * @param dateFin Valeur à définir.
 	 */
 	public void setDateFin(LocalDateTime dateFin) {
 		this.dateFin = dateFin;
 	}
 
 	/**
-	 * Set the value of {@link #active active}.
-	 * @param active value to set.
+	 * Définit la valeur de {@link #active active}.
+	 * @param active Valeur à définir.
 	 */
 	public void setActive(Boolean active) {
 		this.active = active;
 	}
 
 	/**
-	 * Set the value of {@link #restaurantId restaurantId}.
-	 * @param restaurantId value to set.
+	 * Définit la valeur de {@link #restaurantId restaurantId}.
+	 * @param restaurantId Valeur à définir.
 	 */
 	public void setRestaurantId(Integer restaurantId) {
 		this.restaurantId = restaurantId;

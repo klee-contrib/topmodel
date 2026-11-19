@@ -3,7 +3,7 @@
 ----
 
 -- ===========================================================================================
---   Description		:	Création de la table PERSONNE.
+--  Description          : Création de la table PERSONNE.
 -- ===========================================================================================
 
 create table PERSONNE (
@@ -16,7 +16,7 @@ create table PERSONNE (
 	constraint FK_PERSONNE_DEP_CODE foreign key (DEP_CODE) references DEPARTEMENT (DEP_CODE))
 go
 
-/* Index on foreign key column for PERSONNE.DEP_CODE */
+/* Index sur la colonne de clé étrangère PERSONNE.DEP_CODE */
 create nonclustered index IDX_PER_DEP_CODE_FK
 	on PERSONNE (DEP_CODE asc)
 go

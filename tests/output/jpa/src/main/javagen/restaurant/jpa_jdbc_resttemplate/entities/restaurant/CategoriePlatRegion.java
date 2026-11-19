@@ -26,7 +26,7 @@ public class CategoriePlatRegion {
 	public static final CategoriePlatRegion IDF_ENTREE = new CategoriePlatRegion(RegionCode.Idf, CategoriePlatCode.Entree);
 
 	/**
-	 * Liste de toutes les valeurs de l'énumération CategoriePlatRegion.
+	 * Liste de toutes les valeurs de l'énumération 'CategoriePlatRegion'.
 	 */
 	public static final List<CategoriePlatRegion> VALUES = List.of(IDF_ENTREE, IDF_DESSERT);
 
@@ -43,7 +43,7 @@ public class CategoriePlatRegion {
 	private String categoriePlat;
 
 	/**
-	 * All args constructor for 'CategoriePlatRegion'.
+	 * Constructeur tout arguments pour 'CategoriePlatRegion'.
 	 * @param regionCode Région.
 	 * @param categoriePlat Catégorie de plat.
 	 */
@@ -53,18 +53,18 @@ public class CategoriePlatRegion {
 	}
 
 	/**
-	 * Getter for regionCode.
+	 * Accesseur de 'regionCode'.
 	 *
-	 * @return value of {@link #regionCode regionCode}.
+	 * @return Valeur de {@link #regionCode regionCode}.
 	 */
 	public String getRegionCode() {
 		return this.regionCode;
 	}
 
 	/**
-	 * Getter for categoriePlat.
+	 * Accesseur de 'categoriePlat'.
 	 *
-	 * @return value of {@link #categoriePlat categoriePlat}.
+	 * @return Valeur de {@link #categoriePlat categoriePlat}.
 	 */
 	public String getCategoriePlat() {
 		return this.categoriePlat;

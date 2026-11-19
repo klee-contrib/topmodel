@@ -3,7 +3,7 @@
 ----
 
 -- ===========================================================================================
---   Description		:	Création de la table AVIS_CLIENT.
+--  Description          : Création de la table AVIS_CLIENT.
 -- ===========================================================================================
 
 create table AVIS_CLIENT (
@@ -21,12 +21,12 @@ create table AVIS_CLIENT (
 	constraint UK_AVIS_CLIENT_PER_ID_LIE_ID_AVI_DATE_AVIS unique nonclustered (PER_ID asc, LIE_ID asc, AVI_DATE_AVIS asc))
 go
 
-/* Index on foreign key column for AVIS_CLIENT.PER_ID */
+/* Index sur la colonne de clé étrangère AVIS_CLIENT.PER_ID */
 create nonclustered index IDX_AVI_PER_ID_FK
 	on AVIS_CLIENT (PER_ID asc)
 go
 
-/* Index on foreign key column for AVIS_CLIENT.LIE_ID */
+/* Index sur la colonne de clé étrangère AVIS_CLIENT.LIE_ID */
 create nonclustered index IDX_AVI_LIE_ID_FK
 	on AVIS_CLIENT (LIE_ID asc)
 go

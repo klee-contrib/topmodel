@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using TopModel.Core.FileModel;
 using TopModel.Core.Model;
 using TopModel.Generator.Core;
@@ -74,11 +74,7 @@ public class JavaUniqueValuedPropertyGenerator(
     protected virtual async Task WriteStaticClass(IProperty property, Class classe, string tag)
     {
         var packageName = Config.GetEnumPackageName(classe, tag);
-        await using var fw = this.OpenJavaWriter(
-            Config.GetEnumFileName(classe, tag, property),
-            packageName,
-            codePage: null
-        );
+        await using var fw = this.OpenJavaWriter(Config.GetEnumFileName(classe, tag, property), packageName);
         var staticClass = GetStaticClass(property, classe, tag);
         fw.Write(staticClass);
     }
@@ -87,7 +83,7 @@ public class JavaUniqueValuedPropertyGenerator(
     {
         var javaClass = new JavaClass(Config.GetEnumType(property))
         {
-            Comment = $"Valeurs connues de la propriété {property.NamePascal} de la classe {classe.NamePascal}",
+            Comment = Config.GetMessage(JpaMessage.EnumKnownValues, property.NamePascal, classe.NamePascal),
         };
 
         if (Config.GeneratedHint)
@@ -96,7 +92,7 @@ public class JavaUniqueValuedPropertyGenerator(
         }
 
         var emptyConstructor = new JavaConstructor(Config.GetEnumType(property)) { Visibility = "private" };
-        emptyConstructor.AddBodyLine("// private constructor to hide implicite public one");
+        emptyConstructor.AddBodyLine("// " + Config.GetMessage(JpaMessage.PrivateConstructorComment));
         javaClass.Add(emptyConstructor);
 
         var i = 0;

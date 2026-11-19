@@ -3,7 +3,7 @@
 ----
 
 -- ===========================================================================================
---   Description		:	Création de la table MENU.
+--  Description          : Création de la table MENU.
 -- ===========================================================================================
 
 create table MENU (
@@ -26,7 +26,7 @@ go
 create sequence SEQ_MENU as int start with 1000 increment by 50
 go
 
-/* Index on foreign key column for MENU.LIE_ID */
+/* Index sur la colonne de clé étrangère MENU.LIE_ID */
 create nonclustered index IDX_MEN_LIE_ID_FK
 	on MENU (LIE_ID asc)
 go

@@ -50,9 +50,10 @@ public class SqlResourcesGenerator(
         var appName = classes.First().Namespace.App;
 
         writer.WriteSqlFileHeader(
+            Config,
             appName,
             fileName.Split('/')[^1],
-            "Scripts d'insertion des ressources (libellés traduits)."
+            Config.GetMessage(SqlMessage.SqlResourcesHeader)
         );
 
         if (Config.TranslateProperties != null)
@@ -71,8 +72,11 @@ public class SqlResourcesGenerator(
                 {
                     writer.WriteLine();
                     writer.WriteLine(
-                        "/**\t\tInitialisation des traductions des propriétés de la table "
-                            + Config.GetSqlName(modelClass, tag, noQuote: true)
+                        "/**\t\t"
+                            + Config.GetMessage(
+                                SqlMessage.SqlResourcesInitialization,
+                                Config.GetSqlName(modelClass, tag, noQuote: true)
+                            )
                             + "\t\t**/"
                     );
 
@@ -106,8 +110,11 @@ public class SqlResourcesGenerator(
             {
                 writer.WriteLine();
                 writer.WriteLine(
-                    "/**\t\tInitialisation des traductions des valeurs de la table "
-                        + Config.GetSqlName(modelClass, tag, noQuote: true)
+                    "/**\t\t"
+                        + Config.GetMessage(
+                            SqlMessage.SqlValueTranslationsInitialization,
+                            Config.GetSqlName(modelClass, tag, noQuote: true)
+                        )
                         + "\t\t**/"
                 );
                 foreach (var language in translationStore.Translations.Keys)

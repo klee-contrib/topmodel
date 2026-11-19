@@ -19,173 +19,173 @@ import jakarta.validation.constraints.Size;
 public class ReservationWrite implements Serializable {
 
 	/**
-	 * Serial ID.
+	 * ID de sérialisation.
 	 */
 	@Serial
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Date et heure de la réservation.
-	 * Alias of {@link restaurant.jpa_server.entities.restaurant.Reservation#getDateReservation() Reservation#getDateReservation()}
+	 * Alias de {@link restaurant.jpa_server.entities.restaurant.Reservation#getDateReservation() Reservation#getDateReservation()}
 	 */
 	@NotNull
 	private LocalDateTime dateReservation;
 
 	/**
 	 * Nombre de personnes.
-	 * Alias of {@link restaurant.jpa_server.entities.restaurant.Reservation#getNombrePersonnes() Reservation#getNombrePersonnes()}
+	 * Alias de {@link restaurant.jpa_server.entities.restaurant.Reservation#getNombrePersonnes() Reservation#getNombrePersonnes()}
 	 */
 	@NotNull
 	private Integer nombrePersonnes;
 
 	/**
 	 * Commentaire sur la réservation.
-	 * Alias of {@link restaurant.jpa_server.entities.restaurant.Reservation#getCommentaire() Reservation#getCommentaire()}
+	 * Alias de {@link restaurant.jpa_server.entities.restaurant.Reservation#getCommentaire() Reservation#getCommentaire()}
 	 */
 	@Size(max = 100)
 	private String commentaire;
 
 	/**
 	 * Indique si la réservation est confirmée.
-	 * Alias of {@link restaurant.jpa_server.entities.restaurant.Reservation#getConfirmee() Reservation#getConfirmee()}
+	 * Alias de {@link restaurant.jpa_server.entities.restaurant.Reservation#getConfirmee() Reservation#getConfirmee()}
 	 */
 	@NotNull
 	private Boolean confirmee = false;
 
 	/**
 	 * Client ayant fait la réservation.
-	 * Alias of {@link restaurant.jpa_server.entities.restaurant.Reservation#getClient() Reservation#getClient()}
+	 * Alias de {@link restaurant.jpa_server.entities.restaurant.Reservation#getClient() Reservation#getClient()}
 	 */
 	@NotNull
 	private Integer clientId;
 
 	/**
 	 * Table réservée.
-	 * Alias of {@link restaurant.jpa_server.entities.restaurant.Reservation#getTableId() Reservation#getTableId()}
+	 * Alias de {@link restaurant.jpa_server.entities.restaurant.Reservation#getTableId() Reservation#getTableId()}
 	 */
 	private Integer tableId;
 
 	/**
 	 * Restaurant concerné par la réservation.
-	 * Alias of {@link restaurant.jpa_server.entities.restaurant.Reservation#getRestaurant() Reservation#getRestaurant()}
+	 * Alias de {@link restaurant.jpa_server.entities.restaurant.Reservation#getRestaurant() Reservation#getRestaurant()}
 	 */
 	@NotNull
 	private Integer restaurantId;
 
 	/**
-	 * Getter for dateReservation.
+	 * Accesseur de 'dateReservation'.
 	 *
-	 * @return value of {@link #dateReservation dateReservation}.
+	 * @return Valeur de {@link #dateReservation dateReservation}.
 	 */
 	public LocalDateTime getDateReservation() {
 		return this.dateReservation;
 	}
 
 	/**
-	 * Getter for nombrePersonnes.
+	 * Accesseur de 'nombrePersonnes'.
 	 *
-	 * @return value of {@link #nombrePersonnes nombrePersonnes}.
+	 * @return Valeur de {@link #nombrePersonnes nombrePersonnes}.
 	 */
 	public Integer getNombrePersonnes() {
 		return this.nombrePersonnes;
 	}
 
 	/**
-	 * Getter for commentaire.
+	 * Accesseur de 'commentaire'.
 	 *
-	 * @return value of {@link #commentaire commentaire}.
+	 * @return Valeur de {@link #commentaire commentaire}.
 	 */
 	public String getCommentaire() {
 		return this.commentaire;
 	}
 
 	/**
-	 * Getter for confirmee.
+	 * Accesseur de 'confirmee'.
 	 *
-	 * @return value of {@link #confirmee confirmee}.
+	 * @return Valeur de {@link #confirmee confirmee}.
 	 */
 	public Boolean getConfirmee() {
 		return this.confirmee;
 	}
 
 	/**
-	 * Getter for clientId.
+	 * Accesseur de 'clientId'.
 	 *
-	 * @return value of {@link #clientId clientId}.
+	 * @return Valeur de {@link #clientId clientId}.
 	 */
 	public Integer getClientId() {
 		return this.clientId;
 	}
 
 	/**
-	 * Getter for tableId.
+	 * Accesseur de 'tableId'.
 	 *
-	 * @return value of {@link #tableId tableId}.
+	 * @return Valeur de {@link #tableId tableId}.
 	 */
 	public Integer getTableId() {
 		return this.tableId;
 	}
 
 	/**
-	 * Getter for restaurantId.
+	 * Accesseur de 'restaurantId'.
 	 *
-	 * @return value of {@link #restaurantId restaurantId}.
+	 * @return Valeur de {@link #restaurantId restaurantId}.
 	 */
 	public Integer getRestaurantId() {
 		return this.restaurantId;
 	}
 
 	/**
-	 * Set the value of {@link #dateReservation dateReservation}.
-	 * @param dateReservation value to set.
+	 * Définit la valeur de {@link #dateReservation dateReservation}.
+	 * @param dateReservation Valeur à définir.
 	 */
 	public void setDateReservation(LocalDateTime dateReservation) {
 		this.dateReservation = dateReservation;
 	}
 
 	/**
-	 * Set the value of {@link #nombrePersonnes nombrePersonnes}.
-	 * @param nombrePersonnes value to set.
+	 * Définit la valeur de {@link #nombrePersonnes nombrePersonnes}.
+	 * @param nombrePersonnes Valeur à définir.
 	 */
 	public void setNombrePersonnes(Integer nombrePersonnes) {
 		this.nombrePersonnes = nombrePersonnes;
 	}
 
 	/**
-	 * Set the value of {@link #commentaire commentaire}.
-	 * @param commentaire value to set.
+	 * Définit la valeur de {@link #commentaire commentaire}.
+	 * @param commentaire Valeur à définir.
 	 */
 	public void setCommentaire(String commentaire) {
 		this.commentaire = commentaire;
 	}
 
 	/**
-	 * Set the value of {@link #confirmee confirmee}.
-	 * @param confirmee value to set.
+	 * Définit la valeur de {@link #confirmee confirmee}.
+	 * @param confirmee Valeur à définir.
 	 */
 	public void setConfirmee(Boolean confirmee) {
 		this.confirmee = confirmee;
 	}
 
 	/**
-	 * Set the value of {@link #clientId clientId}.
-	 * @param clientId value to set.
+	 * Définit la valeur de {@link #clientId clientId}.
+	 * @param clientId Valeur à définir.
 	 */
 	public void setClientId(Integer clientId) {
 		this.clientId = clientId;
 	}
 
 	/**
-	 * Set the value of {@link #tableId tableId}.
-	 * @param tableId value to set.
+	 * Définit la valeur de {@link #tableId tableId}.
+	 * @param tableId Valeur à définir.
 	 */
 	public void setTableId(Integer tableId) {
 		this.tableId = tableId;
 	}
 
 	/**
-	 * Set the value of {@link #restaurantId restaurantId}.
-	 * @param restaurantId value to set.
+	 * Définit la valeur de {@link #restaurantId restaurantId}.
+	 * @param restaurantId Valeur à définir.
 	 */
 	public void setRestaurantId(Integer restaurantId) {
 		this.restaurantId = restaurantId;

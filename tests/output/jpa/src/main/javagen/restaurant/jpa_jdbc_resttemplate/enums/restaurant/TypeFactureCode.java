@@ -7,7 +7,7 @@ package restaurant.jpa_jdbc_resttemplate.enums.restaurant;
 import jakarta.annotation.Generated;
 
 /**
- * Valeurs connues de la propriété Code de la classe TypeFacture.
+ * Valeurs connues de la propriété 'Code' de la classe 'TypeFacture'.
  */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class TypeFactureCode {
@@ -23,6 +23,6 @@ public class TypeFactureCode {
 	public static final String Phy = "PHY";
 
 	private TypeFactureCode() {
-		// private constructor to hide implicite public one
+		// Constructeur privé pour masquer le constructeur public implicite
 	}
 }

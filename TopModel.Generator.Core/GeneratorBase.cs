@@ -1,5 +1,4 @@
-﻿using System.Text;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using TopModel.Core;
 using TopModel.Core.FileModel;
 using TopModel.Utils;
@@ -31,21 +30,12 @@ public abstract class GeneratorBase<T>(ILogger logger, IFileWriterProvider write
         await HandleFiles(files.Where(f => Config.Files.ContainsKey(f.Name)), ct);
     }
 
-    public IFileWriter OpenFileWriter(string fileName, bool encoderShouldEmitUTF8Identifier = true)
+    public IFileWriter OpenFileWriter(string fileName, FileWriterOptions options)
     {
         return writerProvider.OpenFileWriter(
             Path.Combine(Config.OutputDirectory, fileName).Replace('\\', '/'),
             logger,
-            encoderShouldEmitUTF8Identifier
-        );
-    }
-
-    public IFileWriter OpenFileWriter(string fileName, Encoding encoding)
-    {
-        return writerProvider.OpenFileWriter(
-            Path.Combine(Config.OutputDirectory, fileName).Replace('\\', '/'),
-            logger,
-            encoding
+            options
         );
     }
 

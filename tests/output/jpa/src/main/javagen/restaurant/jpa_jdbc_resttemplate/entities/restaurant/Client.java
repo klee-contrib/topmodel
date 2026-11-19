@@ -29,34 +29,34 @@ public class Client extends Personne {
 	private Integer swileCard;
 
 	/**
-	 * Getter for email.
+	 * Accesseur de 'email'.
 	 *
-	 * @return value of {@link #email email}.
+	 * @return Valeur de {@link #email email}.
 	 */
 	public String getEmail() {
 		return this.email;
 	}
 
 	/**
-	 * Getter for swileCard.
+	 * Accesseur de 'swileCard'.
 	 *
-	 * @return value of {@link #swileCard swileCard}.
+	 * @return Valeur de {@link #swileCard swileCard}.
 	 */
 	public Integer getSwileCard() {
 		return this.swileCard;
 	}
 
 	/**
-	 * Set the value of {@link #email email}.
-	 * @param email value to set.
+	 * Définit la valeur de {@link #email email}.
+	 * @param email Valeur à définir.
 	 */
 	public void setEmail(String email) {
 		this.email = email;
 	}
 
 	/**
-	 * Set the value of {@link #swileCard swileCard}.
-	 * @param swileCard value to set.
+	 * Définit la valeur de {@link #swileCard swileCard}.
+	 * @param swileCard Valeur à définir.
 	 */
 	public void setSwileCard(Integer swileCard) {
 		this.swileCard = swileCard;

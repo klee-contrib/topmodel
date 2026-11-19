@@ -20,7 +20,7 @@ public class JavaConstructorGenerator(JpaConfig config)
         var constructor = new JavaConstructor(classe.NamePascal)
         {
             Visibility = "public",
-            Comment = $"All args constructor for '{classe.NamePascal}'.",
+            Comment = Config.GetMessage(JpaMessage.AllArgsConstructor, classe.NamePascal),
         };
 
         if (Config.GetClassExtends(classe, tag) != null)
@@ -61,7 +61,7 @@ public class JavaConstructorGenerator(JpaConfig config)
             var constructor = new JavaConstructor(classe.NamePascal)
             {
                 Visibility = "public",
-                Comment = mapper.Comment ?? $"Crée une nouvelle instance de '{classe.NamePascal}'",
+                Comment = mapper.Comment ?? Config.GetMessage(JpaMessage.MapperCreateInstance, classe.NamePascal),
             };
 
             foreach (var param in mapper.ClassParams)
@@ -72,7 +72,7 @@ public class JavaConstructorGenerator(JpaConfig config)
                     param.Name.ToCamelCase()
                 )
                 {
-                    Comment = param.Comment ?? $"Instance de '{param.Class.NamePascal}'",
+                    Comment = param.Comment ?? Config.GetMessage(JpaMessage.ModelInstance, param.Class.NamePascal),
                 };
                 constructor.AddParameter(parameter);
             }
@@ -97,7 +97,7 @@ public class JavaConstructorGenerator(JpaConfig config)
             constructor.AddBodyLine(
                 $"{Config.GetMapperName(mapperNs, mapperModelPath)}.map{classe.NamePascal}({string.Join(", ", mapper.ClassParams.Select(p => p.Name.ToCamelCase()).Concat(mapper.PropertyParams.Select(p => p.Property.NameCamel)))}, this);"
             );
-            constructor.ReturnComment = $"Une nouvelle instance de '{classe.NamePascal}'";
+            constructor.ReturnComment = Config.GetMessage(JpaMessage.NewInstanceOf, classe.NamePascal);
             yield return constructor;
         }
     }
@@ -107,7 +107,7 @@ public class JavaConstructorGenerator(JpaConfig config)
         var constructor = new JavaConstructor(classe.NamePascal)
         {
             Visibility = "public",
-            Comment = "No arg constructor",
+            Comment = Config.GetMessage(JpaMessage.NoArgConstructor),
         };
         if (Config.GetClassExtends(classe, tag) != null)
         {
@@ -115,7 +115,7 @@ public class JavaConstructorGenerator(JpaConfig config)
         }
         else
         {
-            constructor.AddBodyLine("// No arg constructor");
+            constructor.AddBodyLine("// " + Config.GetMessage(JpaMessage.NoArgConstructor));
         }
 
         return constructor;

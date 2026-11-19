@@ -315,9 +315,11 @@ public class ModelFile
                         )
                     )
             )
-            .Where(t => t.Item1 is not null && t.Item2 is not null && t.Item2 is not (null, null))
+            .Where(t => t.Item1 is not null && t.Item2 is not null and not (null, null))
             .DistinctBy(t => t.Item1)
             .ToDictionary(t => t.Item1, t => t.Item2);
+
+    internal string? Language { get; set; }
 
     internal IEnumerable<IProperty> OwnProperties =>
         Classes

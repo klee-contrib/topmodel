@@ -1,4 +1,4 @@
-using TopModel.Core.Model;
+﻿using TopModel.Core.Model;
 using TopModel.Utils;
 
 namespace TopModel.Generator.Jpa.ClassGeneration.Utils;
@@ -149,7 +149,7 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
         {
             var getter = $"#{Config.GetGetterName(op, tag)}()";
             javaField.AddCommentLine(
-                $"Alias of {{@link {op.Class.GetImport(Config, tag)}{getter} {op.Class.NamePascal}{getter}}}"
+                Config.GetMessage(JpaMessage.AliasOf, op.Class.GetImport(Config, tag), getter, op.Class.NamePascal)
             );
         }
         var annotations = GetAnnotations(property, tag);
@@ -180,12 +180,12 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
         var field = GetField(property, tag);
         var method = new JavaMethod(field.Type, Config.GetGetterName(property, tag))
         {
-            Comment = $"Getter for {field.Name}",
+            Comment = Config.GetMessage(JpaMessage.Getter, field.Name),
             Body =
             {
                 new WriterLine() { Line = $"return this.{field.Name};", Indent = 0 },
             },
-            ReturnComment = $"value of {{@link #{field.Name} {field.Name}}}",
+            ReturnComment = Config.GetMessage(JpaMessage.GetterValue, field.Name),
             Visibility = "public",
         };
         var genericType = field.Type.Split('<')[0];
@@ -231,9 +231,8 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
             var method = new JavaMethod(propertyType, getterName)
             {
                 Visibility = "public",
-                Comment = $"Getter for {pk.PropertyNameCamel}",
-                ReturnComment =
-                    $"value of {{@link {classe.GetImport(Config, tag)}#{pk.PropertyNameCamel} {pk.PropertyNameCamel}}}",
+                Comment = Config.GetMessage(JpaMessage.Getter, pk.PropertyNameCamel),
+                ReturnComment = Config.GetMessage(JpaMessage.GetterValue, pk.PropertyNameCamel),
             };
             method.AddBodyLine(@$"return this.{pk.PropertyNameCamel};");
             return method;
@@ -246,8 +245,11 @@ public class JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, str
         var field = GetField(property, tag);
         return new("void", GetSetterName(property))
         {
-            Comment = $@"Set the value of {{@link #{field.Name} {field.Name}}}",
-            Parameters = { new JavaMethodParameter(field.Type, field.Name) { Comment = $"value to set" } },
+            Comment = Config.GetMessage(JpaMessage.Setter, string.Empty, field.Name),
+            Parameters =
+            {
+                new JavaMethodParameter(field.Type, field.Name) { Comment = Config.GetMessage(JpaMessage.SetterValue) },
+            },
             Body =
             {
                 new WriterLine() { Line = $"this.{field.Name} = {field.Name};", Indent = 0 },

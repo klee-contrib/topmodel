@@ -3,9 +3,9 @@
 ----
 
 -- ===========================================================================================
---   Application Name	:	Restaurant 
---   Script Name		:	02_indexes_and_keys.sql
---   Description		:	Script de création des indexes et des clés étrangères et uniques.
+--  Nom de l'application : Restaurant 
+--  Nom du script        : 02_indexes_and_keys.sql
+--  Description          : Script de création des indexes et des clés étrangères et uniques.
 -- ===========================================================================================
 
 /**

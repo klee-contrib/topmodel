@@ -3,9 +3,9 @@
 ----
 
 -- ===========================================================================================
---   Application Name	:	Restaurant 
---   Script Name		:	01_tables.sql
---   Description		:	Script de création des tables.
+--  Nom de l'application : Restaurant 
+--  Nom du script        : 01_tables.sql
+--  Description          : Script de création des tables.
 -- ===========================================================================================
 
 /**

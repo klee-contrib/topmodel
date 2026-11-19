@@ -32,7 +32,7 @@ public class Departement {
 	public static final Departement SEINE_SAINT_DENIS = new Departement(DepartementCode.SeineSaintDenis, "restaurant.departement.values.SeineSaintDenis", RegionCode.Idf);
 
 	/**
-	 * Liste de toutes les valeurs de l'énumération Departement.
+	 * Liste de toutes les valeurs de l'énumération 'Departement'.
 	 */
 	public static final List<Departement> VALUES = List.of(HAUTS_DE_SEINE, PARIS, SEINE_ET_MARNE, SEINE_SAINT_DENIS);
 
@@ -58,7 +58,7 @@ public class Departement {
 	private String regionCode;
 
 	/**
-	 * All args constructor for 'Departement'.
+	 * Constructeur tout arguments pour 'Departement'.
 	 * @param code Code du département.
 	 * @param libelle Libellé du département.
 	 * @param regionCode Région associée.
@@ -70,27 +70,27 @@ public class Departement {
 	}
 
 	/**
-	 * Getter for code.
+	 * Accesseur de 'code'.
 	 *
-	 * @return value of {@link #code code}.
+	 * @return Valeur de {@link #code code}.
 	 */
 	public String getCode() {
 		return this.code;
 	}
 
 	/**
-	 * Getter for libelle.
+	 * Accesseur de 'libelle'.
 	 *
-	 * @return value of {@link #libelle libelle}.
+	 * @return Valeur de {@link #libelle libelle}.
 	 */
 	public String getLibelle() {
 		return this.libelle;
 	}
 
 	/**
-	 * Getter for regionCode.
+	 * Accesseur de 'regionCode'.
 	 *
-	 * @return value of {@link #regionCode regionCode}.
+	 * @return Valeur de {@link #regionCode regionCode}.
 	 */
 	public String getRegionCode() {
 		return this.regionCode;

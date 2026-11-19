@@ -3,7 +3,7 @@
 ----
 
 -- ===========================================================================================
---   Description		:	Création de la table LIGNE_COMMANDE.
+--  Description          : Création de la table LIGNE_COMMANDE.
 -- ===========================================================================================
 
 create table LIGNE_COMMANDE (
@@ -20,12 +20,12 @@ create table LIGNE_COMMANDE (
 	constraint UK_LIGNE_COMMANDE_COM_ID_PLA_ID unique nonclustered (COM_ID asc, PLA_ID asc))
 go
 
-/* Index on foreign key column for LIGNE_COMMANDE.COM_ID */
+/* Index sur la colonne de clé étrangère LIGNE_COMMANDE.COM_ID */
 create nonclustered index IDX_LIG_COM_ID_FK
 	on LIGNE_COMMANDE (COM_ID asc)
 go
 
-/* Index on foreign key column for LIGNE_COMMANDE.PLA_ID */
+/* Index sur la colonne de clé étrangère LIGNE_COMMANDE.PLA_ID */
 create nonclustered index IDX_LIG_PLA_ID_FK
 	on LIGNE_COMMANDE (PLA_ID asc)
 go

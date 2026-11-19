@@ -44,7 +44,7 @@ public class JpaDaoGenerator(ILogger<JpaDaoGenerator> logger, IFileWriterProvide
             .ToPackageName();
         var javaClass = InitClass(classe, tag);
 
-        await using var fw = this.OpenJavaWriter(fileName, packageName, codePage: null);
+        await using var fw = this.OpenJavaWriter(fileName, packageName);
         fw.Write(javaClass);
     }
 

@@ -3,7 +3,7 @@
 ----
 
 -- ===========================================================================================
---   Description		:	Création de la table TRANSLATION.
+--  Description          : Création de la table TRANSLATION.
 -- ===========================================================================================
 
 create table TRANSLATION (

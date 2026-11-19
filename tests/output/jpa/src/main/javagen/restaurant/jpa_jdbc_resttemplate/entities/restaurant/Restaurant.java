@@ -38,34 +38,34 @@ public class Restaurant extends Lieu {
 	private LocalDateTime dateCreation;
 
 	/**
-	 * Getter for telephone.
+	 * Accesseur de 'telephone'.
 	 *
-	 * @return value of {@link #telephone telephone}.
+	 * @return Valeur de {@link #telephone telephone}.
 	 */
 	public String getTelephone() {
 		return this.telephone;
 	}
 
 	/**
-	 * Getter for dateCreation.
+	 * Accesseur de 'dateCreation'.
 	 *
-	 * @return value of {@link #dateCreation dateCreation}.
+	 * @return Valeur de {@link #dateCreation dateCreation}.
 	 */
 	public LocalDateTime getDateCreation() {
 		return this.dateCreation;
 	}
 
 	/**
-	 * Set the value of {@link #telephone telephone}.
-	 * @param telephone value to set.
+	 * Définit la valeur de {@link #telephone telephone}.
+	 * @param telephone Valeur à définir.
 	 */
 	public void setTelephone(String telephone) {
 		this.telephone = telephone;
 	}
 
 	/**
-	 * Set the value of {@link #dateCreation dateCreation}.
-	 * @param dateCreation value to set.
+	 * Définit la valeur de {@link #dateCreation dateCreation}.
+	 * @param dateCreation Valeur à définir.
 	 */
 	public void setDateCreation(LocalDateTime dateCreation) {
 		this.dateCreation = dateCreation;

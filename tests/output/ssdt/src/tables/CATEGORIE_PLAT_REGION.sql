@@ -3,7 +3,7 @@
 ----
 
 -- ===========================================================================================
---   Description		:	Création de la table CATEGORIE_PLAT_REGION.
+--  Description          : Création de la table CATEGORIE_PLAT_REGION.
 -- ===========================================================================================
 
 create table CATEGORIE_PLAT_REGION (
@@ -14,12 +14,12 @@ create table CATEGORIE_PLAT_REGION (
 	constraint FK_CATEGORIE_PLAT_REGION_CAT_CODE foreign key (CAT_CODE) references CATEGORIE_PLAT (CAT_CODE))
 go
 
-/* Index on foreign key column for CATEGORIE_PLAT_REGION.REG_CODE */
+/* Index sur la colonne de clé étrangère CATEGORIE_PLAT_REGION.REG_CODE */
 create nonclustered index IDX_CATEGORIE_PLAT_REGION_REG_CODE_FK
 	on CATEGORIE_PLAT_REGION (REG_CODE asc)
 go
 
-/* Index on foreign key column for CATEGORIE_PLAT_REGION.CAT_CODE */
+/* Index sur la colonne de clé étrangère CATEGORIE_PLAT_REGION.CAT_CODE */
 create nonclustered index IDX_CATEGORIE_PLAT_REGION_CAT_CODE_FK
 	on CATEGORIE_PLAT_REGION (CAT_CODE asc)
 go

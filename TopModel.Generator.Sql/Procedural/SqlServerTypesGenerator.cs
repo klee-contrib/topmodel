@@ -33,7 +33,12 @@ public class SqlServerTypesGenerator(ILogger<SqlServerTypesGenerator> logger, IF
 
         var appName = classes.First().Namespace.App;
 
-        writer.WriteSqlFileHeader(appName, fileName.Split('/')[^1], "Script de création des types.");
+        writer.WriteSqlFileHeader(
+            Config,
+            appName,
+            fileName.Split('/')[^1],
+            Config.GetMessage(SqlMessage.SqlTypesHeader)
+        );
 
         foreach (var classe in classes.OrderBy(c => c.SqlName))
         {
@@ -51,7 +56,7 @@ public class SqlServerTypesGenerator(ILogger<SqlServerTypesGenerator> logger, IF
     {
         var typeName = Config.GetSqlTableTypeName(classe, tag);
         writer.WriteLine("/**");
-        writer.WriteLine("  * Création du type " + typeName);
+        writer.WriteLine("  * " + Config.GetMessage(SqlMessage.SqlTypeCreation, typeName));
         writer.WriteLine(" **/");
         writer.WriteLine(
             "If Exists (Select * From sys.types st Join sys.schemas ss On st.schema_id = ss.schema_id Where st.name = N'"

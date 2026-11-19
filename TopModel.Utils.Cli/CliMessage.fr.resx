@@ -138,9 +138,6 @@
   <data name="CheckOptionDescription" xml:space="preserve">
     <value>Vérifie que la génération est à jour (aucun fichier ne doit être généré).</value>
   </data>
-  <data name="ConfigChanged" xml:space="preserve">
-    <value>Modifié</value>
-  </data>
   <data name="ConfigFileNotFound" xml:space="preserve">
     <value>Le fichier de configuration '{0}' est introuvable.</value>
   </data>

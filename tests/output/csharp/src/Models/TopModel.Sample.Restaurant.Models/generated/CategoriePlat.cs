@@ -141,10 +141,10 @@ public partial record CategoriePlat
         return code switch
         {
             Codes.AUTRE => Autre,
+            Codes.BOISSON => Boisson,
+            Codes.DESSERT => Dessert,
             Codes.ENTREE => Entree,
             Codes.PRINCIPAL => Principal,
-            Codes.DESSERT => Dessert,
-            Codes.BOISSON => Boisson,
             _ => throw new InvalidOperationException()
         };
     }

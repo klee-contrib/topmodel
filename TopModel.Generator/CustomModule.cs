@@ -43,10 +43,17 @@ public class CustomModule(
             Directory
                 .EnumerateFiles(
                     Path.GetFullPath(customGenerator, new FileInfo(fullName).DirectoryName!),
-                    "*.cs",
+                    "*",
                     SearchOption.AllDirectories
                 )
-                .Where(f => !f.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}")),
+                .Where(f =>
+                    !f.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}")
+                    && (
+                        Path.GetExtension(f).Equals(".cs", StringComparison.OrdinalIgnoreCase)
+                        || Path.GetExtension(f).Equals(".json", StringComparison.OrdinalIgnoreCase)
+                        || Path.GetExtension(f).Equals(".resx", StringComparison.OrdinalIgnoreCase)
+                    )
+                ),
             customDir
         ) ?? string.Empty;
 

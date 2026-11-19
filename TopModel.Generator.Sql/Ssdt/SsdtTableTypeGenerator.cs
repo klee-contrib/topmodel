@@ -85,7 +85,7 @@ public class SsdtTableTypeGenerator(ILogger<SsdtTableTypeGenerator> logger, IFil
     /// <param name="tableName">Nom de la table.</param>
     protected virtual void WriteHeader(IFileWriter writer, string tableName)
     {
-        writer.WriteSqlFileHeader(description: $"Création du type de table {tableName}.");
+        writer.WriteSqlFileHeader(Config, description: Config.GetMessage(SqlMessage.SqlTypeCreation, tableName));
         writer.WriteLine();
     }
 

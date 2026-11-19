@@ -9,16 +9,13 @@ public static class JpaUtils
     public static JavaWriter OpenJavaWriter(
         this GeneratorBase<JpaConfig> generator,
         string fileName,
-        string packageName,
-        int? codePage = 1252
+        string packageName
     )
     {
         return new JavaWriter(
             generator.OpenFileWriter(
                 fileName,
-                codePage != null
-                    ? CodePagesEncodingProvider.Instance.GetEncoding(codePage.Value)!
-                    : new UTF8Encoding(encoderShouldEmitUTF8Identifier: false)
+                new() { Encoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false), IndentValue = "\t" }
             ),
             packageName
         );

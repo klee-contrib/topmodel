@@ -3,7 +3,7 @@
 ----
 
 -- ===========================================================================================
---   Description		:	Création de la table PRESTATAIRE.
+--  Description          : Création de la table PRESTATAIRE.
 -- ===========================================================================================
 
 create table PRESTATAIRE (

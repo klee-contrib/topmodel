@@ -58,7 +58,10 @@ public class SsdtValuesGenerator(ILogger<SsdtValuesGenerator> logger, IFileWrite
     /// <param name="tableName">Nom de la table.</param>
     protected virtual void WriteHeader(IFileWriter writer, string tableName)
     {
-        writer.WriteSqlFileHeader(description: $"Insertion des valeurs de la table {tableName}.");
+        writer.WriteSqlFileHeader(
+            Config,
+            description: Config.GetMessage(SqlMessage.SqlTableValuesInsertion, tableName)
+        );
         writer.WriteLine();
     }
 

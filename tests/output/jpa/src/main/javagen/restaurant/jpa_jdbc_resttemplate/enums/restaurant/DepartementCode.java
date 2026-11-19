@@ -7,7 +7,7 @@ package restaurant.jpa_jdbc_resttemplate.enums.restaurant;
 import jakarta.annotation.Generated;
 
 /**
- * Valeurs connues de la propriété Code de la classe Departement.
+ * Valeurs connues de la propriété 'Code' de la classe 'Departement'.
  */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class DepartementCode {
@@ -33,6 +33,6 @@ public class DepartementCode {
 	public static final String SeineSaintDenis = "93";
 
 	private DepartementCode() {
-		// private constructor to hide implicite public one
+		// Constructeur privé pour masquer le constructeur public implicite
 	}
 }

@@ -7,7 +7,7 @@ package restaurant.jpa_jdbc_resttemplate.enums.restaurant;
 import jakarta.annotation.Generated;
 
 /**
- * Valeurs connues de la propriété Code de la classe Region.
+ * Valeurs connues de la propriété 'Code' de la classe 'Region'.
  */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class RegionCode {
@@ -18,6 +18,6 @@ public class RegionCode {
 	public static final String Idf = "IDF";
 
 	private RegionCode() {
-		// private constructor to hide implicite public one
+		// Constructeur privé pour masquer le constructeur public implicite
 	}
 }

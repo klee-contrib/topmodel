@@ -6,7 +6,7 @@ public class TmdClass
 
     public string? SqlName { get; set; }
 
-    public string Comment { get; set; } = "Non documenté";
+    public string? Comment { get; set; }
 
     public IList<TmdProperty> Properties { get; set; } = [];
 

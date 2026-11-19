@@ -3,7 +3,7 @@
 ----
 
 -- ===========================================================================================
---   Description		:	Insertion des valeurs de la table CATEGORIE_PLAT.
+--  Description          : Insertion des valeurs de la table CATEGORIE_PLAT.
 -- ===========================================================================================
 
 insert into CATEGORIE_PLAT(CAT_CODE, CAT_LIBELLE, CAT_ORDRE, CAT_PRIX_MOYEN) values(N'AUTRE', N'restaurant.categoriePlat.values.Autre', 5, null);

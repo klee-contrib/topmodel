@@ -13,11 +13,11 @@ import restaurant.jpa_feign.enums.restaurant.TypeFactureCode;
  * Détail d'une facture.
  *
  * @param id Identifiant de la facture.
- *           Alias of {@link restaurant.jpa_feign.entities.restaurant.Facture#getId() Facture#getId()}
+ *           Alias de {@link restaurant.jpa_feign.entities.restaurant.Facture#getId() Facture#getId()}
  * @param commandeId Commande associée à la facture.
- *                   Alias of {@link restaurant.jpa_feign.entities.restaurant.Facture#getCommande() Facture#getCommande()}
+ *                   Alias de {@link restaurant.jpa_feign.entities.restaurant.Facture#getCommande() Facture#getCommande()}
  * @param typeFactureCode type de facture.
- *                        Alias of {@link restaurant.jpa_feign.entities.restaurant.Facture#getTypeFactureCode() Facture#getTypeFactureCode()}
+ *                        Alias de {@link restaurant.jpa_feign.entities.restaurant.Facture#getTypeFactureCode() Facture#getTypeFactureCode()}
  */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public record FactureItem(
@@ -27,7 +27,7 @@ public record FactureItem(
 ) {
 
 	/**
-	 * Enumération des champs de la classe {@link restaurant.jpa_feign.dtos.restaurant.FactureItem FactureItem}.
+	 * Énumération des champs de la classe {@link restaurant.jpa_feign.dtos.restaurant.FactureItem FactureItem}.
 	 */
 	public enum Fields {
 		ID(Integer.class),
@@ -41,9 +41,9 @@ public record FactureItem(
 		}
 
 		/**
-		 * Getter for type.
+		 * Accesseur de 'type'.
 		 *
-		 * @return value of {@link #type type}.
+		 * @return Valeur de {@link #type type}.
 		 */
 		public Class<?> getType() {
 			return this.type;

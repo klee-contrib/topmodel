@@ -32,9 +32,10 @@ public class SqlValuesGenerator(ILogger<SqlValuesGenerator> logger, IFileWriterP
         await using var writer = this.OpenSqlWriter(fileName);
 
         writer.WriteSqlFileHeader(
+            Config,
             classes.First().Namespace.App,
             fileName.Split('/')[^1],
-            "Script d'insertion des valeurs initiales."
+            Config.GetMessage(SqlMessage.SqlValuesHeader)
         );
 
         WriteInsertStart(writer);
@@ -56,7 +57,9 @@ public class SqlValuesGenerator(ILogger<SqlValuesGenerator> logger, IFileWriterP
     protected virtual void WriteInsert(IFileWriter writer, Class classe, string tag)
     {
         writer.WriteLine();
-        writer.WriteLine($"/**\t\tInitialisation de la table {Config.GetSqlName(classe, tag, noQuote: true)}\t\t**/");
+        writer.WriteLine(
+            $"/**\t\t{Config.GetMessage(SqlMessage.SqlTableInitialization, Config.GetSqlName(classe, tag, noQuote: true))}\t\t**/"
+        );
         Config.WriteInsertLines(writer, classe, tag);
     }
 

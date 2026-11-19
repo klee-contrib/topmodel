@@ -20,21 +20,21 @@ import jakarta.validation.constraints.Size;
 public class TableRead implements TableItem, Serializable {
 
 	/**
-	 * Serial ID.
+	 * ID de sérialisation.
 	 */
 	@Serial
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Identifiant de la table.
-	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.Table#getId() Table#getId()}
+	 * Alias de {@link restaurant.jpa_feign.entities.restaurant.Table#getId() Table#getId()}
 	 */
 	@NotNull
 	private Integer id;
 
 	/**
 	 * Numéro de la table.
-	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.Table#getNumero() Table#getNumero()}
+	 * Alias de {@link restaurant.jpa_feign.entities.restaurant.Table#getNumero() Table#getNumero()}
 	 */
 	@NotNull
 	@Size(max = 10)
@@ -42,137 +42,137 @@ public class TableRead implements TableItem, Serializable {
 
 	/**
 	 * Capacité de la table (nombre de places).
-	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.Table#getCapacite() Table#getCapacite()}
+	 * Alias de {@link restaurant.jpa_feign.entities.restaurant.Table#getCapacite() Table#getCapacite()}
 	 */
 	@NotNull
 	private Integer capacite;
 
 	/**
 	 * Indique si la table est disponible.
-	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.Table#getDisponible() Table#getDisponible()}
+	 * Alias de {@link restaurant.jpa_feign.entities.restaurant.Table#getDisponible() Table#getDisponible()}
 	 */
 	@NotNull
 	private Boolean disponible = true;
 
 	/**
 	 * Restaurant auquel appartient la table.
-	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.Table#getRestaurantId() Table#getRestaurantId()}
+	 * Alias de {@link restaurant.jpa_feign.entities.restaurant.Table#getRestaurantId() Table#getRestaurantId()}
 	 */
 	@NotNull
 	private Integer restaurantId;
 
 	/**
 	 * Date de création de l'enregistrement.
-	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.Table#getDateCreation() Table#getDateCreation()}
+	 * Alias de {@link restaurant.jpa_feign.entities.restaurant.Table#getDateCreation() Table#getDateCreation()}
 	 */
 	@NotNull
 	@PastOrPresent
 	private LocalDateTime dateCreation;
 
 	/**
-	 * Getter for id.
+	 * Accesseur de 'id'.
 	 *
-	 * @return value of {@link #id id}.
+	 * @return Valeur de {@link #id id}.
 	 */
 	public Integer getId() {
 		return this.id;
 	}
 
 	/**
-	 * Getter for numero.
+	 * Accesseur de 'numero'.
 	 *
-	 * @return value of {@link #numero numero}.
+	 * @return Valeur de {@link #numero numero}.
 	 */
 	public String getNumero() {
 		return this.numero;
 	}
 
 	/**
-	 * Getter for capacite.
+	 * Accesseur de 'capacite'.
 	 *
-	 * @return value of {@link #capacite capacite}.
+	 * @return Valeur de {@link #capacite capacite}.
 	 */
 	public Integer getCapacite() {
 		return this.capacite;
 	}
 
 	/**
-	 * Getter for disponible.
+	 * Accesseur de 'disponible'.
 	 *
-	 * @return value of {@link #disponible disponible}.
+	 * @return Valeur de {@link #disponible disponible}.
 	 */
 	public Boolean getDisponible() {
 		return this.disponible;
 	}
 
 	/**
-	 * Getter for restaurantId.
+	 * Accesseur de 'restaurantId'.
 	 *
-	 * @return value of {@link #restaurantId restaurantId}.
+	 * @return Valeur de {@link #restaurantId restaurantId}.
 	 */
 	public Integer getRestaurantId() {
 		return this.restaurantId;
 	}
 
 	/**
-	 * Getter for dateCreation.
+	 * Accesseur de 'dateCreation'.
 	 *
-	 * @return value of {@link #dateCreation dateCreation}.
+	 * @return Valeur de {@link #dateCreation dateCreation}.
 	 */
 	public LocalDateTime getDateCreation() {
 		return this.dateCreation;
 	}
 
 	/**
-	 * Set the value of {@link #id id}.
-	 * @param id value to set.
+	 * Définit la valeur de {@link #id id}.
+	 * @param id Valeur à définir.
 	 */
 	public void setId(Integer id) {
 		this.id = id;
 	}
 
 	/**
-	 * Set the value of {@link #numero numero}.
-	 * @param numero value to set.
+	 * Définit la valeur de {@link #numero numero}.
+	 * @param numero Valeur à définir.
 	 */
 	public void setNumero(String numero) {
 		this.numero = numero;
 	}
 
 	/**
-	 * Set the value of {@link #capacite capacite}.
-	 * @param capacite value to set.
+	 * Définit la valeur de {@link #capacite capacite}.
+	 * @param capacite Valeur à définir.
 	 */
 	public void setCapacite(Integer capacite) {
 		this.capacite = capacite;
 	}
 
 	/**
-	 * Set the value of {@link #disponible disponible}.
-	 * @param disponible value to set.
+	 * Définit la valeur de {@link #disponible disponible}.
+	 * @param disponible Valeur à définir.
 	 */
 	public void setDisponible(Boolean disponible) {
 		this.disponible = disponible;
 	}
 
 	/**
-	 * Set the value of {@link #restaurantId restaurantId}.
-	 * @param restaurantId value to set.
+	 * Définit la valeur de {@link #restaurantId restaurantId}.
+	 * @param restaurantId Valeur à définir.
 	 */
 	public void setRestaurantId(Integer restaurantId) {
 		this.restaurantId = restaurantId;
 	}
 
 	/**
-	 * Set the value of {@link #dateCreation dateCreation}.
-	 * @param dateCreation value to set.
+	 * Définit la valeur de {@link #dateCreation dateCreation}.
+	 * @param dateCreation Valeur à définir.
 	 */
 	public void setDateCreation(LocalDateTime dateCreation) {
 		this.dateCreation = dateCreation;
 	}
 
 	/**
-	 * Enumération des champs de la classe {@link restaurant.jpa_feign.dtos.restaurant.TableRead TableRead}.
+	 * Énumération des champs de la classe {@link restaurant.jpa_feign.dtos.restaurant.TableRead TableRead}.
 	 */
 	public enum Fields {
 		ID(Integer.class),
@@ -189,9 +189,9 @@ public class TableRead implements TableItem, Serializable {
 		}
 
 		/**
-		 * Getter for type.
+		 * Accesseur de 'type'.
 		 *
-		 * @return value of {@link #type type}.
+		 * @return Valeur de {@link #type type}.
 		 */
 		public Class<?> getType() {
 			return this.type;

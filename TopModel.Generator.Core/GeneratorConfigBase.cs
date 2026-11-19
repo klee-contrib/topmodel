@@ -68,6 +68,11 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
         [.. base.PropertiesWithTagVariableSupport, nameof(UseLowerCaseSqlNamesParam)];
 
     /// <summary>
+    /// Language de la config globale, pour choisir la langue des libellés techniques dans le code généré.
+    /// </summary>
+    public virtual string? ConfigLanguage { get; set; }
+
+    /// <summary>
     /// Utilise le nom de l'enum ou de la constante pour référencer une valeur.
     /// </summary>
     protected virtual bool UseValueNameForValues => true;
@@ -418,6 +423,12 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
         }
 
         return GetEnumInEnumClassType(className, propName, internalReference);
+    }
+
+    public string GetMessage<T>(T message, params object[] args)
+        where T : struct, Enum
+    {
+        return message.GetLocalizedMessage(ConfigLanguage, args);
     }
 
     public virtual string GetReadonlyEnumClassInstanceName(Class classe, string refName, bool internalReference = false)

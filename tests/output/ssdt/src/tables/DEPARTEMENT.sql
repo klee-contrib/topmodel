@@ -3,7 +3,7 @@
 ----
 
 -- ===========================================================================================
---   Description		:	Création de la table DEPARTEMENT.
+--  Description          : Création de la table DEPARTEMENT.
 -- ===========================================================================================
 
 create table DEPARTEMENT (
@@ -14,7 +14,7 @@ create table DEPARTEMENT (
 	constraint FK_DEPARTEMENT_REG_CODE foreign key (REG_CODE) references REGION (REG_CODE))
 go
 
-/* Index on foreign key column for DEPARTEMENT.REG_CODE */
+/* Index sur la colonne de clé étrangère DEPARTEMENT.REG_CODE */
 create nonclustered index IDX_DEP_REG_CODE_FK
 	on DEPARTEMENT (REG_CODE asc)
 go

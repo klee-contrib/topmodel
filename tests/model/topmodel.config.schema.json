@@ -39,6 +39,10 @@
       "description": "Nom du fichier de lock.\n\n- Valeur par défaut : `topmodel.lock`.",
       "default": "topmodel.lock"
     },
+    "language": {
+      "type": "string",
+      "description": "Langue des libellés techniques écrits dans le contenu généré. Ce paramètre est indépendant de la section `i18n` (qui contrôle la localisation des libellés métier) et de la langue des messages en console (qui est toujours celle de l'OS)."
+    },
     "pluralizeTableNames": {
       "type": "boolean",
       "description": "Utilise le nom au pluriel des classes pour générer leurs noms de table SQL.\n\n- Valeur par défaut : `false`.",

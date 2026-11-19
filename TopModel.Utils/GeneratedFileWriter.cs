@@ -9,47 +9,37 @@ namespace TopModel.Utils;
 /// </summary>
 public class GeneratedFileWriter : IFileWriter
 {
-    /// <summary>
-    /// Nombre de lignes d'en-tête à ignorer dans le calcul de checksum.
-    /// </summary>
-    private const int LinesInHeader = 4;
-
     private readonly ConfigBase _config;
-    private readonly Encoding _encoding;
     private readonly ILogger _logger;
-    private readonly StringBuilder _sb;
+    private readonly StringBuilder _sb = new();
 
-    internal GeneratedFileWriter(
-        ConfigBase config,
-        string fileName,
-        ILogger logger,
-        bool encoderShouldEmitUTF8Identifier
-    )
-        : this(config, fileName, logger, new UTF8Encoding(encoderShouldEmitUTF8Identifier)) { }
-
-    internal GeneratedFileWriter(ConfigBase config, string fileName, ILogger logger, Encoding encoding)
+    internal GeneratedFileWriter(ConfigBase config, string fileName, ILogger logger, FileWriterOptions options)
     {
         _config = config;
-        _encoding = encoding;
         _logger = logger;
-        FileName = fileName ?? throw new ArgumentNullException(nameof(fileName));
-        _sb = new StringBuilder();
-    }
 
-    /// <inheritdoc />
-    public bool EnableHeader { get; set; } = true;
+        FileName = fileName ?? throw new ArgumentNullException(nameof(fileName));
+        Options = options;
+
+        if (options.EnableHeader)
+        {
+            var headerMessage = options.HeaderMessage
+                ?? UtilsMessage.GeneratedFileHeader.GetLocalizedMessage(config.Language);
+
+            _sb.AppendLine(options.StartCommentToken);
+            _sb.AppendLine($"{options.StartCommentToken} {headerMessage}");
+            _sb.AppendLine(options.StartCommentToken);
+            _sb.AppendLine();
+        }
+    }
 
     /// <inheritdoc />
     public string FileName { get; }
 
     /// <inheritdoc />
-    public string HeaderMessage { get; set; } = "ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !";
+    public string? Language => _config.Language;
 
-    /// <inheritdoc />
-    public string IndentValue { get; set; } = "    ";
-
-    /// <inheritdoc />
-    public string StartCommentToken { get; set; } = "////";
+    public FileWriterOptions Options { get; }
 
     /// <inheritdoc cref="IAsyncDisposable.DisposeAsync" />
     public async ValueTask DisposeAsync()
@@ -59,25 +49,15 @@ public class GeneratedFileWriter : IFileWriter
             return;
         }
 
-        string? currentContent = null;
-        var fileExists = File.Exists(FileName.Replace('\\', '/'));
+        var newContent = _sb.ToString();
+
+        var normalizedFileName = FileName.Replace('\\', '/');
+
+        var fileExists = File.Exists(normalizedFileName);
         if (fileExists)
         {
-            using var reader = new StreamReader(FileName, _encoding);
-
-            if (EnableHeader)
-            {
-                for (var i = 0; i < LinesInHeader; i++)
-                {
-                    await reader.ReadLineAsync();
-                }
-            }
-
-            currentContent = await reader.ReadToEndAsync();
-
             var ignoredFile = _config.IgnoredFiles.FirstOrDefault(i =>
-                Path.GetFullPath(Path.Combine(_config.ConfigRoot, i.Path)).Replace('\\', '/')
-                == FileName.Replace('\\', '/')
+                Path.GetFullPath(Path.Combine(_config.ConfigRoot, i.Path)).Replace('\\', '/') == normalizedFileName
             );
             if (ignoredFile != null)
             {
@@ -88,32 +68,41 @@ public class GeneratedFileWriter : IFileWriter
 
                 return;
             }
-        }
 
-        var newContent = _sb.ToString();
-        if (newContent.ReplaceLineEndings() == currentContent?.ReplaceLineEndings())
-        {
-            return;
-        }
+            using var currentReader = new StreamReader(FileName, Options.Encoding);
+            using var newReader = new StringReader(newContent);
+            var contentIsEqual = true;
 
-        /* Création du répertoire si inexistant. */
-        var dir = new FileInfo(FileName).DirectoryName!;
-        if (!Directory.Exists(dir))
-        {
-            Directory.CreateDirectory(dir);
-        }
-
-        await using (var sw = new StreamWriter(FileName, append: false, _encoding))
-        {
-            if (EnableHeader && !newContent.StartsWith($"{StartCommentToken}{Environment.NewLine}"))
+            while (true)
             {
-                await sw.WriteLineAsync(StartCommentToken);
-                await sw.WriteLineAsync($"{StartCommentToken} {HeaderMessage}");
-                await sw.WriteLineAsync(StartCommentToken);
-                await sw.WriteLineAsync();
+                var currentLine = await currentReader.ReadLineAsync();
+                var newLine = await newReader.ReadLineAsync();
+
+                if (currentLine == null || newLine == null)
+                {
+                    contentIsEqual = currentLine == null && newLine == null;
+                    break;
+                }
+
+                if (currentLine != newLine)
+                {
+                    contentIsEqual = false;
+                    break;
+                }
             }
 
-            await sw.WriteAsync(newContent);
+            if (contentIsEqual)
+            {
+                return;
+            }
+        }
+
+        var dir = new FileInfo(FileName).DirectoryName!;
+        Directory.CreateDirectory(dir);
+
+        await using (var writer = new StreamWriter(FileName, append: false, Options.Encoding))
+        {
+            await writer.WriteAsync(newContent);
         }
 
         _logger.LogInformation(

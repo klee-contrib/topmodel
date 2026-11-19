@@ -132,6 +132,9 @@
   <data name="FileModified" xml:space="preserve">
     <value>Modifié:  {0}</value>
   </data>
+  <data name="GeneratedFileHeader" xml:space="preserve">
+    <value>ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !</value>
+  </data>
   <data name="LockFileReadError" xml:space="preserve">
     <value>Erreur à la lecture du fichier {0}. Merci de rétablir la version générée automatiquement.</value>
   </data>

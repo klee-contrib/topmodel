@@ -47,12 +47,12 @@ public abstract class AbstractRestaurantClient {
 
 	/**
 	 * Méthode de récupération des headers.
-	 * @return les headers à ajouter à la requête
+	 * @return Headers à ajouter à la requête
 	 */
 	protected abstract HttpHeaders getHeaders();
 
 	/**
-	 * UriComponentsBuilder pour la méthode addRestaurant.
+	 * UriComponentsBuilder pour la méthode 'addRestaurant'.
 	 * @return uriBuilder avec les query params remplis
 	 */
 	protected UriComponentsBuilder addRestaurantUriComponentsBuilder() {
@@ -72,7 +72,7 @@ public abstract class AbstractRestaurantClient {
 	}
 
 	/**
-	 * UriComponentsBuilder pour la méthode addTable.
+	 * UriComponentsBuilder pour la méthode 'addTable'.
 	 * @return uriBuilder avec les query params remplis
 	 */
 	protected UriComponentsBuilder addTableUriComponentsBuilder() {
@@ -92,7 +92,7 @@ public abstract class AbstractRestaurantClient {
 	}
 
 	/**
-	 * UriComponentsBuilder pour la méthode deleteRestaurant.
+	 * UriComponentsBuilder pour la méthode 'deleteRestaurant'.
 	 * @param resId Identifiant du restaurant
 	 */
 	protected UriComponentsBuilder deleteRestaurantUriComponentsBuilder(Integer resId) {
@@ -111,7 +111,7 @@ public abstract class AbstractRestaurantClient {
 	}
 
 	/**
-	 * UriComponentsBuilder pour la méthode deleteTable.
+	 * UriComponentsBuilder pour la méthode 'deleteTable'.
 	 * @param tabId Identifiant de la table
 	 */
 	protected UriComponentsBuilder deleteTableUriComponentsBuilder(Integer tabId) {
@@ -130,7 +130,7 @@ public abstract class AbstractRestaurantClient {
 	}
 
 	/**
-	 * UriComponentsBuilder pour la méthode getRestaurant.
+	 * UriComponentsBuilder pour la méthode 'getRestaurant'.
 	 * @param resId Identifiant du restaurant
 	 * @return uriBuilder avec les query params remplis
 	 */
@@ -151,7 +151,7 @@ public abstract class AbstractRestaurantClient {
 	}
 
 	/**
-	 * UriComponentsBuilder pour la méthode getRestaurantMenu.
+	 * UriComponentsBuilder pour la méthode 'getRestaurantMenu'.
 	 * @param resId Identifiant du restaurant
 	 * @param menId Identifiant du menu
 	 * @return uriBuilder avec les query params remplis
@@ -174,7 +174,7 @@ public abstract class AbstractRestaurantClient {
 	}
 
 	/**
-	 * UriComponentsBuilder pour la méthode getRestaurantPlats.
+	 * UriComponentsBuilder pour la méthode 'getRestaurantPlats'.
 	 * @param resId Identifiant du restaurant
 	 * @param categoriePlatCode Catégorie du plat
 	 * @param disponible Indique si le plat est disponible
@@ -202,7 +202,7 @@ public abstract class AbstractRestaurantClient {
 	}
 
 	/**
-	 * UriComponentsBuilder pour la méthode getRestaurantStatistiques.
+	 * UriComponentsBuilder pour la méthode 'getRestaurantStatistiques'.
 	 * @param resId Identifiant du restaurant
 	 * @param dateDebut Date de début pour le calcul des statistiques
 	 * @param dateFin Date de fin pour le calcul des statistiques
@@ -230,7 +230,7 @@ public abstract class AbstractRestaurantClient {
 	}
 
 	/**
-	 * UriComponentsBuilder pour la méthode getRestaurantTables.
+	 * UriComponentsBuilder pour la méthode 'getRestaurantTables'.
 	 * @param resId Identifiant du restaurant
 	 * @param disponible Indique si la table est disponible
 	 * @return uriBuilder avec les query params remplis
@@ -255,7 +255,7 @@ public abstract class AbstractRestaurantClient {
 	}
 
 	/**
-	 * UriComponentsBuilder pour la méthode getRestaurants.
+	 * UriComponentsBuilder pour la méthode 'getRestaurants'.
 	 * @return uriBuilder avec les query params remplis
 	 */
 	protected UriComponentsBuilder getRestaurantsUriComponentsBuilder() {
@@ -274,7 +274,7 @@ public abstract class AbstractRestaurantClient {
 	}
 
 	/**
-	 * UriComponentsBuilder pour la méthode getTable.
+	 * UriComponentsBuilder pour la méthode 'getTable'.
 	 * @param tabId Identifiant de la table
 	 * @return uriBuilder avec les query params remplis
 	 */
@@ -295,7 +295,7 @@ public abstract class AbstractRestaurantClient {
 	}
 
 	/**
-	 * UriComponentsBuilder pour la méthode getTables.
+	 * UriComponentsBuilder pour la méthode 'getTables'.
 	 * @param restaurantId Restaurant auquel appartient la table
 	 * @param disponible Indique si la table est disponible
 	 * @return uriBuilder avec les query params remplis
@@ -321,7 +321,7 @@ public abstract class AbstractRestaurantClient {
 	}
 
 	/**
-	 * UriComponentsBuilder pour la méthode searchRestaurants.
+	 * UriComponentsBuilder pour la méthode 'searchRestaurants'.
 	 * @param nom Nom du restaurant (recherche partielle)
 	 * @param adresse Adresse du restaurant (recherche partielle)
 	 * @param noteMin Note minimum requise
@@ -356,7 +356,7 @@ public abstract class AbstractRestaurantClient {
 	}
 
 	/**
-	 * UriComponentsBuilder pour la méthode updateRestaurant.
+	 * UriComponentsBuilder pour la méthode 'updateRestaurant'.
 	 * @param resId Identifiant du restaurant
 	 * @return uriBuilder avec les query params remplis
 	 */
@@ -378,7 +378,7 @@ public abstract class AbstractRestaurantClient {
 	}
 
 	/**
-	 * UriComponentsBuilder pour la méthode updateTable.
+	 * UriComponentsBuilder pour la méthode 'updateTable'.
 	 * @param tabId Identifiant de la table
 	 * @return uriBuilder avec les query params remplis
 	 */

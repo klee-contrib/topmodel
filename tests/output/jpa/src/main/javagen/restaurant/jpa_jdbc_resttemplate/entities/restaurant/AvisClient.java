@@ -83,136 +83,136 @@ public class AvisClient extends NombreVuesBase {
 	private LocalDateTime dateCreation;
 
 	/**
-	 * Getter for id.
+	 * Accesseur de 'id'.
 	 *
-	 * @return value of {@link #id id}.
+	 * @return Valeur de {@link #id id}.
 	 */
 	public Integer getId() {
 		return this.id;
 	}
 
 	/**
-	 * Getter for note.
+	 * Accesseur de 'note'.
 	 *
-	 * @return value of {@link #note note}.
+	 * @return Valeur de {@link #note note}.
 	 */
 	public Integer getNote() {
 		return this.note;
 	}
 
 	/**
-	 * Getter for commentaire.
+	 * Accesseur de 'commentaire'.
 	 *
-	 * @return value of {@link #commentaire commentaire}.
+	 * @return Valeur de {@link #commentaire commentaire}.
 	 */
 	public String getCommentaire() {
 		return this.commentaire;
 	}
 
 	/**
-	 * Getter for dateAvis.
+	 * Accesseur de 'dateAvis'.
 	 *
-	 * @return value of {@link #dateAvis dateAvis}.
+	 * @return Valeur de {@link #dateAvis dateAvis}.
 	 */
 	public LocalDateTime getDateAvis() {
 		return this.dateAvis;
 	}
 
 	/**
-	 * Getter for approuve.
+	 * Accesseur de 'approuve'.
 	 *
-	 * @return value of {@link #approuve approuve}.
+	 * @return Valeur de {@link #approuve approuve}.
 	 */
 	public Boolean getApprouve() {
 		return this.approuve;
 	}
 
 	/**
-	 * Getter for client.
+	 * Accesseur de 'client'.
 	 *
-	 * @return value of {@link #client client}.
+	 * @return Valeur de {@link #client client}.
 	 */
 	public Integer getClient() {
 		return this.client;
 	}
 
 	/**
-	 * Getter for restaurant.
+	 * Accesseur de 'restaurant'.
 	 *
-	 * @return value of {@link #restaurant restaurant}.
+	 * @return Valeur de {@link #restaurant restaurant}.
 	 */
 	public Integer getRestaurant() {
 		return this.restaurant;
 	}
 
 	/**
-	 * Getter for dateCreation.
+	 * Accesseur de 'dateCreation'.
 	 *
-	 * @return value of {@link #dateCreation dateCreation}.
+	 * @return Valeur de {@link #dateCreation dateCreation}.
 	 */
 	public LocalDateTime getDateCreation() {
 		return this.dateCreation;
 	}
 
 	/**
-	 * Set the value of {@link #id id}.
-	 * @param id value to set.
+	 * Définit la valeur de {@link #id id}.
+	 * @param id Valeur à définir.
 	 */
 	public void setId(Integer id) {
 		this.id = id;
 	}
 
 	/**
-	 * Set the value of {@link #note note}.
-	 * @param note value to set.
+	 * Définit la valeur de {@link #note note}.
+	 * @param note Valeur à définir.
 	 */
 	public void setNote(Integer note) {
 		this.note = note;
 	}
 
 	/**
-	 * Set the value of {@link #commentaire commentaire}.
-	 * @param commentaire value to set.
+	 * Définit la valeur de {@link #commentaire commentaire}.
+	 * @param commentaire Valeur à définir.
 	 */
 	public void setCommentaire(String commentaire) {
 		this.commentaire = commentaire;
 	}
 
 	/**
-	 * Set the value of {@link #dateAvis dateAvis}.
-	 * @param dateAvis value to set.
+	 * Définit la valeur de {@link #dateAvis dateAvis}.
+	 * @param dateAvis Valeur à définir.
 	 */
 	public void setDateAvis(LocalDateTime dateAvis) {
 		this.dateAvis = dateAvis;
 	}
 
 	/**
-	 * Set the value of {@link #approuve approuve}.
-	 * @param approuve value to set.
+	 * Définit la valeur de {@link #approuve approuve}.
+	 * @param approuve Valeur à définir.
 	 */
 	public void setApprouve(Boolean approuve) {
 		this.approuve = approuve;
 	}
 
 	/**
-	 * Set the value of {@link #client client}.
-	 * @param client value to set.
+	 * Définit la valeur de {@link #client client}.
+	 * @param client Valeur à définir.
 	 */
 	public void setClient(Integer client) {
 		this.client = client;
 	}
 
 	/**
-	 * Set the value of {@link #restaurant restaurant}.
-	 * @param restaurant value to set.
+	 * Définit la valeur de {@link #restaurant restaurant}.
+	 * @param restaurant Valeur à définir.
 	 */
 	public void setRestaurant(Integer restaurant) {
 		this.restaurant = restaurant;
 	}
 
 	/**
-	 * Set the value of {@link #dateCreation dateCreation}.
-	 * @param dateCreation value to set.
+	 * Définit la valeur de {@link #dateCreation dateCreation}.
+	 * @param dateCreation Valeur à définir.
 	 */
 	public void setDateCreation(LocalDateTime dateCreation) {
 		this.dateCreation = dateCreation;

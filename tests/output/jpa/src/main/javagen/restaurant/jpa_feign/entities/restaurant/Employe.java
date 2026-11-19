@@ -71,109 +71,109 @@ public class Employe extends Personne implements EmployeBase {
 	private Restaurant restaurant;
 
 	/**
-	 * Getter for telephone.
+	 * Accesseur de 'telephone'.
 	 *
-	 * @return value of {@link #telephone telephone}.
+	 * @return Valeur de {@link #telephone telephone}.
 	 */
 	public String getTelephone() {
 		return this.telephone;
 	}
 
 	/**
-	 * Getter for dateNaissance.
+	 * Accesseur de 'dateNaissance'.
 	 *
-	 * @return value of {@link #dateNaissance dateNaissance}.
+	 * @return Valeur de {@link #dateNaissance dateNaissance}.
 	 */
 	public LocalDateTime getDateNaissance() {
 		return this.dateNaissance;
 	}
 
 	/**
-	 * Getter for matricule.
+	 * Accesseur de 'matricule'.
 	 *
-	 * @return value of {@link #matricule matricule}.
+	 * @return Valeur de {@link #matricule matricule}.
 	 */
 	public String getMatricule() {
 		return this.matricule;
 	}
 
 	/**
-	 * Getter for dateEmbauche.
+	 * Accesseur de 'dateEmbauche'.
 	 *
-	 * @return value of {@link #dateEmbauche dateEmbauche}.
+	 * @return Valeur de {@link #dateEmbauche dateEmbauche}.
 	 */
 	public LocalDateTime getDateEmbauche() {
 		return this.dateEmbauche;
 	}
 
 	/**
-	 * Getter for salaire.
+	 * Accesseur de 'salaire'.
 	 *
-	 * @return value of {@link #salaire salaire}.
+	 * @return Valeur de {@link #salaire salaire}.
 	 */
 	public BigDecimal getSalaire() {
 		return this.salaire;
 	}
 
 	/**
-	 * Getter for restaurant.
+	 * Accesseur de 'restaurant'.
 	 *
-	 * @return value of {@link #restaurant restaurant}.
+	 * @return Valeur de {@link #restaurant restaurant}.
 	 */
 	public Restaurant getRestaurant() {
 		return this.restaurant;
 	}
 
 	/**
-	 * Set the value of {@link #telephone telephone}.
-	 * @param telephone value to set.
+	 * Définit la valeur de {@link #telephone telephone}.
+	 * @param telephone Valeur à définir.
 	 */
 	public void setTelephone(String telephone) {
 		this.telephone = telephone;
 	}
 
 	/**
-	 * Set the value of {@link #dateNaissance dateNaissance}.
-	 * @param dateNaissance value to set.
+	 * Définit la valeur de {@link #dateNaissance dateNaissance}.
+	 * @param dateNaissance Valeur à définir.
 	 */
 	public void setDateNaissance(LocalDateTime dateNaissance) {
 		this.dateNaissance = dateNaissance;
 	}
 
 	/**
-	 * Set the value of {@link #matricule matricule}.
-	 * @param matricule value to set.
+	 * Définit la valeur de {@link #matricule matricule}.
+	 * @param matricule Valeur à définir.
 	 */
 	public void setMatricule(String matricule) {
 		this.matricule = matricule;
 	}
 
 	/**
-	 * Set the value of {@link #dateEmbauche dateEmbauche}.
-	 * @param dateEmbauche value to set.
+	 * Définit la valeur de {@link #dateEmbauche dateEmbauche}.
+	 * @param dateEmbauche Valeur à définir.
 	 */
 	public void setDateEmbauche(LocalDateTime dateEmbauche) {
 		this.dateEmbauche = dateEmbauche;
 	}
 
 	/**
-	 * Set the value of {@link #salaire salaire}.
-	 * @param salaire value to set.
+	 * Définit la valeur de {@link #salaire salaire}.
+	 * @param salaire Valeur à définir.
 	 */
 	public void setSalaire(BigDecimal salaire) {
 		this.salaire = salaire;
 	}
 
 	/**
-	 * Set the value of {@link #restaurant restaurant}.
-	 * @param restaurant value to set.
+	 * Définit la valeur de {@link #restaurant restaurant}.
+	 * @param restaurant Valeur à définir.
 	 */
 	public void setRestaurant(Restaurant restaurant) {
 		this.restaurant = restaurant;
 	}
 
 	/**
-	 * Enumération des champs de la classe {@link restaurant.jpa_feign.entities.restaurant.Employe Employe}.
+	 * Énumération des champs de la classe {@link restaurant.jpa_feign.entities.restaurant.Employe Employe}.
 	 */
 	public enum Fields {
 		TELEPHONE(String.class),
@@ -190,9 +190,9 @@ public class Employe extends Personne implements EmployeBase {
 		}
 
 		/**
-		 * Getter for type.
+		 * Accesseur de 'type'.
 		 *
-		 * @return value of {@link #type type}.
+		 * @return Valeur de {@link #type type}.
 		 */
 		public Class<?> getType() {
 			return this.type;

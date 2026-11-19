@@ -13,6 +13,8 @@ public abstract class TmdGenerator(ILogger<TmdGenerator> logger)
 
     public required string ModelRoot { get; init; }
 
+    public required string? Language { get; init; }
+
     public string FullName => $"{Name.PadRight(18, '.')}@{Number}";
 
     public async Task<IList<string>> Generate(LoggingScope scope, CancellationToken ct = default)

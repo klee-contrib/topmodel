@@ -3,9 +3,9 @@
 ----
 
 -- ===========================================================================================
---   Application Name	:	Restaurant 
---   Script Name		:	03_values.sql
---   Description		:	Script d'insertion des valeurs initiales.
+--  Nom de l'application : Restaurant 
+--  Nom du script        : 03_values.sql
+--  Description          : Script d'insertion des valeurs initiales.
 -- ===========================================================================================
 
 /**		Initialisation de la table assiette		**/

@@ -15,7 +15,6 @@ public class TmdWriter : IAsyncDisposable
     {
         _file = file;
         _writer = writer;
-        _writer.StartCommentToken = "####";
         _modelRoot = Path.GetRelativePath(modelRoot, string.Join('/', writer.FileName.Split('/').SkipLast(1)));
         if (_modelRoot == ".")
         {
@@ -26,6 +25,8 @@ public class TmdWriter : IAsyncDisposable
             _modelRoot += '/';
         }
     }
+
+    private string DefaultComment => ModelGeneratorMessage.NotDocumented.GetLocalizedMessage(_writer.Language);
 
     /// <inheritdoc cref="IAsyncDisposable.DisposeAsync" />
     public async ValueTask DisposeAsync()
@@ -81,7 +82,7 @@ public class TmdWriter : IAsyncDisposable
             _writer.WriteLine($"  sqlName: {classe.SqlName}");
         }
 
-        _writer.WriteLine($"  comment: {classe.Comment}");
+        _writer.WriteLine($"  comment: {classe.Comment ?? DefaultComment}");
 
         if (!string.IsNullOrEmpty(classe.Enum))
         {
@@ -154,7 +155,7 @@ public class TmdWriter : IAsyncDisposable
         _writer.WriteLine($"  name: {endpoint.Name}");
         _writer.WriteLine($"  method: {endpoint.Method}");
         _writer.WriteLine($"  route: {endpoint.Route}");
-        _writer.WriteLine(@$"  description: {endpoint.Comment}");
+        _writer.WriteLine(@$"  description: {endpoint.Comment ?? DefaultComment}");
         if (endpoint.PreservePropertyCasing)
         {
             _writer.WriteLine($"  preservePropertyCasing: {endpoint.PreservePropertyCasing.ToString().ToLower()}");
@@ -189,7 +190,7 @@ public class TmdWriter : IAsyncDisposable
         if (property is TmdAssociationProperty ap)
         {
             _writer.WriteLine($"    {(noList ? string.Empty : "- ")}association: {ap.Association.Name}");
-            _writer.WriteLine($@"    {listPrefix}comment: {property.Comment}");
+            _writer.WriteLine($@"    {listPrefix}comment: {property.Comment ?? DefaultComment}");
             if (!string.IsNullOrEmpty(ap.Role))
             {
                 _writer.WriteLine($"    {listPrefix}role: {ap.Role}");
@@ -219,7 +220,7 @@ public class TmdWriter : IAsyncDisposable
                 _writer.WriteLine($"    {listPrefix}primaryKey: true");
             }
 
-            _writer.WriteLine($@"    {listPrefix}comment: {property.Comment}");
+            _writer.WriteLine($@"    {listPrefix}comment: {property.Comment ?? DefaultComment}");
         }
         else if (property is TmdCompositionProperty cp)
         {
@@ -240,7 +241,7 @@ public class TmdWriter : IAsyncDisposable
                 _writer.WriteLine($"    {listPrefix}required: false");
             }
 
-            _writer.WriteLine($@"    {listPrefix}comment: {property.Comment}");
+            _writer.WriteLine($@"    {listPrefix}comment: {property.Comment ?? DefaultComment}");
         }
         else if (property is TmdAliasProperty sp)
         {
@@ -261,7 +262,7 @@ public class TmdWriter : IAsyncDisposable
 
             if (!string.IsNullOrEmpty(property.Comment))
             {
-                _writer.WriteLine(@$"    {listPrefix}comment: {property.Comment}");
+                _writer.WriteLine(@$"    {listPrefix}comment: {property.Comment ?? DefaultComment}");
             }
         }
     }

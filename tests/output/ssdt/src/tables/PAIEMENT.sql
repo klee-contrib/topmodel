@@ -3,7 +3,7 @@
 ----
 
 -- ===========================================================================================
---   Description		:	Création de la table PAIEMENT.
+--  Description          : Création de la table PAIEMENT.
 -- ===========================================================================================
 
 create table PAIEMENT (
@@ -13,12 +13,12 @@ create table PAIEMENT (
 	constraint FK_PAIEMENT_ID foreign key (ID) references FACTURE (ID))
 go
 
-/* Index on foreign key column for PAIEMENT.ID */
+/* Index sur la colonne de clé étrangère PAIEMENT.ID */
 create nonclustered index IDX_PAIEMENT_ID_FK
 	on PAIEMENT (ID asc)
 go
 
-/* Index on foreign key column for PAIEMENT.SWI_ID */
+/* Index sur la colonne de clé étrangère PAIEMENT.SWI_ID */
 create nonclustered index IDX_PAIEMENT_SWI_ID_FK
 	on PAIEMENT (SWI_ID asc)
 go

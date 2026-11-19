@@ -76,119 +76,119 @@ public class LigneCommande {
 	private LocalDateTime dateCreation;
 
 	/**
-	 * Getter for id.
+	 * Accesseur de 'id'.
 	 *
-	 * @return value of {@link #id id}.
+	 * @return Valeur de {@link #id id}.
 	 */
 	public Integer getId() {
 		return this.id;
 	}
 
 	/**
-	 * Getter for quantite.
+	 * Accesseur de 'quantite'.
 	 *
-	 * @return value of {@link #quantite quantite}.
+	 * @return Valeur de {@link #quantite quantite}.
 	 */
 	public Integer getQuantite() {
 		return this.quantite;
 	}
 
 	/**
-	 * Getter for prixUnitaire.
+	 * Accesseur de 'prixUnitaire'.
 	 *
-	 * @return value of {@link #prixUnitaire prixUnitaire}.
+	 * @return Valeur de {@link #prixUnitaire prixUnitaire}.
 	 */
 	public BigDecimal getPrixUnitaire() {
 		return this.prixUnitaire;
 	}
 
 	/**
-	 * Getter for prixTotal.
+	 * Accesseur de 'prixTotal'.
 	 *
-	 * @return value of {@link #prixTotal prixTotal}.
+	 * @return Valeur de {@link #prixTotal prixTotal}.
 	 */
 	public BigDecimal getPrixTotal() {
 		return this.prixTotal;
 	}
 
 	/**
-	 * Getter for commande.
+	 * Accesseur de 'commande'.
 	 *
-	 * @return value of {@link #commande commande}.
+	 * @return Valeur de {@link #commande commande}.
 	 */
 	public Integer getCommande() {
 		return this.commande;
 	}
 
 	/**
-	 * Getter for plat.
+	 * Accesseur de 'plat'.
 	 *
-	 * @return value of {@link #plat plat}.
+	 * @return Valeur de {@link #plat plat}.
 	 */
 	public Integer getPlat() {
 		return this.plat;
 	}
 
 	/**
-	 * Getter for dateCreation.
+	 * Accesseur de 'dateCreation'.
 	 *
-	 * @return value of {@link #dateCreation dateCreation}.
+	 * @return Valeur de {@link #dateCreation dateCreation}.
 	 */
 	public LocalDateTime getDateCreation() {
 		return this.dateCreation;
 	}
 
 	/**
-	 * Set the value of {@link #id id}.
-	 * @param id value to set.
+	 * Définit la valeur de {@link #id id}.
+	 * @param id Valeur à définir.
 	 */
 	public void setId(Integer id) {
 		this.id = id;
 	}
 
 	/**
-	 * Set the value of {@link #quantite quantite}.
-	 * @param quantite value to set.
+	 * Définit la valeur de {@link #quantite quantite}.
+	 * @param quantite Valeur à définir.
 	 */
 	public void setQuantite(Integer quantite) {
 		this.quantite = quantite;
 	}
 
 	/**
-	 * Set the value of {@link #prixUnitaire prixUnitaire}.
-	 * @param prixUnitaire value to set.
+	 * Définit la valeur de {@link #prixUnitaire prixUnitaire}.
+	 * @param prixUnitaire Valeur à définir.
 	 */
 	public void setPrixUnitaire(BigDecimal prixUnitaire) {
 		this.prixUnitaire = prixUnitaire;
 	}
 
 	/**
-	 * Set the value of {@link #prixTotal prixTotal}.
-	 * @param prixTotal value to set.
+	 * Définit la valeur de {@link #prixTotal prixTotal}.
+	 * @param prixTotal Valeur à définir.
 	 */
 	public void setPrixTotal(BigDecimal prixTotal) {
 		this.prixTotal = prixTotal;
 	}
 
 	/**
-	 * Set the value of {@link #commande commande}.
-	 * @param commande value to set.
+	 * Définit la valeur de {@link #commande commande}.
+	 * @param commande Valeur à définir.
 	 */
 	public void setCommande(Integer commande) {
 		this.commande = commande;
 	}
 
 	/**
-	 * Set the value of {@link #plat plat}.
-	 * @param plat value to set.
+	 * Définit la valeur de {@link #plat plat}.
+	 * @param plat Valeur à définir.
 	 */
 	public void setPlat(Integer plat) {
 		this.plat = plat;
 	}
 
 	/**
-	 * Set the value of {@link #dateCreation dateCreation}.
-	 * @param dateCreation value to set.
+	 * Définit la valeur de {@link #dateCreation dateCreation}.
+	 * @param dateCreation Valeur à définir.
 	 */
 	public void setDateCreation(LocalDateTime dateCreation) {
 		this.dateCreation = dateCreation;

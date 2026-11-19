@@ -25,17 +25,17 @@ public class Verre extends Vaisselle {
 	private Boolean aPied;
 
 	/**
-	 * Getter for aPied.
+	 * Accesseur de 'aPied'.
 	 *
-	 * @return value of {@link #aPied aPied}.
+	 * @return Valeur de {@link #aPied aPied}.
 	 */
 	public Boolean getAPied() {
 		return this.aPied;
 	}
 
 	/**
-	 * Set the value of {@link #aPied aPied}.
-	 * @param aPied value to set.
+	 * Définit la valeur de {@link #aPied aPied}.
+	 * @param aPied Valeur à définir.
 	 */
 	public void setAPied(Boolean aPied) {
 		this.aPied = aPied;

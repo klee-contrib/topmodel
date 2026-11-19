@@ -25,17 +25,17 @@ public class Assiette extends Vaisselle {
 	private Integer taille;
 
 	/**
-	 * Getter for taille.
+	 * Accesseur de 'taille'.
 	 *
-	 * @return value of {@link #taille taille}.
+	 * @return Valeur de {@link #taille taille}.
 	 */
 	public Integer getTaille() {
 		return this.taille;
 	}
 
 	/**
-	 * Set the value of {@link #taille taille}.
-	 * @param taille value to set.
+	 * Définit la valeur de {@link #taille taille}.
+	 * @param taille Valeur à définir.
 	 */
 	public void setTaille(Integer taille) {
 		this.taille = taille;

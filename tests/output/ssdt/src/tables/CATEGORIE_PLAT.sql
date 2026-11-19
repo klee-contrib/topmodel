@@ -3,7 +3,7 @@
 ----
 
 -- ===========================================================================================
---   Description		:	Création de la table CATEGORIE_PLAT.
+--  Description          : Création de la table CATEGORIE_PLAT.
 -- ===========================================================================================
 
 create table CATEGORIE_PLAT (

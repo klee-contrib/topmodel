@@ -24,7 +24,7 @@ public class LigneCommandeHistorique {
 
 	/**
 	 * Identifiant de la ligne.
-	 * Alias of {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.LigneCommande#getId() LigneCommande#getId()}
+	 * Alias de {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.LigneCommande#getId() LigneCommande#getId()}
 	 */
 	@Id
 	@Column("lig_id")
@@ -32,7 +32,7 @@ public class LigneCommandeHistorique {
 
 	/**
 	 * Quantité commandée.
-	 * Alias of {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.LigneCommande#getQuantite() LigneCommande#getQuantite()}
+	 * Alias de {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.LigneCommande#getQuantite() LigneCommande#getQuantite()}
 	 */
 	@NotNull
 	@Column("lig_quantite")
@@ -40,7 +40,7 @@ public class LigneCommandeHistorique {
 
 	/**
 	 * Prix unitaire au moment de la commande.
-	 * Alias of {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.LigneCommande#getPrixUnitaire() LigneCommande#getPrixUnitaire()}
+	 * Alias de {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.LigneCommande#getPrixUnitaire() LigneCommande#getPrixUnitaire()}
 	 */
 	@NotNull
 	@Column("lig_prix_unitaire")
@@ -48,7 +48,7 @@ public class LigneCommandeHistorique {
 
 	/**
 	 * Prix total de la ligne.
-	 * Alias of {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.LigneCommande#getPrixTotal() LigneCommande#getPrixTotal()}
+	 * Alias de {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.LigneCommande#getPrixTotal() LigneCommande#getPrixTotal()}
 	 */
 	@NotNull
 	@Column("lig_prix_total")
@@ -56,7 +56,7 @@ public class LigneCommandeHistorique {
 
 	/**
 	 * Plat commandé.
-	 * Alias of {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.LigneCommande#getPlat() LigneCommande#getPlat()}
+	 * Alias de {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.LigneCommande#getPlat() LigneCommande#getPlat()}
 	 */
 	@NotNull
 	@Column("pla_id")
@@ -64,7 +64,7 @@ public class LigneCommandeHistorique {
 
 	/**
 	 * Date de création de l'enregistrement.
-	 * Alias of {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.LigneCommande#getDateCreation() LigneCommande#getDateCreation()}
+	 * Alias de {@link restaurant.jpa_jdbc_resttemplate.entities.restaurant.LigneCommande#getDateCreation() LigneCommande#getDateCreation()}
 	 */
 	@NotNull
 	@CreatedDate
@@ -79,119 +79,119 @@ public class LigneCommandeHistorique {
 	private Integer commandeHistoriqueId;
 
 	/**
-	 * Getter for id.
+	 * Accesseur de 'id'.
 	 *
-	 * @return value of {@link #id id}.
+	 * @return Valeur de {@link #id id}.
 	 */
 	public Integer getId() {
 		return this.id;
 	}
 
 	/**
-	 * Getter for quantite.
+	 * Accesseur de 'quantite'.
 	 *
-	 * @return value of {@link #quantite quantite}.
+	 * @return Valeur de {@link #quantite quantite}.
 	 */
 	public Integer getQuantite() {
 		return this.quantite;
 	}
 
 	/**
-	 * Getter for prixUnitaire.
+	 * Accesseur de 'prixUnitaire'.
 	 *
-	 * @return value of {@link #prixUnitaire prixUnitaire}.
+	 * @return Valeur de {@link #prixUnitaire prixUnitaire}.
 	 */
 	public BigDecimal getPrixUnitaire() {
 		return this.prixUnitaire;
 	}
 
 	/**
-	 * Getter for prixTotal.
+	 * Accesseur de 'prixTotal'.
 	 *
-	 * @return value of {@link #prixTotal prixTotal}.
+	 * @return Valeur de {@link #prixTotal prixTotal}.
 	 */
 	public BigDecimal getPrixTotal() {
 		return this.prixTotal;
 	}
 
 	/**
-	 * Getter for platId.
+	 * Accesseur de 'platId'.
 	 *
-	 * @return value of {@link #platId platId}.
+	 * @return Valeur de {@link #platId platId}.
 	 */
 	public Integer getPlatId() {
 		return this.platId;
 	}
 
 	/**
-	 * Getter for dateCreation.
+	 * Accesseur de 'dateCreation'.
 	 *
-	 * @return value of {@link #dateCreation dateCreation}.
+	 * @return Valeur de {@link #dateCreation dateCreation}.
 	 */
 	public LocalDateTime getDateCreation() {
 		return this.dateCreation;
 	}
 
 	/**
-	 * Getter for commandeHistoriqueId.
+	 * Accesseur de 'commandeHistoriqueId'.
 	 *
-	 * @return value of {@link #commandeHistoriqueId commandeHistoriqueId}.
+	 * @return Valeur de {@link #commandeHistoriqueId commandeHistoriqueId}.
 	 */
 	public Integer getCommandeHistoriqueId() {
 		return this.commandeHistoriqueId;
 	}
 
 	/**
-	 * Set the value of {@link #id id}.
-	 * @param id value to set.
+	 * Définit la valeur de {@link #id id}.
+	 * @param id Valeur à définir.
 	 */
 	public void setId(Integer id) {
 		this.id = id;
 	}
 
 	/**
-	 * Set the value of {@link #quantite quantite}.
-	 * @param quantite value to set.
+	 * Définit la valeur de {@link #quantite quantite}.
+	 * @param quantite Valeur à définir.
 	 */
 	public void setQuantite(Integer quantite) {
 		this.quantite = quantite;
 	}
 
 	/**
-	 * Set the value of {@link #prixUnitaire prixUnitaire}.
-	 * @param prixUnitaire value to set.
+	 * Définit la valeur de {@link #prixUnitaire prixUnitaire}.
+	 * @param prixUnitaire Valeur à définir.
 	 */
 	public void setPrixUnitaire(BigDecimal prixUnitaire) {
 		this.prixUnitaire = prixUnitaire;
 	}
 
 	/**
-	 * Set the value of {@link #prixTotal prixTotal}.
-	 * @param prixTotal value to set.
+	 * Définit la valeur de {@link #prixTotal prixTotal}.
+	 * @param prixTotal Valeur à définir.
 	 */
 	public void setPrixTotal(BigDecimal prixTotal) {
 		this.prixTotal = prixTotal;
 	}
 
 	/**
-	 * Set the value of {@link #platId platId}.
-	 * @param platId value to set.
+	 * Définit la valeur de {@link #platId platId}.
+	 * @param platId Valeur à définir.
 	 */
 	public void setPlatId(Integer platId) {
 		this.platId = platId;
 	}
 
 	/**
-	 * Set the value of {@link #dateCreation dateCreation}.
-	 * @param dateCreation value to set.
+	 * Définit la valeur de {@link #dateCreation dateCreation}.
+	 * @param dateCreation Valeur à définir.
 	 */
 	public void setDateCreation(LocalDateTime dateCreation) {
 		this.dateCreation = dateCreation;
 	}
 
 	/**
-	 * Set the value of {@link #commandeHistoriqueId commandeHistoriqueId}.
-	 * @param commandeHistoriqueId value to set.
+	 * Définit la valeur de {@link #commandeHistoriqueId commandeHistoriqueId}.
+	 * @param commandeHistoriqueId Valeur à définir.
 	 */
 	public void setCommandeHistoriqueId(Integer commandeHistoriqueId) {
 		this.commandeHistoriqueId = commandeHistoriqueId;

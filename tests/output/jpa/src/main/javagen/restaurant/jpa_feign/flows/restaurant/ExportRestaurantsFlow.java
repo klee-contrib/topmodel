@@ -33,7 +33,7 @@ import restaurant.jpa_feign.entities.restaurant.Restaurant;
 public class ExportRestaurantsFlow {
 
 	protected ExportRestaurantsFlow() {
-		// protected constructor to hide implicite public one
+		// Constructeur protégé pour masquer le constructeur public implicite
 	}
 
 	@Bean("ExportRestaurantsFlow")

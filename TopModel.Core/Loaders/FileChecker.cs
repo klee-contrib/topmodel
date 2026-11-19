@@ -56,6 +56,9 @@ public class FileChecker()
                 case (YamlScalarNode { Value: "lockFileName" }, YamlScalarNode { Value: string value }):
                     config.LockFileName = value;
                     break;
+                case (YamlScalarNode { Value: "language" }, YamlScalarNode { Value: string value }):
+                    config.Language = value;
+                    break;
                 case (YamlScalarNode { Value: "noWarn" }, YamlSequenceNode seq):
                     config.NoWarn.AddRange(seq.OfType<YamlScalarNode>().Select(n => Enum.Parse<ErrorType>(n.Value!)));
                     break;

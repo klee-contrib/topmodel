@@ -39,51 +39,51 @@ public class Facture {
 	private String typeFactureCode;
 
 	/**
-	 * Getter for id.
+	 * Accesseur de 'id'.
 	 *
-	 * @return value of {@link #id id}.
+	 * @return Valeur de {@link #id id}.
 	 */
 	public Integer getId() {
 		return this.id;
 	}
 
 	/**
-	 * Getter for commande.
+	 * Accesseur de 'commande'.
 	 *
-	 * @return value of {@link #commande commande}.
+	 * @return Valeur de {@link #commande commande}.
 	 */
 	public Integer getCommande() {
 		return this.commande;
 	}
 
 	/**
-	 * Getter for typeFactureCode.
+	 * Accesseur de 'typeFactureCode'.
 	 *
-	 * @return value of {@link #typeFactureCode typeFactureCode}.
+	 * @return Valeur de {@link #typeFactureCode typeFactureCode}.
 	 */
 	public String getTypeFactureCode() {
 		return this.typeFactureCode;
 	}
 
 	/**
-	 * Set the value of {@link #id id}.
-	 * @param id value to set.
+	 * Définit la valeur de {@link #id id}.
+	 * @param id Valeur à définir.
 	 */
 	public void setId(Integer id) {
 		this.id = id;
 	}
 
 	/**
-	 * Set the value of {@link #commande commande}.
-	 * @param commande value to set.
+	 * Définit la valeur de {@link #commande commande}.
+	 * @param commande Valeur à définir.
 	 */
 	public void setCommande(Integer commande) {
 		this.commande = commande;
 	}
 
 	/**
-	 * Set the value of {@link #typeFactureCode typeFactureCode}.
-	 * @param typeFactureCode value to set.
+	 * Définit la valeur de {@link #typeFactureCode typeFactureCode}.
+	 * @param typeFactureCode Valeur à définir.
 	 */
 	public void setTypeFactureCode(String typeFactureCode) {
 		this.typeFactureCode = typeFactureCode;

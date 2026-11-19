@@ -34,9 +34,10 @@ public class SqlCommentsGenerator(ILogger<SqlCommentsGenerator> logger, IFileWri
         var appName = classes.First().Namespace.App;
 
         writer.WriteSqlFileHeader(
+            Config,
             appName,
             Path.GetFileName(fileName).Split(Path.PathSeparator)[^1],
-            "Script de création de commentaires sur les tables et les colonnes."
+            Config.GetMessage(SqlMessage.SqlCommentsHeader)
         );
 
         foreach (var classe in classes.OrderBy(c => c.SqlName))

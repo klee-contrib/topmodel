@@ -3,7 +3,7 @@
 ----
 
 -- ===========================================================================================
---   Description		:	Création de la table LIGNE_COMMANDE_HISTORIQUE.
+--  Description          : Création de la table LIGNE_COMMANDE_HISTORIQUE.
 -- ===========================================================================================
 
 create table LIGNE_COMMANDE_HISTORIQUE (
@@ -18,7 +18,7 @@ create table LIGNE_COMMANDE_HISTORIQUE (
 	constraint FK_LIGNE_COMMANDE_HISTORIQUE_COM_ID foreign key (COM_ID) references COMMANDE_HISTORIQUE (COM_ID))
 go
 
-/* Index on foreign key column for LIGNE_COMMANDE_HISTORIQUE.COM_ID */
+/* Index sur la colonne de clé étrangère LIGNE_COMMANDE_HISTORIQUE.COM_ID */
 create nonclustered index IDX_LIGNE_COMMANDE_HISTORIQUE_COM_ID_FK
 	on LIGNE_COMMANDE_HISTORIQUE (COM_ID asc)
 go

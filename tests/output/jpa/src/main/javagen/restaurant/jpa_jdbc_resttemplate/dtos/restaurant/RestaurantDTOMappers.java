@@ -10,7 +10,7 @@ import jakarta.annotation.Generated;
 public class RestaurantDTOMappers {
 
 	private RestaurantDTOMappers() {
-		// private constructor to hide implicite public one
+		// Constructeur privé pour masquer le constructeur public implicite
 	}
 
 	/**
@@ -35,7 +35,7 @@ public class RestaurantDTOMappers {
 	}
 
 	/**
-	 * Mappe les champs sources sur une nouvelle instance de la classe 'FactureItem'.
+	 * Crée une nouvelle instance de la classe 'FactureItem' en mappant les champs sources.
 	 * @param source Instance de 'PaiementItem' à mapper.
 	 *
 	 * @return Une nouvelle instance de 'FactureItem' sur lesquels les champs sources ont été mappés.

@@ -84,7 +84,7 @@ public class DbContextGenerator(
 
         cw.WriteNamespace(contextNs);
 
-        cw.WriteSummary("Partial pour ajouter les commentaires EF.");
+        cw.WriteSummary(Config.GetMessage(CsharpMessage.EfCommentsPartial));
         cw.WriteClassDeclaration(dbContextName);
         cw.WriteLine(1, "partial void AddComments(ModelBuilder modelBuilder)");
         cw.WriteLine(1, "{");
@@ -139,14 +139,14 @@ public class DbContextGenerator(
 
         w.WriteNamespace(contextNs);
 
-        w.WriteSummary("Extension du builder Npgsql pour enregistrer les enums Postgres.");
+        w.WriteSummary(Config.GetMessage(CsharpMessage.PostgresEnumsExtension));
         w.WriteClassDeclaration(BuilderOptions, isStatic: true);
 
         w.WriteLine(1, "private static readonly NpgsqlNullNameTranslator _nameTranslator = new();");
         w.WriteLine();
 
-        w.WriteSummary(1, "Enregistre les enums Postgres.");
-        w.WriteParam("builder", "Le builder Npgsql.");
+        w.WriteSummary(1, Config.GetMessage(CsharpMessage.PostgresEnumsRegister));
+        w.WriteParam("builder", Config.GetMessage(CsharpMessage.NpgsqlBuilder));
         w.WriteLine(1, $"public static void MapEnums(this NpgsqlDbContextOptionsBuilder builder)");
         w.WriteLine(1, "{");
         foreach (var classe in classList)
@@ -223,7 +223,7 @@ public class DbContextGenerator(
 
         w.WriteNamespace(contextNs);
 
-        w.WriteSummary("DbContext généré pour Entity Framework Core.");
+        w.WriteSummary(Config.GetMessage(CsharpMessage.DbContextGenerated));
 
         var primaryConstructor = Config.DotnetVersion >= 8;
 
@@ -238,8 +238,8 @@ public class DbContextGenerator(
 
         if (!primaryConstructor && !Config.NoBaseDbContext)
         {
-            w.WriteSummary(1, "Constructeur par défaut.");
-            w.WriteParam("options", "Options du DbContext.");
+            w.WriteSummary(1, Config.GetMessage(CsharpMessage.DefaultConstructor));
+            w.WriteParam("options", Config.GetMessage(CsharpMessage.DbContextOptions));
             w.WriteLine(1, $"public {dbContextName}(DbContextOptions<{dbContextName}> options)");
             w.WriteLine(2, ": base(options)");
             w.WriteLine(1, "{");
@@ -252,7 +252,7 @@ public class DbContextGenerator(
             {
                 w.WriteLine();
             }
-            w.WriteSummary(1, "Accès à l'entité " + Config.GetTypeName(classe));
+            w.WriteSummary(1, Config.GetMessage(CsharpMessage.DatabaseEntityAccess, Config.GetTypeName(classe)));
             w.WriteLine(
                 1,
                 "public DbSet<"
@@ -264,8 +264,8 @@ public class DbContextGenerator(
         }
 
         w.WriteLine();
-        w.WriteSummary(1, "Personalisation du modèle.");
-        w.WriteParam("modelBuilder", "L'objet de construction du modèle.");
+        w.WriteSummary(1, Config.GetMessage(CsharpMessage.ModelCustomization));
+        w.WriteParam("modelBuilder", Config.GetMessage(CsharpMessage.ModelBuilder));
         w.WriteLine(1, "protected override void OnModelCreating(ModelBuilder modelBuilder)");
         w.WriteLine(1, "{");
         w.WriteLine(2, "base.OnModelCreating(modelBuilder);");

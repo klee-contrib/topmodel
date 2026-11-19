@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using TopModel.Core.FileModel;
 using TopModel.Core.Model;
 using TopModel.Generator.Core;
@@ -69,11 +69,7 @@ public class JavaEnumClassPropertyGenerator(
     protected virtual async Task WriteEnum(IProperty property, Class classe, string tag)
     {
         var packageName = Config.GetEnumPackageName(classe, tag);
-        await using var fw = this.OpenJavaWriter(
-            Config.GetEnumFileName(classe, tag, property),
-            packageName,
-            codePage: null
-        );
+        await using var fw = this.OpenJavaWriter(Config.GetEnumFileName(classe, tag, property), packageName);
         var javaEnum = GetJavaEnum(property, classe);
         fw.Write(javaEnum);
     }
@@ -83,8 +79,7 @@ public class JavaEnumClassPropertyGenerator(
         var javaEnum = new JavaEnum(Config.GetEnumType(property))
         {
             ClassType = "enum",
-            Comment =
-                $"Enumération des valeurs possibles de la propriété {property.NamePascal} de la classe {classe.NamePascal}",
+            Comment = Config.GetMessage(JpaMessage.EnumFieldValues, property.NamePascal, classe.NamePascal),
         };
         if (Config.GeneratedHint)
         {

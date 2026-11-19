@@ -34,7 +34,7 @@ public class CategoriePlatRegion {
 	public static final CategoriePlatRegion IDF_ENTREE = new CategoriePlatRegion(RegionCode.IDF, CategoriePlat.ENTREE);
 
 	/**
-	 * Liste de toutes les valeurs de l'énumération CategoriePlatRegion.
+	 * Liste de toutes les valeurs de l'énumération 'CategoriePlatRegion'.
 	 */
 	public static final List<CategoriePlatRegion> VALUES = List.of(IDF_ENTREE, IDF_DESSERT);
 
@@ -52,14 +52,14 @@ public class CategoriePlatRegion {
 	private CategoriePlat categoriePlat;
 
 	/**
-	 * No arg constructor.
+	 * Constructeur sans argument.
 	 */
 	public CategoriePlatRegion() {
-		// No arg constructor
+		// Constructeur sans argument
 	}
 
 	/**
-	 * All args constructor for 'CategoriePlatRegion'.
+	 * Constructeur tout arguments pour 'CategoriePlatRegion'.
 	 * @param regionCode Région.
 	 * @param categoriePlat Catégorie de plat.
 	 */
@@ -69,25 +69,25 @@ public class CategoriePlatRegion {
 	}
 
 	/**
-	 * Getter for regionCode.
+	 * Accesseur de 'regionCode'.
 	 *
-	 * @return value of {@link #regionCode regionCode}.
+	 * @return Valeur de {@link #regionCode regionCode}.
 	 */
 	public RegionCode getRegionCode() {
 		return this.regionCode;
 	}
 
 	/**
-	 * Getter for categoriePlat.
+	 * Accesseur de 'categoriePlat'.
 	 *
-	 * @return value of {@link #categoriePlat categoriePlat}.
+	 * @return Valeur de {@link #categoriePlat categoriePlat}.
 	 */
 	public CategoriePlat getCategoriePlat() {
 		return this.categoriePlat;
 	}
 
 	/**
-	 * Enumération des champs de la classe {@link restaurant.jpa_server.entities.restaurant.CategoriePlatRegion CategoriePlatRegion}.
+	 * Énumération des champs de la classe {@link restaurant.jpa_server.entities.restaurant.CategoriePlatRegion CategoriePlatRegion}.
 	 */
 	public enum Fields {
 		REGION_CODE(RegionCode.class),
@@ -100,9 +100,9 @@ public class CategoriePlatRegion {
 		}
 
 		/**
-		 * Getter for type.
+		 * Accesseur de 'type'.
 		 *
-		 * @return value of {@link #type type}.
+		 * @return Valeur de {@link #type type}.
 		 */
 		public Class<?> getType() {
 			return this.type;
@@ -120,34 +120,34 @@ public class CategoriePlatRegion {
 		private CategoriePlat categoriePlat;
 
 		/**
-		 * Getter for regionCode.
+		 * Accesseur de 'regionCode'.
 		 *
-		 * @return value of {@link #regionCode regionCode}.
+		 * @return Valeur de {@link #regionCode regionCode}.
 		 */
 		public RegionCode getRegionCode() {
 			return this.regionCode;
 		}
 
 		/**
-		 * Set the value of {@link #regionCode regionCode}.
-		 * @param regionCode value to set.
+		 * Définit la valeur de {@link #regionCode regionCode}.
+		 * @param regionCode Valeur à définir.
 		 */
 		public void setRegionCode(RegionCode regionCode) {
 			this.regionCode = regionCode;
 		}
 
 		/**
-		 * Getter for categoriePlat.
+		 * Accesseur de 'categoriePlat'.
 		 *
-		 * @return value of {@link #categoriePlat categoriePlat}.
+		 * @return Valeur de {@link #categoriePlat categoriePlat}.
 		 */
 		public CategoriePlat getCategoriePlat() {
 			return this.categoriePlat;
 		}
 
 		/**
-		 * Set the value of {@link #categoriePlat categoriePlat}.
-		 * @param categoriePlat value to set.
+		 * Définit la valeur de {@link #categoriePlat categoriePlat}.
+		 * @param categoriePlat Valeur à définir.
 		 */
 		public void setCategoriePlat(CategoriePlat categoriePlat) {
 			this.categoriePlat = categoriePlat;

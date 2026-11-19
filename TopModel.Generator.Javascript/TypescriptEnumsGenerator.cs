@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Text;
+using Microsoft.Extensions.Logging;
 using TopModel.Core.Model;
 using TopModel.Generator.Core;
 using TopModel.Utils;
@@ -37,7 +38,10 @@ public class TypescriptEnumsGenerator(ILogger<TypescriptEnumsGenerator> logger, 
     /// </summary>
     private async Task GenerateEnumsFile(string fileName, IEnumerable<Class> enums, string tag)
     {
-        await using var fw = OpenFileWriter(fileName, encoderShouldEmitUTF8Identifier: false);
+        await using var fw = OpenFileWriter(
+            fileName,
+            new() { Encoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false) }
+        );
 
         var imports = enums
             .SelectMany(Config.GetClassDependencies)

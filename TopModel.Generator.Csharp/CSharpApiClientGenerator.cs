@@ -144,7 +144,7 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
         fw.WriteSummary($"Client {fileName}");
         if (primaryConstructor)
         {
-            fw.WriteParam(client, "HttpClient injecté.", 0);
+            fw.WriteParam(client, Config.GetMessage(CsharpMessage.ApiInjectedHttpClient), 0);
         }
 
         fw.WriteClassDeclaration(
@@ -170,8 +170,8 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
         if (!primaryConstructor)
         {
             fw.WriteLine();
-            fw.WriteSummary(1, "Constructeur");
-            fw.WriteParam("client", "HttpClient injecté.");
+            fw.WriteSummary(1, Config.GetMessage(CsharpMessage.DefaultConstructor).TrimEnd('.'));
+            fw.WriteParam("client", Config.GetMessage(CsharpMessage.ApiInjectedHttpClient));
             fw.WriteLine(1, $"public {className}(HttpClient client)");
             fw.WriteLine(1, "{");
             fw.WriteLine(2, $"{client} = client;");
@@ -451,7 +451,7 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
         }
 
         fw.WriteLine();
-        fw.WriteSummary(1, "Assure que l'authentification est configurée.");
+        fw.WriteSummary(1, Config.GetMessage(CsharpMessage.ApiAuthentication));
 
         if (Config.UseCancellationTokens)
         {
@@ -464,8 +464,8 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
         );
 
         fw.WriteLine();
-        fw.WriteSummary(1, "Gère les erreurs éventuelles retournées par l'API appelée.");
-        fw.WriteParam("response", "Réponse HTTP");
+        fw.WriteSummary(1, Config.GetMessage(CsharpMessage.ApiErrors));
+        fw.WriteParam("response", Config.GetMessage(CsharpMessage.ApiHttpResponse));
 
         if (Config.UseCancellationTokens)
         {
@@ -492,8 +492,7 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
             return;
         }
 
-        await using var w = this.OpenCSharpWriter(filePath);
-        w.EnableHeader = false;
+        await using var w = this.OpenCSharpWriter(filePath, new() { EnableHeader = false });
 
         w.WriteNamespace(ns);
 

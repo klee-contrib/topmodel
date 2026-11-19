@@ -41,13 +41,13 @@ public interface PlatItemReadonly {
 
 	/**
 	 * Prix du plat.
-	 * @param prix value to set.
+	 * @param prix Valeur à définir.
 	 */
 	void setPrix(BigDecimal prix);
 
 	/**
 	 * Indique si le plat est disponible.
-	 * @param disponible value to set.
+	 * @param disponible Valeur à définir.
 	 */
 	void setDisponible(Boolean disponible);
 }

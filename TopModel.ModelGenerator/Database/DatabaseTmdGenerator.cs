@@ -170,10 +170,7 @@ public abstract class DatabaseTmdGenerator(
             }
 
             var property = classe.Properties.FirstOrDefault(p => p.SqlName == cc.ColumnName);
-            if (property != null)
-            {
-                property.Comment = cc.Comment!;
-            }
+            property?.Comment = cc.Comment!;
         }
     }
 
@@ -689,7 +686,7 @@ public abstract class DatabaseTmdGenerator(
             ct.ThrowIfCancellationRequested();
             var fileName = Path.Combine(ModelRoot, $"{file.Path}.tmd");
             await using var tmdFileWriter = new TmdWriter(
-                writerProvider.OpenFileWriter(fileName, logger),
+                writerProvider.OpenFileWriter(fileName, logger, new() { StartCommentToken = "####" }),
                 file,
                 ModelRoot
             );

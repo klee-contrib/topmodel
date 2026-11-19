@@ -291,7 +291,11 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
                 pk.PropertyNameCamel
             )
                 .AddCommentLine(
-                    @$"Identifiant technique mappé avec celui de la classe {{@link {association.GetImport(Config, tag)}}} {association.NamePascal}"
+                    Config.GetMessage(
+                        JpaMessage.TechnicalIdentifier,
+                        association.GetImport(Config, tag),
+                        association.NamePascal
+                    )
                 )
                 .Add(JpaModelPropertyGenerator.IdAnnotation);
             javaField.AddImports(ap.GetTypeImports(Config, tag));
@@ -359,8 +363,13 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
             var method = new JavaMethod("void", setterName)
             {
                 Visibility = "public",
-                Comment = $"Set the value of {{@link #{propertyName} {propertyName}}}",
-            }.AddParameter(new JavaMethodParameter(propertyType, propertyName) { Comment = "value to set" });
+                Comment = Config.GetMessage(JpaMessage.Setter, classe.GetImport(Config, tag), propertyName),
+            }.AddParameter(
+                new JavaMethodParameter(propertyType, propertyName)
+                {
+                    Comment = Config.GetMessage(JpaMessage.Setter, classe.GetImport(Config, tag), propertyName),
+                }
+            );
             method.AddImports(Config.GetDomainImports(ap, tag));
             method.AddBodyLine(@$"this.{propertyName} = {propertyName};");
             return method;
@@ -447,12 +456,12 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
                 var propertyName = ap.NameCamel;
                 var adder = new JavaMethod("void", $"add{ap.Association!.NamePascal}{ap.AssociationRole}")
                 {
-                    Comment = $"Add a value to {{@link {classe.GetImport(Config, tag)}#{propertyName} {propertyName}}}",
+                    Comment = Config.GetMessage(JpaMessage.AddValue, classe.GetImport(Config, tag), propertyName),
                 }
                     .AddParameter(
                         new JavaMethodParameter(ap.Association!.NamePascal, ap.Association!.NameCamel)
                         {
-                            Comment = $"value to add to {ap.ReverseProperty!.NameCamel}",
+                            Comment = Config.GetMessage(JpaMessage.AddValueParameter, ap.ReverseProperty!.NameCamel),
                         }
                     )
                     .AddBodyLine(@$"this.{propertyName}.add({ap.Association!.NameCamel});");
@@ -485,13 +494,12 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
                 var propertyName = ap.NameCamel;
                 var remover = new JavaMethod("void", $"remove{ap.Association!.NamePascal}{ap.AssociationRole}")
                 {
-                    Comment =
-                        $"Remove a value from {{@link {classe.GetImport(Config, tag)}#{propertyName} {propertyName}}}",
+                    Comment = Config.GetMessage(JpaMessage.RemoveValue, classe.GetImport(Config, tag), propertyName),
                 }
                     .AddParameter(
                         new JavaMethodParameter(ap.Association!.NamePascal, ap.Association!.NameCamel)
                         {
-                            Comment = $"{ap.Association!.NameCamel} value to remove",
+                            Comment = Config.GetMessage(JpaMessage.ValueToRemove, ap.Association!.NameCamel),
                         }
                     )
                     .AddBodyLine(@$"this.{propertyName}.remove({ap.Association!.NameCamel});");

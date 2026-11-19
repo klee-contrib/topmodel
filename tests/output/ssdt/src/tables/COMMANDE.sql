@@ -3,7 +3,7 @@
 ----
 
 -- ===========================================================================================
---   Description		:	Création de la table COMMANDE.
+--  Description          : Création de la table COMMANDE.
 -- ===========================================================================================
 
 create table COMMANDE (
@@ -25,27 +25,27 @@ create table COMMANDE (
 	constraint UK_COMMANDE_AVI_ID unique nonclustered (AVI_ID asc))
 go
 
-/* Index on foreign key column for COMMANDE.PER_ID */
+/* Index sur la colonne de clé étrangère COMMANDE.PER_ID */
 create nonclustered index IDX_COM_PER_ID_FK
 	on COMMANDE (PER_ID asc)
 go
 
-/* Index on foreign key column for COMMANDE.TAB_ID */
+/* Index sur la colonne de clé étrangère COMMANDE.TAB_ID */
 create nonclustered index IDX_COM_TAB_ID_FK
 	on COMMANDE (TAB_ID asc)
 go
 
-/* Index on foreign key column for COMMANDE.REV_ID */
+/* Index sur la colonne de clé étrangère COMMANDE.REV_ID */
 create nonclustered index IDX_COM_REV_ID_FK
 	on COMMANDE (REV_ID asc)
 go
 
-/* Index on foreign key column for COMMANDE.STC_CODE */
+/* Index sur la colonne de clé étrangère COMMANDE.STC_CODE */
 create nonclustered index IDX_COM_STC_CODE_FK
 	on COMMANDE (STC_CODE asc)
 go
 
-/* Index on foreign key column for COMMANDE.AVI_ID */
+/* Index sur la colonne de clé étrangère COMMANDE.AVI_ID */
 create nonclustered index IDX_COM_AVI_ID_FK
 	on COMMANDE (AVI_ID asc)
 go

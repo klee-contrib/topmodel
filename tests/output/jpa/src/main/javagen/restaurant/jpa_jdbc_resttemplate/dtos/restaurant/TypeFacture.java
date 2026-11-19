@@ -30,7 +30,7 @@ public record TypeFacture(
 	public static final TypeFacture PHY = new TypeFacture(TypeFactureCode.Phy, "restaurant.typeFacture.values.PHY");
 
 	/**
-	 * Liste de toutes les valeurs de l'énumération TypeFacture.
+	 * Liste de toutes les valeurs de l'énumération 'TypeFacture'.
 	 */
 	public static final List<TypeFacture> VALUES = List.of(ELE, PHY);
 

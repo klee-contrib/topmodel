@@ -474,21 +474,20 @@ public static class ReferencesExtensions
             {
                 foreach (var mappings in classe.FromMappers.SelectMany(m => m.ClassParams).Concat(classe.ToMappers))
                 {
-                    if (mappings.Mappings.ContainsKey(property))
+                    var keyReference = mappings.MappingReferences.Keys.FirstOrDefault(f => f.Value == property.Name);
+                    if (keyReference != null)
                     {
-                        var reference = mappings.MappingReferences.Keys.FirstOrDefault(f => f.Value == property.Name);
-                        if (reference != null)
-                        {
-                            yield return (reference, classe.ModelFile);
-                        }
+                        yield return (keyReference, classe.ModelFile);
                     }
 
                     if (mappings.Mappings.Any(m => m.Value == property))
                     {
-                        var reference = mappings.MappingReferences.Values.FirstOrDefault(f => f.Value == property.Name);
-                        if (reference != null)
+                        var valueReference = mappings.MappingReferences.Values.FirstOrDefault(f =>
+                            f.Value == property.Name
+                        );
+                        if (valueReference != null)
                         {
-                            yield return (reference, classe.ModelFile);
+                            yield return (valueReference, classe.ModelFile);
                         }
                     }
                 }

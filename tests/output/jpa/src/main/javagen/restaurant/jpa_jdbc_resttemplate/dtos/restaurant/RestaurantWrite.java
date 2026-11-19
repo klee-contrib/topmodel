@@ -22,14 +22,14 @@ import jakarta.validation.Valid;
 public class RestaurantWrite implements Serializable {
 
 	/**
-	 * Serial ID.
+	 * ID de sérialisation.
 	 */
 	@Serial
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Nom du restaurant.
-	 * Alias of {@link restaurant.jpa_jdbc_resttemplate.dtos.restaurant.RestaurantRead#getNom() RestaurantRead#getNom()}
+	 * Alias de {@link restaurant.jpa_jdbc_resttemplate.dtos.restaurant.RestaurantRead#getNom() RestaurantRead#getNom()}
 	 */
 	@NotNull
 	@Size(max = 100)
@@ -38,7 +38,7 @@ public class RestaurantWrite implements Serializable {
 
 	/**
 	 * Adresse du restaurant.
-	 * Alias of {@link restaurant.jpa_jdbc_resttemplate.dtos.restaurant.RestaurantRead#getAdresse() RestaurantRead#getAdresse()}
+	 * Alias de {@link restaurant.jpa_jdbc_resttemplate.dtos.restaurant.RestaurantRead#getAdresse() RestaurantRead#getAdresse()}
 	 */
 	@Size(max = 100)
 	@Column("lie_adresse")
@@ -46,7 +46,7 @@ public class RestaurantWrite implements Serializable {
 
 	/**
 	 * Numéro de téléphone.
-	 * Alias of {@link restaurant.jpa_jdbc_resttemplate.dtos.restaurant.RestaurantRead#getTelephone() RestaurantRead#getTelephone()}
+	 * Alias de {@link restaurant.jpa_jdbc_resttemplate.dtos.restaurant.RestaurantRead#getTelephone() RestaurantRead#getTelephone()}
 	 */
 	@Size(max = 20)
 	@Column("res_telephone")
@@ -54,170 +54,170 @@ public class RestaurantWrite implements Serializable {
 
 	/**
 	 * Association réciproque de Menu.Restaurant.
-	 * Alias of {@link restaurant.jpa_jdbc_resttemplate.dtos.restaurant.RestaurantRead#getMenus() RestaurantRead#getMenus()}
+	 * Alias de {@link restaurant.jpa_jdbc_resttemplate.dtos.restaurant.RestaurantRead#getMenus() RestaurantRead#getMenus()}
 	 */
 	@NotNull
 	private List<Integer> menus;
 
 	/**
 	 * Association réciproque de Plat.Restaurant.
-	 * Alias of {@link restaurant.jpa_jdbc_resttemplate.dtos.restaurant.RestaurantRead#getPlats() RestaurantRead#getPlats()}
+	 * Alias de {@link restaurant.jpa_jdbc_resttemplate.dtos.restaurant.RestaurantRead#getPlats() RestaurantRead#getPlats()}
 	 */
 	@NotNull
 	private List<Integer> plats;
 
 	/**
 	 * Association réciproque de Promotion.Restaurant.
-	 * Alias of {@link restaurant.jpa_jdbc_resttemplate.dtos.restaurant.RestaurantRead#getPromotions() RestaurantRead#getPromotions()}
+	 * Alias de {@link restaurant.jpa_jdbc_resttemplate.dtos.restaurant.RestaurantRead#getPromotions() RestaurantRead#getPromotions()}
 	 */
 	private List<Integer> promotions;
 
 	/**
 	 * Association réciproque de AvisClient.Restaurant.
-	 * Alias of {@link restaurant.jpa_jdbc_resttemplate.dtos.restaurant.RestaurantRead#getAvisClients() RestaurantRead#getAvisClients()}
+	 * Alias de {@link restaurant.jpa_jdbc_resttemplate.dtos.restaurant.RestaurantRead#getAvisClients() RestaurantRead#getAvisClients()}
 	 */
 	@NotNull
 	private List<Integer> avisClients;
 
 	/**
 	 * Association réciproque de Table.RestaurantId.
-	 * Alias of {@link restaurant.jpa_jdbc_resttemplate.dtos.restaurant.RestaurantRead#getTables() RestaurantRead#getTables()}
+	 * Alias de {@link restaurant.jpa_jdbc_resttemplate.dtos.restaurant.RestaurantRead#getTables() RestaurantRead#getTables()}
 	 */
 	@Valid
 	@NotNull
 	private List<TableItem> tables;
 
 	/**
-	 * Getter for nom.
+	 * Accesseur de 'nom'.
 	 *
-	 * @return value of {@link #nom nom}.
+	 * @return Valeur de {@link #nom nom}.
 	 */
 	public String getNom() {
 		return this.nom;
 	}
 
 	/**
-	 * Getter for adresse.
+	 * Accesseur de 'adresse'.
 	 *
-	 * @return value of {@link #adresse adresse}.
+	 * @return Valeur de {@link #adresse adresse}.
 	 */
 	public String getAdresse() {
 		return this.adresse;
 	}
 
 	/**
-	 * Getter for telephone.
+	 * Accesseur de 'telephone'.
 	 *
-	 * @return value of {@link #telephone telephone}.
+	 * @return Valeur de {@link #telephone telephone}.
 	 */
 	public String getTelephone() {
 		return this.telephone;
 	}
 
 	/**
-	 * Getter for menus.
+	 * Accesseur de 'menus'.
 	 *
-	 * @return value of {@link #menus menus}.
+	 * @return Valeur de {@link #menus menus}.
 	 */
 	public List<Integer> getMenus() {
 		return this.menus;
 	}
 
 	/**
-	 * Getter for plats.
+	 * Accesseur de 'plats'.
 	 *
-	 * @return value of {@link #plats plats}.
+	 * @return Valeur de {@link #plats plats}.
 	 */
 	public List<Integer> getPlats() {
 		return this.plats;
 	}
 
 	/**
-	 * Getter for promotions.
+	 * Accesseur de 'promotions'.
 	 *
-	 * @return value of {@link #promotions promotions}.
+	 * @return Valeur de {@link #promotions promotions}.
 	 */
 	public List<Integer> getPromotions() {
 		return this.promotions;
 	}
 
 	/**
-	 * Getter for avisClients.
+	 * Accesseur de 'avisClients'.
 	 *
-	 * @return value of {@link #avisClients avisClients}.
+	 * @return Valeur de {@link #avisClients avisClients}.
 	 */
 	public List<Integer> getAvisClients() {
 		return this.avisClients;
 	}
 
 	/**
-	 * Getter for tables.
+	 * Accesseur de 'tables'.
 	 *
-	 * @return value of {@link #tables tables}.
+	 * @return Valeur de {@link #tables tables}.
 	 */
 	public List<TableItem> getTables() {
 		return this.tables;
 	}
 
 	/**
-	 * Set the value of {@link #nom nom}.
-	 * @param nom value to set.
+	 * Définit la valeur de {@link #nom nom}.
+	 * @param nom Valeur à définir.
 	 */
 	public void setNom(String nom) {
 		this.nom = nom;
 	}
 
 	/**
-	 * Set the value of {@link #adresse adresse}.
-	 * @param adresse value to set.
+	 * Définit la valeur de {@link #adresse adresse}.
+	 * @param adresse Valeur à définir.
 	 */
 	public void setAdresse(String adresse) {
 		this.adresse = adresse;
 	}
 
 	/**
-	 * Set the value of {@link #telephone telephone}.
-	 * @param telephone value to set.
+	 * Définit la valeur de {@link #telephone telephone}.
+	 * @param telephone Valeur à définir.
 	 */
 	public void setTelephone(String telephone) {
 		this.telephone = telephone;
 	}
 
 	/**
-	 * Set the value of {@link #menus menus}.
-	 * @param menus value to set.
+	 * Définit la valeur de {@link #menus menus}.
+	 * @param menus Valeur à définir.
 	 */
 	public void setMenus(List<Integer> menus) {
 		this.menus = menus;
 	}
 
 	/**
-	 * Set the value of {@link #plats plats}.
-	 * @param plats value to set.
+	 * Définit la valeur de {@link #plats plats}.
+	 * @param plats Valeur à définir.
 	 */
 	public void setPlats(List<Integer> plats) {
 		this.plats = plats;
 	}
 
 	/**
-	 * Set the value of {@link #promotions promotions}.
-	 * @param promotions value to set.
+	 * Définit la valeur de {@link #promotions promotions}.
+	 * @param promotions Valeur à définir.
 	 */
 	public void setPromotions(List<Integer> promotions) {
 		this.promotions = promotions;
 	}
 
 	/**
-	 * Set the value of {@link #avisClients avisClients}.
-	 * @param avisClients value to set.
+	 * Définit la valeur de {@link #avisClients avisClients}.
+	 * @param avisClients Valeur à définir.
 	 */
 	public void setAvisClients(List<Integer> avisClients) {
 		this.avisClients = avisClients;
 	}
 
 	/**
-	 * Set the value of {@link #tables tables}.
-	 * @param tables value to set.
+	 * Définit la valeur de {@link #tables tables}.
+	 * @param tables Valeur à définir.
 	 */
 	public void setTables(List<TableItem> tables) {
 		this.tables = tables;

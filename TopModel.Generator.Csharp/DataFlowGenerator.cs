@@ -342,8 +342,7 @@ public class DataFlowGenerator(ILogger<DataFlowGenerator> logger, IFileWriterPro
             return;
         }
 
-        await using var w = this.OpenCSharpWriter(fileName);
-        w.EnableHeader = false;
+        await using var w = this.OpenCSharpWriter(fileName, new() { EnableHeader = false });
 
         w.AddUsings([
             "Kinetix.Etl",

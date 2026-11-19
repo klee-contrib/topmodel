@@ -114,90 +114,90 @@ public class Commande {
 	private LocalDateTime dateCreation;
 
 	/**
-	 * Getter for id.
+	 * Accesseur de 'id'.
 	 *
-	 * @return value of {@link #id id}.
+	 * @return Valeur de {@link #id id}.
 	 */
 	public Integer getId() {
 		return this.id;
 	}
 
 	/**
-	 * Getter for dateCommande.
+	 * Accesseur de 'dateCommande'.
 	 *
-	 * @return value of {@link #dateCommande dateCommande}.
+	 * @return Valeur de {@link #dateCommande dateCommande}.
 	 */
 	public LocalDateTime getDateCommande() {
 		return this.dateCommande;
 	}
 
 	/**
-	 * Getter for dateLivraison.
+	 * Accesseur de 'dateLivraison'.
 	 *
-	 * @return value of {@link #dateLivraison dateLivraison}.
+	 * @return Valeur de {@link #dateLivraison dateLivraison}.
 	 */
 	public LocalDateTime getDateLivraison() {
 		return this.dateLivraison;
 	}
 
 	/**
-	 * Getter for montantTotal.
+	 * Accesseur de 'montantTotal'.
 	 *
-	 * @return value of {@link #montantTotal montantTotal}.
+	 * @return Valeur de {@link #montantTotal montantTotal}.
 	 */
 	public BigDecimal getMontantTotal() {
 		return this.montantTotal;
 	}
 
 	/**
-	 * Getter for client.
+	 * Accesseur de 'client'.
 	 *
-	 * @return value of {@link #client client}.
+	 * @return Valeur de {@link #client client}.
 	 */
 	public Client getClient() {
 		return this.client;
 	}
 
 	/**
-	 * Getter for tableId.
+	 * Accesseur de 'tableId'.
 	 *
-	 * @return value of {@link #tableId tableId}.
+	 * @return Valeur de {@link #tableId tableId}.
 	 */
 	public Integer getTableId() {
 		return this.tableId;
 	}
 
 	/**
-	 * Getter for reservation.
+	 * Accesseur de 'reservation'.
 	 *
-	 * @return value of {@link #reservation reservation}.
+	 * @return Valeur de {@link #reservation reservation}.
 	 */
 	public Reservation getReservation() {
 		return this.reservation;
 	}
 
 	/**
-	 * Getter for statutCommande.
+	 * Accesseur de 'statutCommande'.
 	 *
-	 * @return value of {@link #statutCommande statutCommande}.
+	 * @return Valeur de {@link #statutCommande statutCommande}.
 	 */
 	public StatutCommande getStatutCommande() {
 		return this.statutCommande;
 	}
 
 	/**
-	 * Getter for avisClient.
+	 * Accesseur de 'avisClient'.
 	 *
-	 * @return value of {@link #avisClient avisClient}.
+	 * @return Valeur de {@link #avisClient avisClient}.
 	 */
 	public AvisClient getAvisClient() {
 		return this.avisClient;
 	}
 
 	/**
-	 * Getter for lignes.
+	 * Accesseur de 'lignes'.
 	 *
-	 * @return value of {@link #lignes lignes}.
+	 * @return Valeur de {@link #lignes lignes}.
 	 */
 	public List<LigneCommande> getLignes() {
 		if (this.lignes == null) {
@@ -207,105 +207,105 @@ public class Commande {
 	}
 
 	/**
-	 * Getter for dateCreation.
+	 * Accesseur de 'dateCreation'.
 	 *
-	 * @return value of {@link #dateCreation dateCreation}.
+	 * @return Valeur de {@link #dateCreation dateCreation}.
 	 */
 	public LocalDateTime getDateCreation() {
 		return this.dateCreation;
 	}
 
 	/**
-	 * Set the value of {@link #id id}.
-	 * @param id value to set.
+	 * Définit la valeur de {@link #id id}.
+	 * @param id Valeur à définir.
 	 */
 	public void setId(Integer id) {
 		this.id = id;
 	}
 
 	/**
-	 * Set the value of {@link #dateCommande dateCommande}.
-	 * @param dateCommande value to set.
+	 * Définit la valeur de {@link #dateCommande dateCommande}.
+	 * @param dateCommande Valeur à définir.
 	 */
 	public void setDateCommande(LocalDateTime dateCommande) {
 		this.dateCommande = dateCommande;
 	}
 
 	/**
-	 * Set the value of {@link #dateLivraison dateLivraison}.
-	 * @param dateLivraison value to set.
+	 * Définit la valeur de {@link #dateLivraison dateLivraison}.
+	 * @param dateLivraison Valeur à définir.
 	 */
 	public void setDateLivraison(LocalDateTime dateLivraison) {
 		this.dateLivraison = dateLivraison;
 	}
 
 	/**
-	 * Set the value of {@link #montantTotal montantTotal}.
-	 * @param montantTotal value to set.
+	 * Définit la valeur de {@link #montantTotal montantTotal}.
+	 * @param montantTotal Valeur à définir.
 	 */
 	public void setMontantTotal(BigDecimal montantTotal) {
 		this.montantTotal = montantTotal;
 	}
 
 	/**
-	 * Set the value of {@link #client client}.
-	 * @param client value to set.
+	 * Définit la valeur de {@link #client client}.
+	 * @param client Valeur à définir.
 	 */
 	public void setClient(Client client) {
 		this.client = client;
 	}
 
 	/**
-	 * Set the value of {@link #tableId tableId}.
-	 * @param tableId value to set.
+	 * Définit la valeur de {@link #tableId tableId}.
+	 * @param tableId Valeur à définir.
 	 */
 	public void setTableId(Integer tableId) {
 		this.tableId = tableId;
 	}
 
 	/**
-	 * Set the value of {@link #reservation reservation}.
-	 * @param reservation value to set.
+	 * Définit la valeur de {@link #reservation reservation}.
+	 * @param reservation Valeur à définir.
 	 */
 	public void setReservation(Reservation reservation) {
 		this.reservation = reservation;
 	}
 
 	/**
-	 * Set the value of {@link #statutCommande statutCommande}.
-	 * @param statutCommande value to set.
+	 * Définit la valeur de {@link #statutCommande statutCommande}.
+	 * @param statutCommande Valeur à définir.
 	 */
 	public void setStatutCommande(StatutCommande statutCommande) {
 		this.statutCommande = statutCommande;
 	}
 
 	/**
-	 * Set the value of {@link #avisClient avisClient}.
-	 * @param avisClient value to set.
+	 * Définit la valeur de {@link #avisClient avisClient}.
+	 * @param avisClient Valeur à définir.
 	 */
 	public void setAvisClient(AvisClient avisClient) {
 		this.avisClient = avisClient;
 	}
 
 	/**
-	 * Set the value of {@link #lignes lignes}.
-	 * @param lignes value to set.
+	 * Définit la valeur de {@link #lignes lignes}.
+	 * @param lignes Valeur à définir.
 	 */
 	public void setLignes(List<LigneCommande> lignes) {
 		this.lignes = lignes;
 	}
 
 	/**
-	 * Set the value of {@link #dateCreation dateCreation}.
-	 * @param dateCreation value to set.
+	 * Définit la valeur de {@link #dateCreation dateCreation}.
+	 * @param dateCreation Valeur à définir.
 	 */
 	public void setDateCreation(LocalDateTime dateCreation) {
 		this.dateCreation = dateCreation;
 	}
 
 	/**
-	 * Add a value to {@link restaurant.jpa_feign.entities.restaurant.Commande#lignes lignes}.
-	 * @param ligneCommande value to add to commande.
+	 * Ajoute une valeur à {@link restaurant.jpa_feign.entities.restaurant.Commande#lignes lignes}.
+	 * @param ligneCommande Valeur à ajouter à 'commande'.
 	 */
 	void addLigneCommande(LigneCommande ligneCommande) {
 		this.lignes.add(ligneCommande);
@@ -313,8 +313,8 @@ public class Commande {
 	}
 
 	/**
-	 * Remove a value from {@link restaurant.jpa_feign.entities.restaurant.Commande#lignes lignes}.
-	 * @param ligneCommande ligneCommande value to remove.
+	 * Supprime une valeur de {@link restaurant.jpa_feign.entities.restaurant.Commande#lignes lignes}.
+	 * @param ligneCommande Valeur de 'ligneCommande' à supprimer.
 	 */
 	void removeLigneCommande(LigneCommande ligneCommande) {
 		this.lignes.remove(ligneCommande);
@@ -322,7 +322,7 @@ public class Commande {
 	}
 
 	/**
-	 * Enumération des champs de la classe {@link restaurant.jpa_feign.entities.restaurant.Commande Commande}.
+	 * Énumération des champs de la classe {@link restaurant.jpa_feign.entities.restaurant.Commande Commande}.
 	 */
 	public enum Fields {
 		ID(Integer.class),
@@ -344,9 +344,9 @@ public class Commande {
 		}
 
 		/**
-		 * Getter for type.
+		 * Accesseur de 'type'.
 		 *
-		 * @return value of {@link #type type}.
+		 * @return Valeur de {@link #type type}.
 		 */
 		public Class<?> getType() {
 			return this.type;

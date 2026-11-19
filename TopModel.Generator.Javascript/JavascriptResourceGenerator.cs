@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Text;
+using Microsoft.Extensions.Logging;
 using TopModel.Core;
 using TopModel.Core.Model;
 using TopModel.Generator.Core;
@@ -68,8 +69,14 @@ public class JavascriptResourceGenerator(
         CancellationToken ct = default
     )
     {
-        await using var fw = OpenFileWriter(filePath, encoderShouldEmitUTF8Identifier: false);
-        fw.EnableHeader = Config.ResourceMode == ResourceMode.JS;
+        await using var fw = OpenFileWriter(
+            filePath,
+            new()
+            {
+                EnableHeader = Config.ResourceMode == ResourceMode.JS,
+                Encoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false),
+            }
+        );
 
         var module = Config.GetRootModule(properties.First().Parent.Namespace);
 
@@ -110,7 +117,10 @@ public class JavascriptResourceGenerator(
         CancellationToken ct = default
     )
     {
-        await using var fw = OpenFileWriter(mainFilePath, encoderShouldEmitUTF8Identifier: false);
+        await using var fw = OpenFileWriter(
+            mainFilePath,
+            new() { Encoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false) }
+        );
 
         foreach (var (moduleFilePath, moduleName) in modules)
         {
@@ -145,8 +155,14 @@ public class JavascriptResourceGenerator(
         CancellationToken ct = default
     )
     {
-        await using var fw = OpenFileWriter(filePath, encoderShouldEmitUTF8Identifier: false);
-        fw.EnableHeader = Config.ResourceMode == ResourceMode.JS;
+        await using var fw = OpenFileWriter(
+            filePath,
+            new()
+            {
+                EnableHeader = Config.ResourceMode == ResourceMode.JS,
+                Encoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false),
+            }
+        );
 
         var module = Config.GetRootModule(properties.First().Parent.Namespace);
 
@@ -222,8 +238,9 @@ public class JavascriptResourceGenerator(
                     && !onlyProperties
                     && !(
                         Config.TranslateReferences == true
-                        && container.Key is Class { DefaultProperty: not null, Enum: not null }
-                        && container.Key is Class { Values.Count: > 0 }
+                        && container.Key
+                            is Class { DefaultProperty: not null, Enum: not null }
+                                and Class { Values.Count: > 0 }
                     )
                         ? string.Empty
                         : ","

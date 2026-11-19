@@ -3,7 +3,7 @@
 ----
 
 -- ===========================================================================================
---   Description		:	Création de la table PLAT.
+--  Description          : Création de la table PLAT.
 -- ===========================================================================================
 
 create table PLAT (
@@ -30,17 +30,17 @@ go
 create sequence SEQ_PLAT as int start with 1000 increment by 50
 go
 
-/* Index on foreign key column for PLAT.CAT_CODE */
+/* Index sur la colonne de clé étrangère PLAT.CAT_CODE */
 create nonclustered index IDX_PLA_CAT_CODE_FK
 	on PLAT (CAT_CODE asc)
 go
 
-/* Index on foreign key column for PLAT.LIE_ID */
+/* Index sur la colonne de clé étrangère PLAT.LIE_ID */
 create nonclustered index IDX_PLA_LIE_ID_FK
 	on PLAT (LIE_ID asc)
 go
 
-/* Index on foreign key column for PLAT.LIE_ID_CREATEUR */
+/* Index sur la colonne de clé étrangère PLAT.LIE_ID_CREATEUR */
 create nonclustered index IDX_PLA_LIE_ID_CREATEUR_FK
 	on PLAT (LIE_ID_CREATEUR asc)
 go

@@ -18,61 +18,61 @@ import jakarta.validation.constraints.NotNull;
 public class CommandeDeleteResult implements Serializable {
 
 	/**
-	 * Serial ID.
+	 * ID de sérialisation.
 	 */
 	@Serial
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Identifiant de la commande.
-	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.Commande#getId() Commande#getId()}
+	 * Alias de {@link restaurant.jpa_feign.entities.restaurant.Commande#getId() Commande#getId()}
 	 */
 	@NotNull
 	private Integer id;
 
 	/**
 	 * Date et heure de la commande.
-	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.Commande#getDateCommande() Commande#getDateCommande()}
+	 * Alias de {@link restaurant.jpa_feign.entities.restaurant.Commande#getDateCommande() Commande#getDateCommande()}
 	 */
 	@NotNull
 	private LocalDateTime dateCommande;
 
 	/**
-	 * Getter for id.
+	 * Accesseur de 'id'.
 	 *
-	 * @return value of {@link #id id}.
+	 * @return Valeur de {@link #id id}.
 	 */
 	public Integer getId() {
 		return this.id;
 	}
 
 	/**
-	 * Getter for dateCommande.
+	 * Accesseur de 'dateCommande'.
 	 *
-	 * @return value of {@link #dateCommande dateCommande}.
+	 * @return Valeur de {@link #dateCommande dateCommande}.
 	 */
 	public LocalDateTime getDateCommande() {
 		return this.dateCommande;
 	}
 
 	/**
-	 * Set the value of {@link #id id}.
-	 * @param id value to set.
+	 * Définit la valeur de {@link #id id}.
+	 * @param id Valeur à définir.
 	 */
 	public void setId(Integer id) {
 		this.id = id;
 	}
 
 	/**
-	 * Set the value of {@link #dateCommande dateCommande}.
-	 * @param dateCommande value to set.
+	 * Définit la valeur de {@link #dateCommande dateCommande}.
+	 * @param dateCommande Valeur à définir.
 	 */
 	public void setDateCommande(LocalDateTime dateCommande) {
 		this.dateCommande = dateCommande;
 	}
 
 	/**
-	 * Enumération des champs de la classe {@link restaurant.jpa_feign.dtos.restaurant.CommandeDeleteResult CommandeDeleteResult}.
+	 * Énumération des champs de la classe {@link restaurant.jpa_feign.dtos.restaurant.CommandeDeleteResult CommandeDeleteResult}.
 	 */
 	public enum Fields {
 		ID(Integer.class),
@@ -85,9 +85,9 @@ public class CommandeDeleteResult implements Serializable {
 		}
 
 		/**
-		 * Getter for type.
+		 * Accesseur de 'type'.
 		 *
-		 * @return value of {@link #type type}.
+		 * @return Valeur de {@link #type type}.
 		 */
 		public Class<?> getType() {
 			return this.type;

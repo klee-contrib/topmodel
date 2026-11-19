@@ -1,4 +1,5 @@
 ﻿using TopModel.Generator.Core;
+using TopModel.Utils;
 
 namespace TopModel.Generator.Csharp;
 
@@ -89,9 +90,13 @@ public static class CSharpUtils
         "while",
     ];
 
-    public static CSharpWriter OpenCSharpWriter(this GeneratorBase<CsharpConfig> generator, string fileName)
+    public static CSharpWriter OpenCSharpWriter(
+        this GeneratorBase<CsharpConfig> generator,
+        string fileName,
+        FileWriterOptions? options = null
+    )
     {
-        return new CSharpWriter(generator.OpenFileWriter(fileName));
+        return new CSharpWriter(generator.OpenFileWriter(fileName, options ?? new()));
     }
 
     public static string ToFilePath(this string path)

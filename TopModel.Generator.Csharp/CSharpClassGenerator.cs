@@ -231,9 +231,9 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
     /// <param name="item">La classe générée.</param>
     protected virtual void GenerateEnumCols(CSharpWriter w, Class item)
     {
-        w.WriteLine(1, "#region Meta données");
+        w.WriteLine(1, $"#region {Config.GetMessage(CsharpMessage.MetadataRegion)}");
         w.WriteLine();
-        w.WriteSummary(1, "Type énuméré présentant les noms des colonnes en base.");
+        w.WriteSummary(1, Config.GetMessage(CsharpMessage.ClassColumnNames));
 
         if (item.Extends == null)
         {
@@ -248,7 +248,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
 
         foreach (var property in Config.GetProperties(item))
         {
-            w.WriteSummary(2, "Nom de la colonne en base associée à la propriété " + property.NamePascal + ".");
+            w.WriteSummary(2, Config.GetMessage(CsharpMessage.ClassColumnName, property.NamePascal));
             w.WriteLine(2, $"{property.SqlName},");
             if (property != Config.GetProperties(item).Last())
             {
@@ -280,7 +280,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
         foreach (var prop in Config.GetProperties(item).Where(p => p.EnumProperty == p))
         {
             hasLine = true;
-            w.WriteSummary(1, $"Valeurs possibles de la liste de référence {prop.Class}.");
+            w.WriteSummary(1, Config.GetMessage(CsharpMessage.ClassReferenceValues, prop.Class));
             WriteEnum(w, prop, refs);
         }
 
@@ -582,7 +582,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
             w.WriteLine();
         }
 
-        w.WriteSummary(1, "Liste des valeurs");
+        w.WriteSummary(1, Config.GetMessage(CsharpMessage.ValueList));
         w.Write(1, $"public static IList<{Config.GetTypeName(item)}> Values {{ get; }} = ");
 
         w.Write(Config.DotnetVersion >= 8 ? "[" : "new() { ");
@@ -608,9 +608,9 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
 
         var key = item.EnumKey;
 
-        w.WriteSummary(1, "Récupère l'instance correspondante à la clé primaire demandée.");
+        w.WriteSummary(1, Config.GetMessage(CsharpMessage.PrimaryKeyInstance));
         w.WriteParam(key.NameCamel, key.Comment);
-        w.WriteReturns(1, "L'instance correspondante.");
+        w.WriteReturns(1, Config.GetMessage(CsharpMessage.PrimaryKeyValue));
         w.WriteLine(
             1,
             $"public static {Config.GetTypeName(item)} GetValue({Config.GetType(key, tag, nonNullable: true)} {key.NameCamel})"
@@ -618,7 +618,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
         w.WriteLine(1, "{");
         w.WriteLine(2, $"return {key.NameCamel} switch");
         w.WriteLine(2, "{");
-        foreach (var refValue in item.Values)
+        foreach (var refValue in item.Values.OrderBy(v => v.Value[key], StringComparer.Ordinal))
         {
             w.WriteLine(
                 3,

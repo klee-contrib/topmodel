@@ -9,7 +9,6 @@ public enum CliMessage
     CancellationRequested,
     CheckModeEnabled,
     CheckOptionDescription,
-    ConfigChanged,
     ConfigFileNotFound,
     ConfigFilesFound,
     ConfigSchemaGenerated,

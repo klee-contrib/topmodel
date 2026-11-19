@@ -3,9 +3,9 @@
 ----
 
 -- ===========================================================================================
---   Application Name	:	Restaurant 
---   Script Name		:	04_resources.sql
---   Description		:	Scripts d'insertion des ressources (libellés traduits).
+--  Nom de l'application : Restaurant 
+--  Nom du script        : 04_resources.sql
+--  Description          : Scripts d'insertion des ressources (libellés traduits).
 -- ===========================================================================================
 
 /**		Initialisation des traductions des propriétés de la table vaisselle		**/

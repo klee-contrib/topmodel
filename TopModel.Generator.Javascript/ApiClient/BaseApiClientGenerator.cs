@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Text;
+using Microsoft.Extensions.Logging;
 using TopModel.Core.FileModel;
 using TopModel.Core.Model;
 using TopModel.Core.Utils;
@@ -64,7 +65,10 @@ public abstract class BaseApiClientGenerator(ILogger<BaseApiClientGenerator> log
         CancellationToken ct = default
     )
     {
-        await using var fw = OpenFileWriter(filePath, encoderShouldEmitUTF8Identifier: false);
+        await using var fw = OpenFileWriter(
+            filePath,
+            new() { Encoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false) }
+        );
 
         var frameworkImports = GetFrameworkImports(filePath, tag, endpoints).GroupAndSort();
         var endpointImports = Config.GetEndpointImports(filePath, endpoints, tag).GroupAndSort();

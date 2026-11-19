@@ -120,7 +120,7 @@ public class SpringRestTemplateApiGenerator(
     {
         var className = GetClassName(fileName, tag);
         var packageName = Config.GetPackageName(endpoints[0], tag);
-        await using var fw = this.OpenJavaWriter(filePath, packageName, codePage: null);
+        await using var fw = this.OpenJavaWriter(filePath, packageName);
 
         WriteImports(endpoints, fw, tag);
         fw.WriteLine();
@@ -138,7 +138,7 @@ public class SpringRestTemplateApiGenerator(
         fw.WriteLine(1, $"protected String host;");
 
         fw.WriteLine();
-        fw.WriteDocStart(1, "Constructeur par paramètres");
+        fw.WriteDocStart(1, Config.GetMessage(JpaMessage.ConstructorByParameters));
         fw.WriteLine(1, " * @param restTemplate");
         fw.WriteLine(1, " * @param host");
         fw.WriteDocEnd(1);
@@ -148,8 +148,8 @@ public class SpringRestTemplateApiGenerator(
         fw.WriteLine(1, $"}}");
 
         fw.WriteLine();
-        fw.WriteDocStart(1, "Méthode de récupération des headers");
-        fw.WriteLine(1, " * @return les headers à ajouter à la requête");
+        fw.WriteDocStart(1, Config.GetMessage(JpaMessage.HeadersMethod));
+        fw.WriteLine(1, $" * @return {Config.GetMessage(JpaMessage.HeadersReturn)}");
         fw.WriteDocEnd(1);
         fw.WriteLine(1, $"protected abstract HttpHeaders getHeaders();");
 
@@ -180,11 +180,11 @@ public class SpringRestTemplateApiGenerator(
         ]);
 
         fw.WriteLine();
-        fw.WriteDocStart(1, "Ajoute une valeur au corps multipart de la requête");
-        fw.WriteLine(1, " * Les valeurs nulles sont ignorées, les collections sont ajoutées élément par élément.");
-        fw.WriteLine(1, " * @param body corps multipart de la requête");
-        fw.WriteLine(1, " * @param name nom du champ");
-        fw.WriteLine(1, " * @param value valeur du champ");
+        fw.WriteDocStart(1, Config.GetMessage(JpaMessage.AddPartDescription));
+        fw.WriteLine(1, $" * {Config.GetMessage(JpaMessage.AddPartNullCollections)}");
+        fw.WriteLine(1, $" * @param body {Config.GetMessage(JpaMessage.AddPartBody)}");
+        fw.WriteLine(1, $" * @param name {Config.GetMessage(JpaMessage.AddPartName)}");
+        fw.WriteLine(1, $" * @param value {Config.GetMessage(JpaMessage.AddPartValue)}");
         fw.WriteDocEnd(1);
         fw.WriteLine(1, "protected void addPart(MultiValueMap<String, Object> body, String name, Object value) {");
         fw.WriteLine(2, "if (value instanceof Collection<?> values) {");
@@ -334,7 +334,7 @@ public class SpringRestTemplateApiGenerator(
 
     protected virtual void WriteUriBuilderMethod(JavaWriter fw, Endpoint endpoint, string tag)
     {
-        fw.WriteDocStart(1, $"UriComponentsBuilder pour la méthode {endpoint.NameCamel}");
+        fw.WriteDocStart(1, Config.GetMessage(JpaMessage.RestTemplateUriBuilder, endpoint.NameCamel));
 
         foreach (var param in endpoint.GetRouteParams().Concat(endpoint.GetQueryParams(Config)))
         {

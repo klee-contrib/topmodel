@@ -39,51 +39,51 @@ public abstract class Lieu {
 	private String adresse;
 
 	/**
-	 * Getter for id.
+	 * Accesseur de 'id'.
 	 *
-	 * @return value of {@link #id id}.
+	 * @return Valeur de {@link #id id}.
 	 */
 	public Integer getId() {
 		return this.id;
 	}
 
 	/**
-	 * Getter for nom.
+	 * Accesseur de 'nom'.
 	 *
-	 * @return value of {@link #nom nom}.
+	 * @return Valeur de {@link #nom nom}.
 	 */
 	public String getNom() {
 		return this.nom;
 	}
 
 	/**
-	 * Getter for adresse.
+	 * Accesseur de 'adresse'.
 	 *
-	 * @return value of {@link #adresse adresse}.
+	 * @return Valeur de {@link #adresse adresse}.
 	 */
 	public String getAdresse() {
 		return this.adresse;
 	}
 
 	/**
-	 * Set the value of {@link #id id}.
-	 * @param id value to set.
+	 * Définit la valeur de {@link #id id}.
+	 * @param id Valeur à définir.
 	 */
 	public void setId(Integer id) {
 		this.id = id;
 	}
 
 	/**
-	 * Set the value of {@link #nom nom}.
-	 * @param nom value to set.
+	 * Définit la valeur de {@link #nom nom}.
+	 * @param nom Valeur à définir.
 	 */
 	public void setNom(String nom) {
 		this.nom = nom;
 	}
 
 	/**
-	 * Set the value of {@link #adresse adresse}.
-	 * @param adresse value to set.
+	 * Définit la valeur de {@link #adresse adresse}.
+	 * @param adresse Valeur à définir.
 	 */
 	public void setAdresse(String adresse) {
 		this.adresse = adresse;

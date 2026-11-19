@@ -1,29 +1,22 @@
-namespace TopModel.Generator.Documentation;
+﻿namespace TopModel.Generator.Documentation;
 
 using TopModel.Utils;
 
 /// <summary>
 /// Utilitaire pour écrire des documents Markdown en s'appuyant sur un <see cref="IFileWriter"/>.
 /// </summary>
-public sealed class MarkdownWriter : IAsyncDisposable
+/// <remarks>
+/// Initialise une nouvelle instance de <see cref="MarkdownWriter"/>.
+/// </remarks>
+/// <param name="fileWriter">Writer sous-jacent dans lequel écrire le Markdown.</param>
+public sealed class MarkdownWriter(IFileWriter fileWriter) : IAsyncDisposable
 {
-    private readonly IFileWriter _fileWriter;
     private bool HasLevel1Header = false;
-
-    /// <summary>
-    /// Initialise une nouvelle instance de <see cref="MarkdownWriter"/>.
-    /// </summary>
-    /// <param name="fileWriter">Writer sous-jacent dans lequel écrire le Markdown.</param>
-    public MarkdownWriter(IFileWriter fileWriter)
-    {
-        _fileWriter = fileWriter;
-        _fileWriter.EnableHeader = false;
-    }
 
     /// <inheritdoc cref="IAsyncDisposable.DisposeAsync" />
     public ValueTask DisposeAsync()
     {
-        return _fileWriter.DisposeAsync();
+        return fileWriter.DisposeAsync();
     }
 
     /// <summary>
@@ -32,7 +25,7 @@ public sealed class MarkdownWriter : IAsyncDisposable
     /// <param name="text">Texte à écrire (optionnel).</param>
     public void WriteLine(string? text = null)
     {
-        _fileWriter.WriteLine(text);
+        fileWriter.WriteLine(text);
     }
 
     /// <summary>
@@ -63,12 +56,12 @@ public sealed class MarkdownWriter : IAsyncDisposable
             }
         }
 
-        _fileWriter.WriteLine($"| {string.Join(" | ", columns.Select((c, i) => c.PadRight(widths[i])))} |");
-        _fileWriter.WriteLine($"| {string.Join(" | ", widths.Select(w => new string('-', w)))} |");
+        fileWriter.WriteLine($"| {string.Join(" | ", columns.Select((c, i) => c.PadRight(widths[i])))} |");
+        fileWriter.WriteLine($"| {string.Join(" | ", widths.Select(w => new string('-', w)))} |");
 
         foreach (var row in rows)
         {
-            _fileWriter.WriteLine(
+            fileWriter.WriteLine(
                 $"| {string.Join(
                     " | ",
                     Enumerable.Range(0, columns.Count)
@@ -93,6 +86,6 @@ public sealed class MarkdownWriter : IAsyncDisposable
             throw new InvalidOperationException(DocumentationMessage.MultipleLevel1Titles.GetMessage());
         }
         HasLevel1Header |= level == 1;
-        _fileWriter.WriteLine($"{new string('#', level)} {text}");
+        fileWriter.WriteLine($"{new string('#', level)} {text}");
     }
 }

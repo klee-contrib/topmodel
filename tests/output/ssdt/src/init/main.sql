@@ -3,7 +3,7 @@
 ----
 
 -- ===========================================================================================
---   Description		:	Insertion des valeurs de listes statiques.
+--  Description          : Insertion des valeurs de listes statiques.
 -- ===========================================================================================
 
 /* Insertion dans la table ASSIETTE. */

@@ -33,34 +33,34 @@ public abstract class Vaisselle {
 	private String description;
 
 	/**
-	 * Getter for id.
+	 * Accesseur de 'id'.
 	 *
-	 * @return value of {@link #id id}.
+	 * @return Valeur de {@link #id id}.
 	 */
 	public Integer getId() {
 		return this.id;
 	}
 
 	/**
-	 * Getter for description.
+	 * Accesseur de 'description'.
 	 *
-	 * @return value of {@link #description description}.
+	 * @return Valeur de {@link #description description}.
 	 */
 	public String getDescription() {
 		return this.description;
 	}
 
 	/**
-	 * Set the value of {@link #id id}.
-	 * @param id value to set.
+	 * Définit la valeur de {@link #id id}.
+	 * @param id Valeur à définir.
 	 */
 	public void setId(Integer id) {
 		this.id = id;
 	}
 
 	/**
-	 * Set the value of {@link #description description}.
-	 * @param description value to set.
+	 * Définit la valeur de {@link #description description}.
+	 * @param description Valeur à définir.
 	 */
 	public void setDescription(String description) {
 		this.description = description;

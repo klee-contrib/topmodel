@@ -105,7 +105,7 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
 
         w.WriteNamespace(implementationNamespace);
 
-        w.WriteSummary($"Implémentation de {interfaceName}.");
+        w.WriteSummary(Config.GetMessage(CsharpMessage.ImplementationOf, interfaceName));
 
         if (PrimaryConstructor)
         {
@@ -145,7 +145,7 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
             {
                 w.WriteLine(1, $"private readonly {dbContextName} _dbContext;");
                 w.WriteLine();
-                w.WriteSummary(1, "Constructeur");
+                w.WriteSummary(1, Config.GetMessage(CsharpMessage.DefaultConstructor).TrimEnd('.'));
                 w.WriteParam("dbContext", "DbContext");
                 w.WriteLine(1, $"public {implementationName}({parameters})");
                 w.WriteLine(1, "{");
@@ -169,7 +169,7 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
             {
                 w.WriteLine(1, $"private readonly BrokerManager _brokerManager;");
                 w.WriteLine();
-                w.WriteSummary(1, "Constructeur");
+                w.WriteSummary(1, Config.GetMessage(CsharpMessage.DefaultConstructor).TrimEnd('.'));
                 w.WriteParam("brokerManager", "BrokerManager");
                 w.WriteLine(1, $"public {implementationName}({parameters})");
                 w.WriteLine(1, "{");
@@ -245,7 +245,11 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
 
         w.WriteNamespace(interfaceNamespace);
         w.WriteSummary(
-            $"Accesseurs de listes de référence {(fileType.StartsWith("db") ? "persistées" : "non persistées")}"
+            Config.GetMessage(
+                fileType.StartsWith("db")
+                    ? CsharpMessage.PersistentReferenceListAccessors
+                    : CsharpMessage.NonPersistentReferenceListAccessors
+            )
         );
         w.WriteLine("[RegisterContract]");
         w.WriteLine($"public partial interface {interfaceName}");
@@ -255,12 +259,12 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
         foreach (var classe in classList)
         {
             count++;
-            w.WriteSummary(1, $"Accesseur de référence pour le type {Config.GetTypeName(classe)}");
+            w.WriteSummary(1, Config.GetMessage(CsharpMessage.ReferenceAccessor, Config.GetTypeName(classe)));
             if (Config.UseAsyncReferenceAccessors)
             {
                 w.WriteParam("ct", "CancellationToken");
             }
-            w.WriteReturns(1, $"Liste de {Config.GetTypeName(classe)}");
+            w.WriteReturns(1, Config.GetMessage(CsharpMessage.ListOf, Config.GetTypeName(classe)));
             w.WriteLine(1, "[ReferenceAccessor]");
             w.WriteLine(
                 1,

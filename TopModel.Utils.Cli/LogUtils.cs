@@ -12,7 +12,7 @@ public static class LogUtils
         {
             var color = Colors[index % Colors.Length];
             AnsiConsole.MarkupLine(
-                $"[{color}]#{index + 1} - {Path.GetRelativePath(Directory.GetCurrentDirectory(), configPath)}[/]{(changed ? $": [teal]{CliMessage.ConfigChanged.GetMessage()}[/]" : string.Empty)}"
+                $"[{color}]#{index + 1} - {Path.GetRelativePath(Directory.GetCurrentDirectory(), configPath)}[/]{(changed ? $": [teal]{CliMessage.ActionModified.GetMessage()}[/]" : string.Empty)}"
             );
         }
 

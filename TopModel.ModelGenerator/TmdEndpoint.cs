@@ -8,7 +8,7 @@ public class TmdEndpoint
 
     public required string Route { get; set; }
 
-    public string Comment { get; set; } = "Non documenté";
+    public string? Comment { get; set; }
 
     public IList<TmdProperty> Params { get; set; } = [];
 

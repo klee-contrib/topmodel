@@ -56,8 +56,7 @@ public class TranslationOutGenerator(
         CancellationToken ct = default
     )
     {
-        await using var fw = OpenFileWriter(filePath);
-        fw.EnableHeader = false;
+        await using var fw = OpenFileWriter(filePath, new() { EnableHeader = false });
 
         var containers = properties.GroupBy(prop => prop.Parent);
 

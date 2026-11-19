@@ -1,4 +1,4 @@
-using System.Data;
+﻿using System.Data;
 using Microsoft.Extensions.Logging;
 using TopModel.Core.FileModel;
 using TopModel.Core.Model;
@@ -442,7 +442,7 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
         fw.WriteLine($"public class {dataFlow.Name}Flow {{");
         fw.WriteLine();
         fw.WriteLine(1, $@"protected {dataFlow.Name}Flow() {{");
-        fw.WriteLine(2, "// protected constructor to hide implicite public one");
+        fw.WriteLine(2, "// " + Config.GetMessage(JpaMessage.ProtectedConstructorComment));
         fw.WriteLine(1, "}");
 
         WriteBeanFlow(fw, dataFlow);
@@ -529,14 +529,14 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
                 .ResolveVariables(Config.DataFlowsPath!, tag, module: dataFlow.ModelFile.Namespace.Module)
                 .ToPackageName();
             var fileName = Config.GetDataFlowPartialFilePath(dataFlow, tag);
-            await using var fw = this.OpenJavaWriter($"{fileName}", packageName, codePage: null);
+            await using var fw = this.OpenJavaWriter($"{fileName}", packageName);
             fw.WriteLine();
             fw.WriteLine(@$"public interface {dataFlow.Name.ToPascalCase()}PartialFlow {{");
             foreach (var source in dataFlow.Sources.Where(s => s.Mode == DataFlowSourceMode.Partial))
             {
                 fw.AddImport("org.springframework.batch.infrastructure.item.ItemReader");
-                fw.WriteDocStart(1, "Remplacer l'implémentation du reader par défaut");
-                fw.WriteReturns(1, "ItemReader reader au sens de spring-batch");
+                fw.WriteDocStart(1, Config.GetMessage(JpaMessage.FlowReplaceReader));
+                fw.WriteReturns(1, Config.GetMessage(JpaMessage.FlowItemReaderStep));
                 fw.WriteDocEnd(1);
                 fw.AddImport(source.Class.GetImport(Config, tag));
                 fw.WriteLine(1, @$"ItemReader<{source.Class.NamePascal}> {source.Class.NameCamel}Reader();");
@@ -546,11 +546,8 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
             {
                 fw.AddImport("org.springframework.batch.core.step.Step");
                 fw.WriteLine();
-                fw.WriteDocStart(
-                    1,
-                    "Etape positionnée avant toute autre opération dans ce flux (avant la première lecture ou le truncate)"
-                );
-                fw.WriteReturns(1, "Step étape au sens de spring-batch");
+                fw.WriteDocStart(1, Config.GetMessage(JpaMessage.FlowBeforeOperations));
+                fw.WriteReturns(1, Config.GetMessage(JpaMessage.FlowStep));
                 fw.WriteDocEnd(1);
                 fw.WriteLine(1, @$" Step beforeFlowStep();");
             }
@@ -559,8 +556,8 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
             {
                 fw.AddImport("org.springframework.batch.core.step.Step");
                 fw.WriteLine();
-                fw.WriteDocStart(1, "Etape après toutes les opérations de ce flux (après la dernière écriture)");
-                fw.WriteReturns(1, "Step étape au sens de spring-batch");
+                fw.WriteDocStart(1, Config.GetMessage(JpaMessage.FlowAfterOperations));
+                fw.WriteReturns(1, Config.GetMessage(JpaMessage.FlowStep));
                 fw.WriteDocEnd(1);
                 fw.WriteLine(1, @$"Step afterFlowStep();");
             }
@@ -576,13 +573,10 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
                 fw.AddImport(processorSourceClass.GetImport(Config, tag));
                 fw.AddImport(processorTargetClass.GetImport(Config, tag));
                 fw.WriteLine();
-                fw.WriteDocStart(
-                    1,
-                    "Processus de transformation de la donnée dans le flow. Les étapes sont ordonnées comme suit :"
-                );
+                fw.WriteDocStart(1, Config.GetMessage(JpaMessage.FlowProcess));
                 fw.WriteLine(1, " * Read - AfterSource - Map - BeforeWrite - Write");
-                fw.WriteLine(1, " * Le map remplace le mapping par défaut de TopModel");
-                fw.WriteReturns(1, "ItemProcessor étape au sens de spring-batch");
+                fw.WriteLine(1, $" * {Config.GetMessage(JpaMessage.FlowMap)}");
+                fw.WriteReturns(1, Config.GetMessage(JpaMessage.FlowItemProcessorStep));
                 fw.WriteDocEnd(1);
                 fw.WriteLine(
                     1,

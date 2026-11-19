@@ -1,4 +1,6 @@
-﻿namespace TopModel.Core.Model;
+﻿using TopModel.Utils;
+
+namespace TopModel.Core.Model;
 
 public static class ContainerExtensions
 {
@@ -13,7 +15,7 @@ public static class ContainerExtensions
                 {
                     Association = classe.Extends,
                     Class = classe,
-                    Comment = "Association vers la clé primaire de la classe parente",
+                    Comment = CoreMessage.ParentAssociationComment.GetLocalizedMessage(classe.ModelFile.Language),
                     Required = true,
                     PrimaryKey = !classe.PrimaryKey.Any(),
                 }

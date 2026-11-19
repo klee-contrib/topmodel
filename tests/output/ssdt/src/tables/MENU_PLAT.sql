@@ -3,7 +3,7 @@
 ----
 
 -- ===========================================================================================
---   Description		:	Création de la table MENU_PLAT.
+--  Description          : Création de la table MENU_PLAT.
 -- ===========================================================================================
 
 create table MENU_PLAT (
@@ -17,12 +17,12 @@ create table MENU_PLAT (
 	constraint UK_MENU_PLAT_MEN_ID_MPL_ORDRE unique nonclustered (MEN_ID asc, MPL_ORDRE asc))
 go
 
-/* Index on foreign key column for MENU_PLAT.MEN_ID */
+/* Index sur la colonne de clé étrangère MENU_PLAT.MEN_ID */
 create nonclustered index IDX_MPL_MEN_ID_FK
 	on MENU_PLAT (MEN_ID asc)
 go
 
-/* Index on foreign key column for MENU_PLAT.PLA_ID */
+/* Index sur la colonne de clé étrangère MENU_PLAT.PLA_ID */
 create nonclustered index IDX_MPL_PLA_ID_FK
 	on MENU_PLAT (PLA_ID asc)
 go

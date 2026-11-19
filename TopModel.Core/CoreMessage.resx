@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -120,6 +120,9 @@
   <data name="CircularDependency" xml:space="preserve">
     <value>Circular dependency detected: {0} cannot reference {1}.</value>
   </data>
+  <data name="DiscriminatorPropertyComment" xml:space="preserve">
+    <value>Discriminator for instances of the class hierarchy</value>
+  </data>
   <data name="FileCreated" xml:space="preserve">
     <value>Created:  {0}</value>
   </data>
@@ -144,6 +147,9 @@
   <data name="MapperFromParametersInvalid" xml:space="preserve">
     <value>Error while building parameters for the 'from' mapper.</value>
   </data>
+  <data name="ModelInstanceComment" xml:space="preserve">
+    <value>Instance of '{0}'</value>
+  </data>
   <data name="ModelLoaded" xml:space="preserve">
     <value>Model loaded successfully.</value>
   </data>
@@ -155,6 +161,9 @@
   </data>
   <data name="NoYamlDocument" xml:space="preserve">
     <value>No YAML document in the configuration file.</value>
+  </data>
+  <data name="ParentAssociationComment" xml:space="preserve">
+    <value>Association to the parent class primary key</value>
   </data>
   <data name="PropertyInvalidForAlias" xml:space="preserve">
     <value>Unknown property '{0}' for an alias.</value>
@@ -179,6 +188,9 @@
   </data>
   <data name="PropertyTypeUnknown" xml:space="preserve">
     <value>Unknown property type.</value>
+  </data>
+  <data name="ReverseAssociationComment" xml:space="preserve">
+    <value>Reverse association of {0}.{1}</value>
   </data>
   <data name="UndefinedConfigVariable" xml:space="preserve">
     <value>{{{0}.{1}}} - Variable '{{{2}}}' is not defined for this configuration.</value>

@@ -14,13 +14,13 @@ import jakarta.validation.constraints.NotNull;
  * Détail d'un paiement.
  *
  * @param factureId Facture associée au paiement.
- *                  Alias of {@link restaurant.jpa_feign.entities.restaurant.Paiement#getFacture() Paiement#getFacture()}
+ *                  Alias de {@link restaurant.jpa_feign.entities.restaurant.Paiement#getFacture() Paiement#getFacture()}
  * @param swileCardId Carte Swile utilisée pour le paiement.
- *                    Alias of {@link restaurant.jpa_feign.entities.restaurant.Paiement#getSwileCardId() Paiement#getSwileCardId()}
+ *                    Alias de {@link restaurant.jpa_feign.entities.restaurant.Paiement#getSwileCardId() Paiement#getSwileCardId()}
  * @param dateCommande Date et heure de la commande.
- *                     Alias of {@link restaurant.jpa_feign.entities.restaurant.Commande#getDateCommande() Commande#getDateCommande()}
+ *                     Alias de {@link restaurant.jpa_feign.entities.restaurant.Commande#getDateCommande() Commande#getDateCommande()}
  * @param montantTotal Montant total de la commande.
- *                     Alias of {@link restaurant.jpa_feign.entities.restaurant.Commande#getMontantTotal() Commande#getMontantTotal()}
+ *                     Alias de {@link restaurant.jpa_feign.entities.restaurant.Commande#getMontantTotal() Commande#getMontantTotal()}
  */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public record PaiementItem(
@@ -31,7 +31,7 @@ public record PaiementItem(
 ) {
 
 	/**
-	 * Enumération des champs de la classe {@link restaurant.jpa_feign.dtos.restaurant.PaiementItem PaiementItem}.
+	 * Énumération des champs de la classe {@link restaurant.jpa_feign.dtos.restaurant.PaiementItem PaiementItem}.
 	 */
 	public enum Fields {
 		FACTURE_ID(Integer.class),
@@ -46,9 +46,9 @@ public record PaiementItem(
 		}
 
 		/**
-		 * Getter for type.
+		 * Accesseur de 'type'.
 		 *
-		 * @return value of {@link #type type}.
+		 * @return Valeur de {@link #type type}.
 		 */
 		public Class<?> getType() {
 			return this.type;

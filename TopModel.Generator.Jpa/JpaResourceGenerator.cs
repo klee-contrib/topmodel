@@ -64,8 +64,8 @@ public class JpaResourceGenerator(
             };
         }
 
-        await using var fw = OpenFileWriter(filePath, encoding);
-        fw.EnableHeader = false;
+        await using var fw = OpenFileWriter(filePath, new() { Encoding = encoding, EnableHeader = false });
+
         var containers = properties.GroupBy(prop => prop.Parent);
 
         foreach (var container in containers.OrderBy(c => c.Key.NameCamel))

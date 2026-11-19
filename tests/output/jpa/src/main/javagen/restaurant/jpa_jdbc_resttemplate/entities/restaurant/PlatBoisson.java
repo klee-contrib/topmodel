@@ -25,17 +25,17 @@ public class PlatBoisson extends Plat {
 	private Integer volume;
 
 	/**
-	 * Getter for volume.
+	 * Accesseur de 'volume'.
 	 *
-	 * @return value of {@link #volume volume}.
+	 * @return Valeur de {@link #volume volume}.
 	 */
 	public Integer getVolume() {
 		return this.volume;
 	}
 
 	/**
-	 * Set the value of {@link #volume volume}.
-	 * @param volume value to set.
+	 * Définit la valeur de {@link #volume volume}.
+	 * @param volume Valeur à définir.
 	 */
 	public void setVolume(Integer volume) {
 		this.volume = volume;

@@ -7,6 +7,7 @@ public enum UtilsMessage
     FileCreated,
     FileDeleted,
     FileModified,
+    GeneratedFileHeader,
     LockFileReadError,
     LockFileVersionMismatch,
 }

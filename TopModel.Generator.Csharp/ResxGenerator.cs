@@ -163,9 +163,7 @@ public class ResxGenerator(
         CancellationToken ct = default
     )
     {
-        await using var w = OpenFileWriter(filePath);
-        w.EnableHeader = false;
-        w.IndentValue = "  ";
+        await using var w = OpenFileWriter(filePath, new() { EnableHeader = false, IndentValue = "  " });
         w.WriteLine(ResxStartFile);
 
         foreach (

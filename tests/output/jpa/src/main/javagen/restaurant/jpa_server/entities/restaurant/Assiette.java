@@ -24,24 +24,24 @@ public class Assiette extends Vaisselle {
 	private Integer taille;
 
 	/**
-	 * Getter for taille.
+	 * Accesseur de 'taille'.
 	 *
-	 * @return value of {@link #taille taille}.
+	 * @return Valeur de {@link #taille taille}.
 	 */
 	public Integer getTaille() {
 		return this.taille;
 	}
 
 	/**
-	 * Set the value of {@link #taille taille}.
-	 * @param taille value to set.
+	 * Définit la valeur de {@link #taille taille}.
+	 * @param taille Valeur à définir.
 	 */
 	public void setTaille(Integer taille) {
 		this.taille = taille;
 	}
 
 	/**
-	 * Enumération des champs de la classe {@link restaurant.jpa_server.entities.restaurant.Assiette Assiette}.
+	 * Énumération des champs de la classe {@link restaurant.jpa_server.entities.restaurant.Assiette Assiette}.
 	 */
 	public enum Fields {
 		TAILLE(Integer.class);
@@ -53,9 +53,9 @@ public class Assiette extends Vaisselle {
 		}
 
 		/**
-		 * Getter for type.
+		 * Accesseur de 'type'.
 		 *
-		 * @return value of {@link #type type}.
+		 * @return Valeur de {@link #type type}.
 		 */
 		public Class<?> getType() {
 			return this.type;

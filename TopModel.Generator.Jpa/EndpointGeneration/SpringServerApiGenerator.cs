@@ -166,7 +166,7 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
     {
         var className = GetClassName(fileName, tag);
         var packageName = Config.GetPackageName(endpoints[0], tag);
-        await using var fw = this.OpenJavaWriter(filePath, packageName, codePage: null);
+        await using var fw = this.OpenJavaWriter(filePath, packageName);
 
         var javaInterface = new JavaClass(className) { ClassType = "interface", Package = packageName };
         var annotations = GetClassAnnotations(endpoints[0].ModelFile, tag);

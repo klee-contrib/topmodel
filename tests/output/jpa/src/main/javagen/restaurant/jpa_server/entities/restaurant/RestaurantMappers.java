@@ -45,7 +45,7 @@ import restaurant.jpa_server.dtos.restaurant.TableWrite;
 public class RestaurantMappers {
 
 	private RestaurantMappers() {
-		// private constructor to hide implicite public one
+		// Constructeur privé pour masquer le constructeur public implicite
 	}
 
 	/**
@@ -312,10 +312,10 @@ public class RestaurantMappers {
 	}
 
 	/**
-	 * Crée une nouvelle instance de la classe 'FactureItem' en mappant les champs sources.
+	 * Mappe les champs sources sur l'instance de la classe 'FactureItem' passée en paramètre.
 	 * @param facture Instance de 'Facture' source.
 	 *
-	 * @return Une nouvelle instance de 'FactureItem' sur laquelle les champs sources ont été mappés.
+	 * @return L'instance de 'FactureItem' passée en paramètres sur lesquels les champs sources ont été mappés.
 	 */
 	public static FactureItem createFactureItem(Facture facture) {
 		if (facture == null) {
@@ -419,11 +419,11 @@ public class RestaurantMappers {
 	}
 
 	/**
-	 * Crée une nouvelle instance de la classe 'PaiementItem' en mappant les champs sources.
+	 * Mappe les champs sources sur l'instance de la classe 'PaiementItem' passée en paramètre.
 	 * @param paiement Instance de 'Paiement' source.
 	 * @param commande Instance de 'Commande' source.
 	 *
-	 * @return Une nouvelle instance de 'PaiementItem' sur laquelle les champs sources ont été mappés.
+	 * @return L'instance de 'PaiementItem' passée en paramètres sur lesquels les champs sources ont été mappés.
 	 */
 	public static PaiementItem createPaiementItem(Paiement paiement, Commande commande) {
 		if (paiement == null) {

@@ -42,27 +42,27 @@ public class Client extends Personne {
 	private List<AvisClient> avisClients;
 
 	/**
-	 * Getter for email.
+	 * Accesseur de 'email'.
 	 *
-	 * @return value of {@link #email email}.
+	 * @return Valeur de {@link #email email}.
 	 */
 	public String getEmail() {
 		return this.email;
 	}
 
 	/**
-	 * Getter for swileCard.
+	 * Accesseur de 'swileCard'.
 	 *
-	 * @return value of {@link #swileCard swileCard}.
+	 * @return Valeur de {@link #swileCard swileCard}.
 	 */
 	public Integer getSwileCard() {
 		return this.swileCard;
 	}
 
 	/**
-	 * Getter for avisClients.
+	 * Accesseur de 'avisClients'.
 	 *
-	 * @return value of {@link #avisClients avisClients}.
+	 * @return Valeur de {@link #avisClients avisClients}.
 	 */
 	public List<AvisClient> getAvisClients() {
 		if (this.avisClients == null) {
@@ -72,31 +72,31 @@ public class Client extends Personne {
 	}
 
 	/**
-	 * Set the value of {@link #email email}.
-	 * @param email value to set.
+	 * Définit la valeur de {@link #email email}.
+	 * @param email Valeur à définir.
 	 */
 	public void setEmail(String email) {
 		this.email = email;
 	}
 
 	/**
-	 * Set the value of {@link #swileCard swileCard}.
-	 * @param swileCard value to set.
+	 * Définit la valeur de {@link #swileCard swileCard}.
+	 * @param swileCard Valeur à définir.
 	 */
 	public void setSwileCard(Integer swileCard) {
 		this.swileCard = swileCard;
 	}
 
 	/**
-	 * Set the value of {@link #avisClients avisClients}.
-	 * @param avisClients value to set.
+	 * Définit la valeur de {@link #avisClients avisClients}.
+	 * @param avisClients Valeur à définir.
 	 */
 	public void setAvisClients(List<AvisClient> avisClients) {
 		this.avisClients = avisClients;
 	}
 
 	/**
-	 * Enumération des champs de la classe {@link restaurant.jpa_server.entities.restaurant.Client Client}.
+	 * Énumération des champs de la classe {@link restaurant.jpa_server.entities.restaurant.Client Client}.
 	 */
 	public enum Fields {
 		EMAIL(String.class),
@@ -110,9 +110,9 @@ public class Client extends Personne {
 		}
 
 		/**
-		 * Getter for type.
+		 * Accesseur de 'type'.
 		 *
-		 * @return value of {@link #type type}.
+		 * @return Valeur de {@link #type type}.
 		 */
 		public Class<?> getType() {
 			return this.type;

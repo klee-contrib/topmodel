@@ -44,31 +44,31 @@ public interface CommandeItem {
 
 	/**
 	 * Identifiant de la commande.
-	 * @param id value to set.
+	 * @param id Valeur à définir.
 	 */
 	void setId(Integer id);
 
 	/**
 	 * Date et heure de la commande.
-	 * @param dateCommande value to set.
+	 * @param dateCommande Valeur à définir.
 	 */
 	void setDateCommande(LocalDateTime dateCommande);
 
 	/**
 	 * Montant total de la commande.
-	 * @param montantTotal value to set.
+	 * @param montantTotal Valeur à définir.
 	 */
 	void setMontantTotal(BigDecimal montantTotal);
 
 	/**
 	 * Statut de la commande.
-	 * @param statutCommande value to set.
+	 * @param statutCommande Valeur à définir.
 	 */
 	void setStatutCommande(StatutCommande statutCommande);
 
 	/**
 	 * Client ayant passé la commande.
-	 * @param clientId value to set.
+	 * @param clientId Valeur à définir.
 	 */
 	void setClientId(Integer clientId);
 }

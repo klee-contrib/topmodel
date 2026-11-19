@@ -24,24 +24,24 @@ public class PlatBoisson extends Plat {
 	private Integer volume;
 
 	/**
-	 * Getter for volume.
+	 * Accesseur de 'volume'.
 	 *
-	 * @return value of {@link #volume volume}.
+	 * @return Valeur de {@link #volume volume}.
 	 */
 	public Integer getVolume() {
 		return this.volume;
 	}
 
 	/**
-	 * Set the value of {@link #volume volume}.
-	 * @param volume value to set.
+	 * Définit la valeur de {@link #volume volume}.
+	 * @param volume Valeur à définir.
 	 */
 	public void setVolume(Integer volume) {
 		this.volume = volume;
 	}
 
 	/**
-	 * Enumération des champs de la classe {@link restaurant.jpa_server.entities.restaurant.PlatBoisson PlatBoisson}.
+	 * Énumération des champs de la classe {@link restaurant.jpa_server.entities.restaurant.PlatBoisson PlatBoisson}.
 	 */
 	public enum Fields {
 		VOLUME(Integer.class);
@@ -53,9 +53,9 @@ public class PlatBoisson extends Plat {
 		}
 
 		/**
-		 * Getter for type.
+		 * Accesseur de 'type'.
 		 *
-		 * @return value of {@link #type type}.
+		 * @return Valeur de {@link #type type}.
 		 */
 		public Class<?> getType() {
 			return this.type;

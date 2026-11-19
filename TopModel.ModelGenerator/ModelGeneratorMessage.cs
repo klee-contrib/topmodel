@@ -4,7 +4,9 @@ public enum ModelGeneratorMessage
 {
     ConnectingToDb,
     DbConnectionSuccess,
+    EnumValuesDescription,
     GeneratingPleaseWait,
+    NotDocumented,
     PasswordPrompt,
     RegisteredGenerators,
     RootCommandDescription,

@@ -1,0 +1,288 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AddValue" xml:space="preserve">
+    <value>Add a value to {{@link {0}#{1} {1}}}</value>
+  </data>
+  <data name="AddValueParameter" xml:space="preserve">
+    <value>Value to add to '{0}'</value>
+  </data>
+  <data name="AliasOf" xml:space="preserve">
+    <value>Alias of {{@link {0}{1} {2}{1}}}</value>
+  </data>
+  <data name="AddPartBody" xml:space="preserve">
+    <value>Multipart request body</value>
+  </data>
+  <data name="AddPartDescription" xml:space="preserve">
+    <value>Adds a value to the multipart request body</value>
+  </data>
+  <data name="AddPartName" xml:space="preserve">
+    <value>Field name</value>
+  </data>
+  <data name="AddPartNullCollections" xml:space="preserve">
+    <value>Null values are ignored; collections are added item by item.</value>
+  </data>
+  <data name="AddPartValue" xml:space="preserve">
+    <value>Field value</value>
+  </data>
+  <data name="AllArgsConstructor" xml:space="preserve">
+    <value>All args constructor for '{0}'.</value>
+  </data>
+  <data name="ApiNewInstance" xml:space="preserve">
+    <value>A new instance of '{0}' created by mapping the source fields</value>
+  </data>
+  <data name="ApiPreexistingInstance" xml:space="preserve">
+    <value>The existing instance of '{0}' on which the source fields have been mapped</value>
+  </data>
+  <data name="ConstructorByParameters" xml:space="preserve">
+    <value>Constructor with parameters</value>
+  </data>
+  <data name="EnumAllValues" xml:space="preserve">
+    <value>List of all enum values '{0}'.</value>
+  </data>
+  <data name="EnumClassFields" xml:space="preserve">
+    <value>Enum fields of class {{@link {0} {1}}}</value>
+  </data>
+  <data name="EnumFieldValues" xml:space="preserve">
+    <value>Possible values of property '{0}' of class '{1}'</value>
+  </data>
+  <data name="EnumKnownValues" xml:space="preserve">
+    <value>Known values of property '{0}' of class '{1}'</value>
+  </data>
+  <data name="EnumReturn" xml:space="preserve">
+    <value>Returns the enum value for the specified key.</value>
+  </data>
+  <data name="EnumUnknownKey" xml:space="preserve">
+    <value>Unknown enum key: </value>
+  </data>
+  <data name="EnumValueForKey" xml:space="preserve">
+    <value>The enum value matching key '{0}'.</value>
+  </data>
+  <data name="EnumValueKey" xml:space="preserve">
+    <value>The enum key for which to obtain the value.</value>
+  </data>
+  <data name="FlowAfterOperations" xml:space="preserve">
+    <value>Step after all operations in this flow (after the last write)</value>
+  </data>
+  <data name="FlowBeforeOperations" xml:space="preserve">
+    <value>Step positioned before all other operations in this flow (before the first read or truncate)</value>
+  </data>
+  <data name="FlowItemProcessorStep" xml:space="preserve">
+    <value>Spring Batch ItemProcessor step</value>
+  </data>
+  <data name="FlowItemReaderStep" xml:space="preserve">
+    <value>Spring Batch ItemReader</value>
+  </data>
+  <data name="FlowMap" xml:space="preserve">
+    <value>The map replaces the default TopModel mapping</value>
+  </data>
+  <data name="FlowProcess" xml:space="preserve">
+    <value>Data transformation process for this flow. Steps are ordered as follows:</value>
+  </data>
+  <data name="FlowReplaceReader" xml:space="preserve">
+    <value>Replace the default reader implementation</value>
+  </data>
+  <data name="FlowStep" xml:space="preserve">
+    <value>Spring Batch Step</value>
+  </data>
+  <data name="Getter" xml:space="preserve">
+    <value>Getter for '{0}'</value>
+  </data>
+  <data name="GetterValue" xml:space="preserve">
+    <value>Value of {{@link #{0} {0}}}</value>
+  </data>
+  <data name="HeadersMethod" xml:space="preserve">
+    <value>Method to retrieve headers</value>
+  </data>
+  <data name="HeadersReturn" xml:space="preserve">
+    <value>Headers to add to the request</value>
+  </data>
+  <data name="MapperCreateInstance" xml:space="preserve">
+    <value>Creates a new instance of class '{0}' by mapping the source fields.</value>
+  </data>
+  <data name="MapperInstanceMapped" xml:space="preserve">
+    <value>Maps the source fields onto the instance of '{0}' passed as a parameter</value>
+  </data>
+  <data name="MapperNewOrExistingInstance" xml:space="preserve">
+    <value>Maps '{0}' to a new instance or to the provided instance</value>
+  </data>
+  <data name="MapperNewOrExistingReturn" xml:space="preserve">
+    <value>New instance or provided instance mapped from '{0}'</value>
+  </data>
+  <data name="MapperParameterInstance" xml:space="preserve">
+    <value>Instance of '{0}' to map</value>
+  </data>
+  <data name="MapperTargetInstance" xml:space="preserve">
+    <value>Instance of '{0}' on which to map</value>
+  </data>
+  <data name="MapperToNewInstance" xml:space="preserve">
+    <value>Maps '{0}' to a new instance of '{1}'</value>
+  </data>
+  <data name="ModelInstance" xml:space="preserve">
+    <value>Instance of '{0}'</value>
+  </data>
+  <data name="NewInstanceMapped" xml:space="preserve">
+    <value>A new instance of '{0}' mapped from '{1}'</value>
+  </data>
+  <data name="NewInstanceOf" xml:space="preserve">
+    <value>A new instance of '{0}'</value>
+  </data>
+  <data name="NewRecordInstance" xml:space="preserve">
+    <value>A new instance of '{0}' on which the source fields have been mapped</value>
+  </data>
+  <data name="NoArgConstructor" xml:space="preserve">
+    <value>No arg constructor</value>
+  </data>
+  <data name="NoReturn" xml:space="preserve">
+    <value>No return value</value>
+  </data>
+  <data name="PrivateConstructorComment" xml:space="preserve">
+    <value>Private constructor to hide implicit public one</value>
+  </data>
+  <data name="ProtectedConstructorComment" xml:space="preserve">
+    <value>Protected constructor to hide implicit public one</value>
+  </data>
+  <data name="RemoveValue" xml:space="preserve">
+    <value>Remove a value from {{@link {0}#{1} {1}}}</value>
+  </data>
+  <data name="RestTemplateUriBuilder" xml:space="preserve">
+    <value>UriComponentsBuilder for method '{0}'</value>
+  </data>
+  <data name="SerialId" xml:space="preserve">
+    <value>Serial ID</value>
+  </data>
+  <data name="Setter" xml:space="preserve">
+    <value>Set the value of {{@link {0}#{1} {1}}}</value>
+  </data>
+  <data name="SetterValue" xml:space="preserve">
+    <value>Value to set</value>
+  </data>
+  <data name="SourceInstance" xml:space="preserve">
+    <value>Source instance of '{0}'</value>
+  </data>
+  <data name="TargetInstance" xml:space="preserve">
+    <value>Target instance of '{0}'</value>
+  </data>
+  <data name="TechnicalIdentifier" xml:space="preserve">
+    <value>Technical identifier mapped to that of class {{@link {0}}} {1}</value>
+  </data>
+  <data name="ValueToRemove" xml:space="preserve">
+    <value>'{0}' value to remove</value>
+  </data>
+</root>

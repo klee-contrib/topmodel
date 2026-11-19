@@ -24,21 +24,21 @@ import restaurant.jpa_feign.enums.restaurant.StatutCommande;
 public class ClientAvecCommandes implements Serializable {
 
 	/**
-	 * Serial ID.
+	 * ID de sérialisation.
 	 */
 	@Serial
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Identifiant de la personne.
-	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.Personne#getId() Personne#getId()}
+	 * Alias de {@link restaurant.jpa_feign.entities.restaurant.Personne#getId() Personne#getId()}
 	 */
 	@NotNull
 	private Integer id;
 
 	/**
 	 * Nom de la personne.
-	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.Personne#getNom() Personne#getNom()}
+	 * Alias de {@link restaurant.jpa_feign.entities.restaurant.Personne#getNom() Personne#getNom()}
 	 */
 	@NotNull
 	@Size(max = 100)
@@ -46,7 +46,7 @@ public class ClientAvecCommandes implements Serializable {
 
 	/**
 	 * Prénom de la personne.
-	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.Personne#getPrenom() Personne#getPrenom()}
+	 * Alias de {@link restaurant.jpa_feign.entities.restaurant.Personne#getPrenom() Personne#getPrenom()}
 	 */
 	@NotNull
 	@Size(max = 100)
@@ -54,14 +54,14 @@ public class ClientAvecCommandes implements Serializable {
 
 	/**
 	 * Département de résidence de la personne.
-	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.Personne#getDepartementCode() Personne#getDepartementCode()}
+	 * Alias de {@link restaurant.jpa_feign.entities.restaurant.Personne#getDepartementCode() Personne#getDepartementCode()}
 	 */
 	@Size(max = 10)
 	private String departementCode;
 
 	/**
 	 * Date de création de l'enregistrement.
-	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.Personne#getDateCreation() Personne#getDateCreation()}
+	 * Alias de {@link restaurant.jpa_feign.entities.restaurant.Personne#getDateCreation() Personne#getDateCreation()}
 	 */
 	@NotNull
 	@PastOrPresent
@@ -69,423 +69,423 @@ public class ClientAvecCommandes implements Serializable {
 
 	/**
 	 * Adresse email du client.
-	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.Client#getEmail() Client#getEmail()}
+	 * Alias de {@link restaurant.jpa_feign.entities.restaurant.Client#getEmail() Client#getEmail()}
 	 */
 	@Size(max = 100)
 	private String email;
 
 	/**
 	 * Carte Swile du client.
-	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.Client#getSwileCard() Client#getSwileCard()}
+	 * Alias de {@link restaurant.jpa_feign.entities.restaurant.Client#getSwileCard() Client#getSwileCard()}
 	 */
 	private Integer swileCardId;
 
 	/**
 	 * Association réciproque de AvisClient.Client.
-	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.Client#getAvisClients() Client#getAvisClients()}
+	 * Alias de {@link restaurant.jpa_feign.entities.restaurant.Client#getAvisClients() Client#getAvisClients()}
 	 */
 	@NotNull
 	private List<Integer> avisClients;
 
 	/**
 	 * Liste des commandes du client.
-	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.Commande#getId() Commande#getId()}
+	 * Alias de {@link restaurant.jpa_feign.entities.restaurant.Commande#getId() Commande#getId()}
 	 */
 	@NotNull
 	private List<Integer> commandeId;
 
 	/**
 	 * Liste des commandes du client.
-	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.Commande#getDateCommande() Commande#getDateCommande()}
+	 * Alias de {@link restaurant.jpa_feign.entities.restaurant.Commande#getDateCommande() Commande#getDateCommande()}
 	 */
 	@NotNull
 	private List<LocalDateTime> commandeDateCommande;
 
 	/**
 	 * Liste des commandes du client.
-	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.Commande#getDateLivraison() Commande#getDateLivraison()}
+	 * Alias de {@link restaurant.jpa_feign.entities.restaurant.Commande#getDateLivraison() Commande#getDateLivraison()}
 	 */
 	private List<LocalDateTime> commandeDateLivraison;
 
 	/**
 	 * Liste des commandes du client.
-	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.Commande#getMontantTotal() Commande#getMontantTotal()}
+	 * Alias de {@link restaurant.jpa_feign.entities.restaurant.Commande#getMontantTotal() Commande#getMontantTotal()}
 	 */
 	@NotNull
 	private List<BigDecimal> commandeMontantTotal;
 
 	/**
 	 * Liste des commandes du client.
-	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.Commande#getClient() Commande#getClient()}
+	 * Alias de {@link restaurant.jpa_feign.entities.restaurant.Commande#getClient() Commande#getClient()}
 	 */
 	@NotNull
 	private List<Integer> commandeClientId;
 
 	/**
 	 * Liste des commandes du client.
-	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.Commande#getTableId() Commande#getTableId()}
+	 * Alias de {@link restaurant.jpa_feign.entities.restaurant.Commande#getTableId() Commande#getTableId()}
 	 */
 	private List<Integer> commandeTableId;
 
 	/**
 	 * Liste des commandes du client.
-	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.Commande#getReservation() Commande#getReservation()}
+	 * Alias de {@link restaurant.jpa_feign.entities.restaurant.Commande#getReservation() Commande#getReservation()}
 	 */
 	private List<Integer> commandeReservationId;
 
 	/**
 	 * Liste des commandes du client.
-	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.Commande#getStatutCommande() Commande#getStatutCommande()}
+	 * Alias de {@link restaurant.jpa_feign.entities.restaurant.Commande#getStatutCommande() Commande#getStatutCommande()}
 	 */
 	@NotNull
 	private List<StatutCommande> commandeStatutCommande;
 
 	/**
 	 * Liste des commandes du client.
-	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.Commande#getAvisClient() Commande#getAvisClient()}
+	 * Alias de {@link restaurant.jpa_feign.entities.restaurant.Commande#getAvisClient() Commande#getAvisClient()}
 	 */
 	private List<Integer> commandeAvisClientId;
 
 	/**
 	 * Liste des commandes du client.
-	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.Commande#getLignes() Commande#getLignes()}
+	 * Alias de {@link restaurant.jpa_feign.entities.restaurant.Commande#getLignes() Commande#getLignes()}
 	 */
 	@NotNull
 	private List<List<Integer>> commandeLignes;
 
 	/**
 	 * Liste des commandes du client.
-	 * Alias of {@link restaurant.jpa_feign.entities.restaurant.Commande#getDateCreation() Commande#getDateCreation()}
+	 * Alias de {@link restaurant.jpa_feign.entities.restaurant.Commande#getDateCreation() Commande#getDateCreation()}
 	 */
 	@NotNull
 	@PastOrPresent
 	private List<LocalDateTime> commandeDateCreation;
 
 	/**
-	 * Getter for id.
+	 * Accesseur de 'id'.
 	 *
-	 * @return value of {@link #id id}.
+	 * @return Valeur de {@link #id id}.
 	 */
 	public Integer getId() {
 		return this.id;
 	}
 
 	/**
-	 * Getter for nom.
+	 * Accesseur de 'nom'.
 	 *
-	 * @return value of {@link #nom nom}.
+	 * @return Valeur de {@link #nom nom}.
 	 */
 	public String getNom() {
 		return this.nom;
 	}
 
 	/**
-	 * Getter for prenom.
+	 * Accesseur de 'prenom'.
 	 *
-	 * @return value of {@link #prenom prenom}.
+	 * @return Valeur de {@link #prenom prenom}.
 	 */
 	public String getPrenom() {
 		return this.prenom;
 	}
 
 	/**
-	 * Getter for departementCode.
+	 * Accesseur de 'departementCode'.
 	 *
-	 * @return value of {@link #departementCode departementCode}.
+	 * @return Valeur de {@link #departementCode departementCode}.
 	 */
 	public String getDepartementCode() {
 		return this.departementCode;
 	}
 
 	/**
-	 * Getter for dateCreation.
+	 * Accesseur de 'dateCreation'.
 	 *
-	 * @return value of {@link #dateCreation dateCreation}.
+	 * @return Valeur de {@link #dateCreation dateCreation}.
 	 */
 	public LocalDateTime getDateCreation() {
 		return this.dateCreation;
 	}
 
 	/**
-	 * Getter for email.
+	 * Accesseur de 'email'.
 	 *
-	 * @return value of {@link #email email}.
+	 * @return Valeur de {@link #email email}.
 	 */
 	public String getEmail() {
 		return this.email;
 	}
 
 	/**
-	 * Getter for swileCardId.
+	 * Accesseur de 'swileCardId'.
 	 *
-	 * @return value of {@link #swileCardId swileCardId}.
+	 * @return Valeur de {@link #swileCardId swileCardId}.
 	 */
 	public Integer getSwileCardId() {
 		return this.swileCardId;
 	}
 
 	/**
-	 * Getter for avisClients.
+	 * Accesseur de 'avisClients'.
 	 *
-	 * @return value of {@link #avisClients avisClients}.
+	 * @return Valeur de {@link #avisClients avisClients}.
 	 */
 	public List<Integer> getAvisClients() {
 		return this.avisClients;
 	}
 
 	/**
-	 * Getter for commandeId.
+	 * Accesseur de 'commandeId'.
 	 *
-	 * @return value of {@link #commandeId commandeId}.
+	 * @return Valeur de {@link #commandeId commandeId}.
 	 */
 	public List<Integer> getCommandeId() {
 		return this.commandeId;
 	}
 
 	/**
-	 * Getter for commandeDateCommande.
+	 * Accesseur de 'commandeDateCommande'.
 	 *
-	 * @return value of {@link #commandeDateCommande commandeDateCommande}.
+	 * @return Valeur de {@link #commandeDateCommande commandeDateCommande}.
 	 */
 	public List<LocalDateTime> getCommandeDateCommande() {
 		return this.commandeDateCommande;
 	}
 
 	/**
-	 * Getter for commandeDateLivraison.
+	 * Accesseur de 'commandeDateLivraison'.
 	 *
-	 * @return value of {@link #commandeDateLivraison commandeDateLivraison}.
+	 * @return Valeur de {@link #commandeDateLivraison commandeDateLivraison}.
 	 */
 	public List<LocalDateTime> getCommandeDateLivraison() {
 		return this.commandeDateLivraison;
 	}
 
 	/**
-	 * Getter for commandeMontantTotal.
+	 * Accesseur de 'commandeMontantTotal'.
 	 *
-	 * @return value of {@link #commandeMontantTotal commandeMontantTotal}.
+	 * @return Valeur de {@link #commandeMontantTotal commandeMontantTotal}.
 	 */
 	public List<BigDecimal> getCommandeMontantTotal() {
 		return this.commandeMontantTotal;
 	}
 
 	/**
-	 * Getter for commandeClientId.
+	 * Accesseur de 'commandeClientId'.
 	 *
-	 * @return value of {@link #commandeClientId commandeClientId}.
+	 * @return Valeur de {@link #commandeClientId commandeClientId}.
 	 */
 	public List<Integer> getCommandeClientId() {
 		return this.commandeClientId;
 	}
 
 	/**
-	 * Getter for commandeTableId.
+	 * Accesseur de 'commandeTableId'.
 	 *
-	 * @return value of {@link #commandeTableId commandeTableId}.
+	 * @return Valeur de {@link #commandeTableId commandeTableId}.
 	 */
 	public List<Integer> getCommandeTableId() {
 		return this.commandeTableId;
 	}
 
 	/**
-	 * Getter for commandeReservationId.
+	 * Accesseur de 'commandeReservationId'.
 	 *
-	 * @return value of {@link #commandeReservationId commandeReservationId}.
+	 * @return Valeur de {@link #commandeReservationId commandeReservationId}.
 	 */
 	public List<Integer> getCommandeReservationId() {
 		return this.commandeReservationId;
 	}
 
 	/**
-	 * Getter for commandeStatutCommande.
+	 * Accesseur de 'commandeStatutCommande'.
 	 *
-	 * @return value of {@link #commandeStatutCommande commandeStatutCommande}.
+	 * @return Valeur de {@link #commandeStatutCommande commandeStatutCommande}.
 	 */
 	public List<StatutCommande> getCommandeStatutCommande() {
 		return this.commandeStatutCommande;
 	}
 
 	/**
-	 * Getter for commandeAvisClientId.
+	 * Accesseur de 'commandeAvisClientId'.
 	 *
-	 * @return value of {@link #commandeAvisClientId commandeAvisClientId}.
+	 * @return Valeur de {@link #commandeAvisClientId commandeAvisClientId}.
 	 */
 	public List<Integer> getCommandeAvisClientId() {
 		return this.commandeAvisClientId;
 	}
 
 	/**
-	 * Getter for commandeLignes.
+	 * Accesseur de 'commandeLignes'.
 	 *
-	 * @return value of {@link #commandeLignes commandeLignes}.
+	 * @return Valeur de {@link #commandeLignes commandeLignes}.
 	 */
 	public List<List<Integer>> getCommandeLignes() {
 		return this.commandeLignes;
 	}
 
 	/**
-	 * Getter for commandeDateCreation.
+	 * Accesseur de 'commandeDateCreation'.
 	 *
-	 * @return value of {@link #commandeDateCreation commandeDateCreation}.
+	 * @return Valeur de {@link #commandeDateCreation commandeDateCreation}.
 	 */
 	public List<LocalDateTime> getCommandeDateCreation() {
 		return this.commandeDateCreation;
 	}
 
 	/**
-	 * Set the value of {@link #id id}.
-	 * @param id value to set.
+	 * Définit la valeur de {@link #id id}.
+	 * @param id Valeur à définir.
 	 */
 	public void setId(Integer id) {
 		this.id = id;
 	}
 
 	/**
-	 * Set the value of {@link #nom nom}.
-	 * @param nom value to set.
+	 * Définit la valeur de {@link #nom nom}.
+	 * @param nom Valeur à définir.
 	 */
 	public void setNom(String nom) {
 		this.nom = nom;
 	}
 
 	/**
-	 * Set the value of {@link #prenom prenom}.
-	 * @param prenom value to set.
+	 * Définit la valeur de {@link #prenom prenom}.
+	 * @param prenom Valeur à définir.
 	 */
 	public void setPrenom(String prenom) {
 		this.prenom = prenom;
 	}
 
 	/**
-	 * Set the value of {@link #departementCode departementCode}.
-	 * @param departementCode value to set.
+	 * Définit la valeur de {@link #departementCode departementCode}.
+	 * @param departementCode Valeur à définir.
 	 */
 	public void setDepartementCode(String departementCode) {
 		this.departementCode = departementCode;
 	}
 
 	/**
-	 * Set the value of {@link #dateCreation dateCreation}.
-	 * @param dateCreation value to set.
+	 * Définit la valeur de {@link #dateCreation dateCreation}.
+	 * @param dateCreation Valeur à définir.
 	 */
 	public void setDateCreation(LocalDateTime dateCreation) {
 		this.dateCreation = dateCreation;
 	}
 
 	/**
-	 * Set the value of {@link #email email}.
-	 * @param email value to set.
+	 * Définit la valeur de {@link #email email}.
+	 * @param email Valeur à définir.
 	 */
 	public void setEmail(String email) {
 		this.email = email;
 	}
 
 	/**
-	 * Set the value of {@link #swileCardId swileCardId}.
-	 * @param swileCardId value to set.
+	 * Définit la valeur de {@link #swileCardId swileCardId}.
+	 * @param swileCardId Valeur à définir.
 	 */
 	public void setSwileCardId(Integer swileCardId) {
 		this.swileCardId = swileCardId;
 	}
 
 	/**
-	 * Set the value of {@link #avisClients avisClients}.
-	 * @param avisClients value to set.
+	 * Définit la valeur de {@link #avisClients avisClients}.
+	 * @param avisClients Valeur à définir.
 	 */
 	public void setAvisClients(List<Integer> avisClients) {
 		this.avisClients = avisClients;
 	}
 
 	/**
-	 * Set the value of {@link #commandeId commandeId}.
-	 * @param commandeId value to set.
+	 * Définit la valeur de {@link #commandeId commandeId}.
+	 * @param commandeId Valeur à définir.
 	 */
 	public void setCommandeId(List<Integer> commandeId) {
 		this.commandeId = commandeId;
 	}
 
 	/**
-	 * Set the value of {@link #commandeDateCommande commandeDateCommande}.
-	 * @param commandeDateCommande value to set.
+	 * Définit la valeur de {@link #commandeDateCommande commandeDateCommande}.
+	 * @param commandeDateCommande Valeur à définir.
 	 */
 	public void setCommandeDateCommande(List<LocalDateTime> commandeDateCommande) {
 		this.commandeDateCommande = commandeDateCommande;
 	}
 
 	/**
-	 * Set the value of {@link #commandeDateLivraison commandeDateLivraison}.
-	 * @param commandeDateLivraison value to set.
+	 * Définit la valeur de {@link #commandeDateLivraison commandeDateLivraison}.
+	 * @param commandeDateLivraison Valeur à définir.
 	 */
 	public void setCommandeDateLivraison(List<LocalDateTime> commandeDateLivraison) {
 		this.commandeDateLivraison = commandeDateLivraison;
 	}
 
 	/**
-	 * Set the value of {@link #commandeMontantTotal commandeMontantTotal}.
-	 * @param commandeMontantTotal value to set.
+	 * Définit la valeur de {@link #commandeMontantTotal commandeMontantTotal}.
+	 * @param commandeMontantTotal Valeur à définir.
 	 */
 	public void setCommandeMontantTotal(List<BigDecimal> commandeMontantTotal) {
 		this.commandeMontantTotal = commandeMontantTotal;
 	}
 
 	/**
-	 * Set the value of {@link #commandeClientId commandeClientId}.
-	 * @param commandeClientId value to set.
+	 * Définit la valeur de {@link #commandeClientId commandeClientId}.
+	 * @param commandeClientId Valeur à définir.
 	 */
 	public void setCommandeClientId(List<Integer> commandeClientId) {
 		this.commandeClientId = commandeClientId;
 	}
 
 	/**
-	 * Set the value of {@link #commandeTableId commandeTableId}.
-	 * @param commandeTableId value to set.
+	 * Définit la valeur de {@link #commandeTableId commandeTableId}.
+	 * @param commandeTableId Valeur à définir.
 	 */
 	public void setCommandeTableId(List<Integer> commandeTableId) {
 		this.commandeTableId = commandeTableId;
 	}
 
 	/**
-	 * Set the value of {@link #commandeReservationId commandeReservationId}.
-	 * @param commandeReservationId value to set.
+	 * Définit la valeur de {@link #commandeReservationId commandeReservationId}.
+	 * @param commandeReservationId Valeur à définir.
 	 */
 	public void setCommandeReservationId(List<Integer> commandeReservationId) {
 		this.commandeReservationId = commandeReservationId;
 	}
 
 	/**
-	 * Set the value of {@link #commandeStatutCommande commandeStatutCommande}.
-	 * @param commandeStatutCommande value to set.
+	 * Définit la valeur de {@link #commandeStatutCommande commandeStatutCommande}.
+	 * @param commandeStatutCommande Valeur à définir.
 	 */
 	public void setCommandeStatutCommande(List<StatutCommande> commandeStatutCommande) {
 		this.commandeStatutCommande = commandeStatutCommande;
 	}
 
 	/**
-	 * Set the value of {@link #commandeAvisClientId commandeAvisClientId}.
-	 * @param commandeAvisClientId value to set.
+	 * Définit la valeur de {@link #commandeAvisClientId commandeAvisClientId}.
+	 * @param commandeAvisClientId Valeur à définir.
 	 */
 	public void setCommandeAvisClientId(List<Integer> commandeAvisClientId) {
 		this.commandeAvisClientId = commandeAvisClientId;
 	}
 
 	/**
-	 * Set the value of {@link #commandeLignes commandeLignes}.
-	 * @param commandeLignes value to set.
+	 * Définit la valeur de {@link #commandeLignes commandeLignes}.
+	 * @param commandeLignes Valeur à définir.
 	 */
 	public void setCommandeLignes(List<List<Integer>> commandeLignes) {
 		this.commandeLignes = commandeLignes;
 	}
 
 	/**
-	 * Set the value of {@link #commandeDateCreation commandeDateCreation}.
-	 * @param commandeDateCreation value to set.
+	 * Définit la valeur de {@link #commandeDateCreation commandeDateCreation}.
+	 * @param commandeDateCreation Valeur à définir.
 	 */
 	public void setCommandeDateCreation(List<LocalDateTime> commandeDateCreation) {
 		this.commandeDateCreation = commandeDateCreation;
 	}
 
 	/**
-	 * Enumération des champs de la classe {@link restaurant.jpa_feign.dtos.restaurant.ClientAvecCommandes ClientAvecCommandes}.
+	 * Énumération des champs de la classe {@link restaurant.jpa_feign.dtos.restaurant.ClientAvecCommandes ClientAvecCommandes}.
 	 */
 	public enum Fields {
 		ID(Integer.class),
@@ -515,9 +515,9 @@ public class ClientAvecCommandes implements Serializable {
 		}
 
 		/**
-		 * Getter for type.
+		 * Accesseur de 'type'.
 		 *
-		 * @return value of {@link #type type}.
+		 * @return Valeur de {@link #type type}.
 		 */
 		public Class<?> getType() {
 			return this.type;

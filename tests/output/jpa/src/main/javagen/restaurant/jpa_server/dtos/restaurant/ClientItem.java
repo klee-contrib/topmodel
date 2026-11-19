@@ -17,7 +17,7 @@ import jakarta.validation.constraints.Size;
 public class ClientItem extends PersonneItem implements Serializable {
 
 	/**
-	 * Serial ID.
+	 * ID de sérialisation.
 	 */
 	@Serial
 	private static final long serialVersionUID = 1L;
@@ -29,17 +29,17 @@ public class ClientItem extends PersonneItem implements Serializable {
 	private String nomComplet;
 
 	/**
-	 * Getter for nomComplet.
+	 * Accesseur de 'nomComplet'.
 	 *
-	 * @return value of {@link #nomComplet nomComplet}.
+	 * @return Valeur de {@link #nomComplet nomComplet}.
 	 */
 	public String getNomComplet() {
 		return this.nomComplet;
 	}
 
 	/**
-	 * Set the value of {@link #nomComplet nomComplet}.
-	 * @param nomComplet value to set.
+	 * Définit la valeur de {@link #nomComplet nomComplet}.
+	 * @param nomComplet Valeur à définir.
 	 */
 	public void setNomComplet(String nomComplet) {
 		this.nomComplet = nomComplet;

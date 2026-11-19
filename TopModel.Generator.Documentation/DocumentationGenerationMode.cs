@@ -1,4 +1,4 @@
-namespace TopModel.Generator.Documentation;
+﻿namespace TopModel.Generator.Documentation;
 
 /// <summary>
 /// Mode de découpage des fichiers de documentation générés.

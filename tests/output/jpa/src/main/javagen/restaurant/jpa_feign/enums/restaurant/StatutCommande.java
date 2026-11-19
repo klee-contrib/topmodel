@@ -42,7 +42,7 @@ public enum StatutCommande {
 	private String libelle;
 
 	/**
-	 * All args constructor for 'StatutCommande'.
+	 * Constructeur tout arguments pour 'StatutCommande'.
 	 * @param libelle Libellé du statut.
 	 */
 	private StatutCommande(String libelle) {
@@ -50,9 +50,9 @@ public enum StatutCommande {
 	}
 
 	/**
-	 * Getter for libelle.
+	 * Accesseur de 'libelle'.
 	 *
-	 * @return value of {@link #libelle libelle}.
+	 * @return Valeur de {@link #libelle libelle}.
 	 */
 	public String getLibelle() {
 		return this.libelle;

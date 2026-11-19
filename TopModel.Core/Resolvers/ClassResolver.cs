@@ -558,7 +558,9 @@ internal class ClassResolver(
                         OwnName = new LocatedString(new Scalar("Discriminator")),
                         Class = classe,
                         Required = true,
-                        Comment = "Discriminateur pour les instances de la hiérarchie de classe",
+                        Comment = CoreMessage.DiscriminatorPropertyComment.GetLocalizedMessage(
+                            classe.ModelFile.Language
+                        ),
                     };
                 }
             }
