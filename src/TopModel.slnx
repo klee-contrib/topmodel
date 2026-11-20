@@ -1,0 +1,32 @@
+<Solution>
+  <Folder Name="/Common/">
+    <File Path=".editorconfig" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+  </Folder>
+  <Folder Name="/Generators/">
+    <Project Path="Generators/TopModel.Generator.Csharp/TopModel.Generator.Csharp.csproj" />
+    <Project Path="Generators/TopModel.Generator.Documentation/TopModel.Generator.Documentation.csproj" />
+    <Project Path="Generators/TopModel.Generator.Javascript/TopModel.Generator.Javascript.csproj" />
+    <Project Path="Generators/TopModel.Generator.Jpa/TopModel.Generator.Jpa.csproj" />
+    <Project Path="Generators/TopModel.Generator.Sql/TopModel.Generator.Sql.csproj" />
+    <Project Path="Generators/TopModel.Generator.Translation/TopModel.Generator.Translation.csproj" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="Tests/TopModel.Core.Tests/TopModel.Core.Tests.csproj" />
+    <Project Path="Tests/TopModel.LanguageServer.IntegrationTests/TopModel.LanguageServer.IntegrationTests.csproj" />
+    <Project Path="Tests/TopModel.LanguageServer.Tests/TopModel.LanguageServer.Tests.csproj" />
+    <Project Path="Tests/TopModel.ModelGenerator.Tests/TopModel.ModelGenerator.Tests.csproj" />
+  </Folder>
+  <Folder Name="/Utils/">
+    <Project Path="Utils/TopModel.Utils.Cli/TopModel.Utils.Cli.csproj" />
+    <Project Path="Utils/TopModel.Utils.Mermaid/TopModel.Utils.Mermaid.csproj" />
+    <Project Path="Utils/TopModel.Utils.Tests/TopModel.Utils.Tests.csproj" />
+    <Project Path="Utils/TopModel.Utils/TopModel.Utils.csproj" />
+  </Folder>
+  <Project Path="TopModel.Core/TopModel.Core.csproj" />
+  <Project Path="TopModel.Generator.Core/TopModel.Generator.Core.csproj" />
+  <Project Path="TopModel.Generator/TopModel.Generator.csproj" />
+  <Project Path="TopModel.LanguageServer/TopModel.LanguageServer.csproj" />
+  <Project Path="TopModel.ModelGenerator/TopModel.ModelGenerator.csproj" />
+</Solution>

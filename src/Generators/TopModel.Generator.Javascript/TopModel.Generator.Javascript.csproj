@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Version>4.5.2</Version>
+    <Description>Générateurs JS/TS pour TopModel</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\TopModel.Generator.Core\TopModel.Generator.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="*.config*.json">
+      <Pack>true</Pack>
+      <PackagePath>contentFiles</PackagePath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="build\**">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>false</PackageCopyToOutput>
+      <PackagePath>build\</PackagePath>
+    </None>
+  </ItemGroup>
+</Project>

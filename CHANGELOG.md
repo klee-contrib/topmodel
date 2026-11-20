@@ -2,12 +2,12 @@
 
 Changelogs des modules :
 
-- [`csharp`](./TopModel.Generator.Csharp/CHANGELOG.md)
-- [`javascript`](./TopModel.Generator.Javascript/CHANGELOG.md)
-- [`jpa`](./TopModel.Generator.Jpa/CHANGELOG.md)
-- [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
-- [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
-- [`documentation`](./TopModel.Generator.Documentation/CHANGELOG.md)
+- [`csharp`](./src/Generators/TopModel.Generator.Csharp/CHANGELOG.md)
+- [`javascript`](./src/Generators/TopModel.Generator.Javascript/CHANGELOG.md)
+- [`jpa`](./src/Generators/TopModel.Generator.Jpa/CHANGELOG.md)
+- [`sql`](./src/Generators/TopModel.Generator.Sql/CHANGELOG.md)
+- [`translation`](./src/Generators/TopModel.Generator.Translation/CHANGELOG.md)
+- [`documentation`](./src/Generators/TopModel.Generator.Documentation/CHANGELOG.md)
 
 > Remarque : ce changelog s'applique aussi à l'outil `modls`, utilisé pour le support TopModel dans l'extension VSCode, lorsque les mises à jour ne sont pas uniquement liées à la génération. La version correspondante sera précisée si son numéro n'est pas le même.
 

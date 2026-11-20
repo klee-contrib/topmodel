@@ -18,17 +18,17 @@ jobs:
           node-version: 20
 
       - run: npm ci
-        working-directory: TopModel.VSCode
+        working-directory: src/TopModel.VSCode
 
       - name: Publish to Visual Studio Marketplace
         uses: HaaLeo/publish-vscode-extension@v2
         with:
           pat: ${{secrets.VS_MARKETPLACE_API_KEY}}
           registryUrl: https://marketplace.visualstudio.com
-          packagePath: TopModel.VSCode
+          packagePath: src/TopModel.VSCode
 
       - name: Publish to OpenVSX Marketplace
         uses: HaaLeo/publish-vscode-extension@v2
         with:
           pat: ${{secrets.OPEN_VSX_API_KEY}}
-          packagePath: TopModel.VSCode
+          packagePath: src/TopModel.VSCode

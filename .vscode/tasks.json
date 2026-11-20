@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/TopModel.Generator/TopModel.Generator.csproj",
+                "${workspaceFolder}/src/TopModel.Generator/TopModel.Generator.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -19,7 +19,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/TopModel.Generator.Jpa/TopModel.Generator.Jpa.csproj",
+                "${workspaceFolder}/src/Generators/TopModel.Generator.Jpa/TopModel.Generator.Jpa.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -31,7 +31,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/TopModel.Generator.Javascript/TopModel.Generator.Javascript.csproj",
+                "${workspaceFolder}/src/Generators/TopModel.Generator.Javascript/TopModel.Generator.Javascript.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -43,7 +43,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/TopModel.Generator.Sql/TopModel.Generator.Sql.csproj",
+                "${workspaceFolder}/src/Generators/TopModel.Generator.Sql/TopModel.Generator.Sql.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -55,7 +55,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/TopModel.Generator.Csharp/TopModel.Generator.Csharp.csproj",
+                "${workspaceFolder}/src/Generators/TopModel.Generator.Csharp/TopModel.Generator.Csharp.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -67,7 +67,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/TopModel.ModelGenerator/TopModel.ModelGenerator.csproj",
+                "${workspaceFolder}/src/TopModel.ModelGenerator/TopModel.ModelGenerator.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -79,7 +79,7 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/TopModel.Generator/TopModel.Generator.csproj",
+                "${workspaceFolder}/src/TopModel.Generator/TopModel.Generator.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -92,7 +92,7 @@
             "args": [
                 "watch",
                 "run",
-                "${workspaceFolder}/TopModel.Generator/TopModel.Generator.csproj",
+                "${workspaceFolder}/src/TopModel.Generator/TopModel.Generator.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],

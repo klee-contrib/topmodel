@@ -37,14 +37,14 @@ jobs:
           done
 
       - name: run tests - tmdgen
-        run: dotnet-coverage collect --settings coverage.settings.xml --output "./tmdgen-database-coverage-results.xml" --output-format cobertura -- "dotnet run --project TopModel.ModelGenerator/TopModel.ModelGenerator.csproj -- -f tests/tmdgen/database/tmdgen.config -f tests/tmdgen/open-api/tmdgen.config -c"
+        run: dotnet-coverage collect --settings coverage.settings.xml --output "./tmdgen-database-coverage-results.xml" --output-format cobertura -- "dotnet run --project src/TopModel.ModelGenerator/TopModel.ModelGenerator.csproj -- -f tests/tmdgen/database/tmdgen.config -f tests/tmdgen/open-api/tmdgen.config -c"
 
       - name: run tests - modgen
-        run: dotnet-coverage collect --settings coverage.settings.xml --output "./modgen-coverage-results.xml" --output-format cobertura -- "dotnet run --project ./TopModel.Generator -s -u all -c Release"
+        run: dotnet-coverage collect --settings coverage.settings.xml --output "./modgen-coverage-results.xml" --output-format cobertura -- "dotnet run --project ./src/TopModel.Generator -s -u all -c Release"
 
       # Le language server est lancé par les tests en processus enfant : dotnet-coverage le couvre aussi.
       - name: run all tests
-        run: dotnet-coverage collect --settings coverage.settings.xml --output "./tests-coverage-results.xml" --output-format cobertura -- "dotnet test TopModel.slnx -c Release"
+        run: dotnet-coverage collect --settings coverage.settings.xml --output "./tests-coverage-results.xml" --output-format cobertura -- "dotnet test src/TopModel.slnx -c Release"
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5

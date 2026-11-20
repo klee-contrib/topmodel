@@ -4,12 +4,12 @@
 
 version: 4.8.10
 custom:
-  ../../TopModel.Generator.Csharp: 9238d86fecd4e38752ee5e7303ad3845
-  ../../TopModel.Generator.Javascript: 8ff50b51fc5de24a1099d09955e4d7b6
-  ../../TopModel.Generator.Jpa: c114471f04ccbfc1bca50f5bc0c0390c
-  ../../TopModel.Generator.Sql: 40c01d7612d57f8e5451e29585e47d23
-  ../../TopModel.Generator.Translation: 955be40f0bc5c0eff101d569dc1d94c8
-  ../../TopModel.Generator.Documentation: f47c7233fd39e2d32c262cfb864ac6dc
+  ../../src/Generators/TopModel.Generator.Csharp: 9238d86fecd4e38752ee5e7303ad3845
+  ../../src/Generators/TopModel.Generator.Javascript: 8ff50b51fc5de24a1099d09955e4d7b6
+  ../../src/Generators/TopModel.Generator.Jpa: c114471f04ccbfc1bca50f5bc0c0390c
+  ../../src/Generators/TopModel.Generator.Sql: 40c01d7612d57f8e5451e29585e47d23
+  ../../src/Generators/TopModel.Generator.Translation: 955be40f0bc5c0eff101d569dc1d94c8
+  ../../src/Generators/TopModel.Generator.Documentation: f47c7233fd39e2d32c262cfb864ac6dc
 generatedFiles:
   - ../output/angular/src/appgenerated/api/restaurant/commande.service.ts
   - ../output/angular/src/appgenerated/api/restaurant/menu.service.ts
