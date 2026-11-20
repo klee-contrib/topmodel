@@ -1,0 +1,80 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["outputDirectory", "tags"],
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Nom de cette configuration.\n\n- Valeur par défaut : `{module}@{index}`."
+    },
+    "tags": {
+      "type": "array",
+      "description": "Tags pris en compte par cette configuration.",
+      "items": {
+        "type": "string",
+        "description": "Catégorie de fichier que le générateur doit lire."
+      }
+    },
+    "referencedTags": {
+      "type": "object",
+      "description": "Tags d'autres configs dont les classes peuvent être référencées dans le code généré par les générateurs de ce module.",
+      "additionalProperties": {
+        "type": "string",
+        "description": "Le nom de la config dans laquelle aller chercher le tag."
+      }
+    },
+    "variables": {
+      "type": "object",
+      "description": "Variables globales de la configuration, qui pourront être utilisées dans toutes les propriétés de la configuration.",
+      "patternProperties": {
+        ".+": {
+          "type": ["string", "number", "boolean"]
+        }
+      }
+    },
+    "tagVariables": {
+      "type": "object",
+      "description": "Variables par tag de la configuration, qui pourront être utilisées dans les propriétés de la configuration qui supportent ces variables.",
+      "patternProperties": {
+        ".*": {
+          "type": "object",
+          "patternProperties": {
+            ".*": {
+              "type": ["string", "number", "boolean"]
+            }
+          }
+        }
+      }
+    },
+    "rootModule": {
+      "type": "string",
+      "description": "Définition du module racine, pour les différents regroupements à faire dessus (fichiers de traductions...).\n\n- Valeur par défaut : `{module:head}`.\n- Templating : `{module}`.",
+      "default": "{module:head}"
+    },
+    "outputDirectory": {
+      "type": "string",
+      "description": "Racine du répertoire de génération."
+    },
+    "translateReferences": {
+      "type": "boolean",
+      "description": "Si les libellés des listes de références doivent être traduits dans cette configuration.\n\n- Valeur par défaut : la valeur renseignée dans le bloc `i18n` global."
+    },
+    "translateProperties": {
+      "type": "boolean",
+      "description": "Si les libellés des propriétés doivent être traduits dans cette configuration.\n\n- Valeur par défaut : la valeur renseignée dans le bloc `i18n` global."
+    },
+    "langs": {
+      "type": "array",
+      "description": "Langues cibles pour lesquelles les traductions manquantes doivent être générées.",
+      "items": {
+        "type": "string",
+        "description": "Code de langue."
+      }
+    },
+    "rootPath": {
+      "type": "string",
+      "description": "Chemin des dossiers de traductions sortants (manquants).\n\n- Valeur par défaut : `{lang}`.\n- Templating : `{lang}`.\n- Variables par tag : **oui**.",
+      "default": "{lang}"
+    }
+  }
+}

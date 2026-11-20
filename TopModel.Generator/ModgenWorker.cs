@@ -644,7 +644,12 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
     {
         _logger.LogInformation(CliMessage.GeneratingConfigSchema);
         var schema = JsonNode
-            .Parse(await File.ReadAllTextAsync(Assembly.GetExecutingAssembly().GetFilePath("schema.config.json"), ct))!
+            .Parse(
+                await File.ReadAllTextAsync(
+                    Assembly.GetExecutingAssembly().GetLocalizedFilePath("schema.config.json", Config.Language),
+                    ct
+                )
+            )!
             .AsObject();
 
         schema.Remove("additionalProperties");
@@ -658,7 +663,10 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
             configSchema.Add(
                 "items",
                 JsonNode.Parse(
-                    await File.ReadAllTextAsync(configType.Assembly.GetFilePath($"{configName}.config.json"), ct)
+                    await File.ReadAllTextAsync(
+                        configType.Assembly.GetLocalizedFilePath($"{configName}.config.json", Config.Language),
+                        ct
+                    )
                 )
             );
             schema["properties"]!.AsObject().Add(configName, configSchema);

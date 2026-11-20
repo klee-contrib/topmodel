@@ -2,56 +2,56 @@
   "$id": "schema.tmdgen.config.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
-  "description": "Fichier de config du générateur de modèle tmdgen",
+  "description": "tmdgen model generator configuration file",
   "additionalProperties": false,
   "definitions": {
     "domain": {
       "oneOf": [
         {
           "type": "object",
-          "description": "Correspondance entre le nom de la propriété et un modèle dans le modèle cible",
+          "description": "Mapping between a property name and a model in the target model",
           "additionalProperties": false,
           "required": ["domain", "name"],
           "properties": {
             "name": {
               "type": "string",
-              "description": "Nom de propriété ou regexp de nom de propriété à matcher"
+              "description": "Property name or property-name regular expression to match"
             },
             "domain": {
               "type": "string",
-              "description": "Domain cible correspondant au nom"
+              "description": "Target domain matching the name"
             },
             "scale": {
               "type": "number",
-              "description": "Echelle du domain"
+              "description": "Domain scale"
             },
             "precision": {
               "type": "number",
-              "description": "Précision du domain"
+              "description": "Domain precision"
             }
           }
         },
         {
           "type": "object",
-          "description": "Correspondance entre le type de données et un modèle dans le modèle cible",
+          "description": "Mapping between a data type and a model in the target model",
           "additionalProperties": false,
           "required": ["type", "domain"],
           "properties": {
             "type": {
               "type": "string",
-              "description": "Type de propriété ou regexp de type de propriété à matcher"
+              "description": "Property type or property-type regular expression to match"
             },
             "domain": {
               "type": "string",
-              "description": "Domain cible correspondant au type"
+              "description": "Target domain matching the type"
             },
             "scale": {
               "type": "number",
-              "description": "Echelle du domain"
+              "description": "Domain scale"
             },
             "precision": {
               "type": "number",
-              "description": "Précision du domain"
+              "description": "Domain precision"
             }
           }
         }
@@ -61,29 +61,29 @@
   "properties": {
     "modelRoot": {
       "type": "string",
-      "description": "Chemin relatif du répertoire de génération du modèle vis-à-vis du répertoire racine du modèle cible"
+      "description": "Model generation directory path relative to the target model root directory"
     },
     "lockFileName": {
       "type": "string",
-      "description": "Nom du fichier de lock",
+      "description": "Lock file name",
       "default": "tmdgen.lock"
     },
     "language": {
       "type": "string",
-      "description": "Langue des libellés techniques écrits dans le contenu généré. Ce paramètre est indépendant de la langue des messages en console (qui est toujours celle de l'OS)."
+      "description": "Language of technical labels written in generated content. This setting is independent of the console message language (which always matches the OS language)."
     },
     "noWarn": {
       "type": "array",
-      "description": "Liste des warnings à ignorer.",
+      "description": "List of warnings to ignore.",
       "items": {
         "type": "string",
-        "description": "Code du warning (TMDXXXX) à ignorer ",
+        "description": "Warning code (TMDXXXX) to ignore",
         "enum": ["TMD1004", "TMD1005"]
       }
     },
     "ignoredFiles": {
       "type": "array",
-      "description": "Liste des fichiers à ignorer après première génération (relatif au fichier de config).",
+      "description": "Files to ignore after the first generation (relative to the configuration file).",
       "items": {
         "type": "object",
         "additionalProperties": false,
@@ -91,67 +91,67 @@
         "properties": {
           "path": {
             "type": "string",
-            "description": "Chemin du fichier à ignorer, relatif au fichier de config."
+            "description": "Path of the file to ignore, relative to the configuration file."
           },
           "comment": {
             "type": "string",
-            "description": "Motif."
+            "description": "Reason."
           }
         }
       }
     },
     "database": {
       "type": "array",
-      "description": "Liste des configurations de la génération de fichiers Topmodel à partir d'une base de données",
+      "description": "Configurations for generating TopModel files from a database",
       "items": {
         "type": "object",
-        "description": "Configuration de la génération de fichiers Topmodel à partir d'une base de données",
+        "description": "Configuration for generating TopModel files from a database",
         "additionalProperties": false,
         "required": ["source"],
         "properties": {
           "tags": {
             "type": "array",
-            "description": "Liste des tags à ajouter dans les fichiers générés",
+            "description": "Tags to add to generated files",
             "items": {
               "type": "string",
-              "description": "Tag à ajouter aux fichiers générés"
+              "description": "Tag to add to generated files"
             }
           },
           "classNameOverrides": {
             "type": "object",
-            "description": "Surcharge de nom de classes à générer. N'a pas d'impact sur le nom SQL de la classe.",
+            "description": "Override for generated class names. Does not affect the class's SQL name.",
             "additionalProperties": {
               "type": "string",
-              "description": "Surcharge à utiliser."
+              "description": "Override to use."
             }
           },
           "modules": {
             "type": "array",
-            "description": "Liste des modules et des classes qui devront en faire partie",
+            "description": "Modules and the classes they must contain",
             "items": {
               "type": "object",
-              "description": "Module contenant des classes",
+              "description": "Module containing classes",
               "additionalProperties": false,
               "required": ["name", "classes"],
               "properties": {
                 "name": {
                   "type": "string",
-                  "description": "Nom du module"
+                  "description": "Module name"
                 },
                 "classes": {
                   "type": "array",
-                  "description": "Liste des classes au format PascalCase qui devront faire partie du module",
+                  "description": "PascalCase names of classes that must belong to the module",
                   "items": {
                     "type": "string",
-                    "description": "Nom d'une classe devant faire partie du module"
+                    "description": "Name of a class that must belong to the module"
                   }
                 },
                 "tags": {
                   "type": "array",
-                  "description": "Tags supplémentaires à ajouter aux classes de ce module.",
+                  "description": "Additional tags to add to this module's classes.",
                   "items": {
                     "type": "string",
-                    "description": "Nom du tag."
+                    "description": "Tag name."
                   }
                 }
               }
@@ -159,70 +159,70 @@
           },
           "domains": {
             "type": "array",
-            "description": "Liste des correspondance entre les types définis dans la spécification openapi et les domaines dans le modèle cible",
+            "description": "Mappings between types defined in the OpenAPI specification and domains in the target model",
             "items": {
               "$ref": "#/definitions/domain"
             }
           },
           "outputDirectory": {
             "type": "string",
-            "description": "Dossier dans lequel doivent être placés les fichiers et modules générés. Ce chemin est relatif au modelRoot"
+            "description": "Folder where generated files and modules must be placed. This path is relative to modelRoot"
           },
           "exclude": {
             "type": "array",
-            "description": "Liste des tables à exclure de la génération",
+            "description": "Tables to exclude from generation",
             "items": {
               "type": "string",
-              "description": "Table à exclure de la génération"
+              "description": "Table to exclude from generation"
             }
           },
           "extractValues": {
             "type": "array",
-            "description": "Liste des classes dont il faut extraire les valeurs",
+            "description": "Classes whose values must be extracted",
             "items": {
               "type": "string",
-              "description": "Classe dont il faut extraire les valeurs"
+              "description": "Class whose values must be extracted"
             }
           },
           "source": {
             "type": "object",
-            "description": "Informations de connexion à la base de données",
+            "description": "Database connection information",
             "additionalProperties": false,
             "required": ["dbType"],
             "properties": {
               "host": {
                 "type": "string",
-                "description": "Hôte",
+                "description": "Host",
                 "default": "localhost"
               },
               "port": {
                 "type": "string",
-                "description": "Numéro du port",
+                "description": "Port number",
                 "default": "5432"
               },
               "dbName": {
                 "type": "string",
-                "description": "Nom de la base de donnée",
+                "description": "Database name",
                 "default": "postgres"
               },
               "schema": {
                 "type": "string",
-                "description": "Nom du schéma",
+                "description": "Schema name",
                 "default": "public"
               },
               "user": {
                 "type": "string",
-                "description": "Utilisateur de connexion à la base de données",
+                "description": "Database connection user",
                 "default": "postgres"
               },
               "password": {
                 "type": "string",
-                "description": "Mot de passe de connexion à la base de données",
+                "description": "Database connection password",
                 "default": "postgres"
               },
               "dbType": {
                 "type": "string",
-                "description": "Type de la base de données : postgresql, oracle, mySql, msSql",
+                "description": "Database type: postgresql, oracle, mySql, msSql",
                 "enum": ["oracle", "postgresql", "mySql", "msSql"]
               }
             }
@@ -232,69 +232,69 @@
     },
     "openApi": {
       "type": "array",
-      "description": "Liste des configuration de la génération de fichiers Topmodel à partir de fichiers au format OpenApi",
+      "description": "Configurations for generating TopModel files from OpenAPI files",
       "items": {
         "type": "object",
-        "description": "Configuration de la génération de fichiers Topmodel à partir d'un fichier au format OpenApi",
+        "description": "Configuration for generating TopModel files from an OpenAPI file",
         "additionalProperties": false,
         "properties": {
           "domains": {
             "type": "array",
-            "description": "Liste des correspondance entre les types définis dans la spécification openapi et les domaines dans le modèle cible",
+            "description": "Mappings between types defined in the OpenAPI specification and domains in the target model",
             "items": {
               "$ref": "#/definitions/domain"
             }
           },
           "source": {
             "type": "string",
-            "description": "Url ou chemin relatif du fichier json ou yaml de spécification openapi"
+            "description": "URL or relative path of the OpenAPI JSON or YAML specification file"
           },
           "outputDirectory": {
             "type": "string",
-            "description": "Dossier dans lequel doivent être placés les fichiers et modules générés. Ce chemin est relatif au modelRoot. Accepte le templating avec {module}",
+            "description": "Folder where generated files and modules must be placed. This path is relative to modelRoot and supports templating with `{module}`.",
             "default": "{module}"
           },
           "module": {
             "type": "string",
-            "description": "Module des fichiers de modèle générés. Par défaut : 'module'."
+            "description": "Module for generated model files. Default: `module`."
           },
           "modelTags": {
             "type": "array",
             "items": {
               "type": "string",
-              "description": "Tag à placer dans le fichier de modèle généré"
+              "description": "Tag to place in the generated model file"
             }
           },
           "endpointTags": {
             "type": "array",
             "items": {
               "type": "string",
-              "description": "Tag à placer dans le fichier de endpoint généré"
+              "description": "Tag to place in the generated endpoint file"
             }
           },
           "include": {
             "type": "array",
-            "description": "Liste des tags de la spécification qu'il faut générer dans le modèle cible",
+            "description": "Specification tags that must be generated in the target model",
             "items": {
               "type": "string",
-              "description": "Tag de la spécification qu'il faut générer dans le modèle cible"
+              "description": "Specification tag to generate in the target model"
             }
           },
           "modelFileName": {
             "type": "string",
-            "description": "Nom du fichier dans lequel sera déclaré le modèle"
+            "description": "Name of the file in which the model will be declared"
           },
           "preservePropertyCasing": {
             "type": "boolean",
-            "description": "Garde les noms des propriétés générées tels quels pour la génération via `modgen`, au lieu de les convertir dans le format du langage cible. Par défaut : `true`."
+            "description": "Preserves generated property names for generation through `modgen` instead of converting them to the target language's format. Default: `true`."
           },
           "classPrefix": {
             "type": "string",
-            "description": "Préfixe à ajouter à toutes les classes générées pour cette source."
+            "description": "Prefix to add to all classes generated for this source."
           },
           "useEnumClasses": {
             "type": "boolean",
-            "description": "Génère des classes `enum: class` au lieu de classes `enum: true` pour les enums."
+            "description": "Generates `enum: class` classes instead of `enum: true` classes for enums."
           }
         }
       }

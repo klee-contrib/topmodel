@@ -22,10 +22,7 @@ public class SchemaHandler : IRequestHandler<SchemaRequest, SchemaResponse?>, IJ
     {
         // Le schéma est porté par l'assembly de TopModel.Core, qui le copie dans le répertoire de sortie.
         var language = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
-        var localizedFilePath = typeof(FileChecker).Assembly.GetFilePath($"schema.{language}.json");
-        var filePath = File.Exists(localizedFilePath)
-            ? localizedFilePath
-            : typeof(FileChecker).Assembly.GetFilePath("schema.json");
+        var filePath = typeof(FileChecker).Assembly.GetLocalizedFilePath("schema.json", language);
         if (!File.Exists(filePath))
         {
             return null;

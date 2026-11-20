@@ -147,7 +147,7 @@ public class TmdGenWorker : TopModelWorker<ModelGeneratorConfig, TmdGenFileCheck
         _logger.LogInformation(CliMessage.GeneratingConfigSchema);
 
         var schema = await File.ReadAllTextAsync(
-            Assembly.GetExecutingAssembly().GetFilePath("schema.tmdgen.config.json"),
+            Assembly.GetExecutingAssembly().GetLocalizedFilePath("schema.tmdgen.config.json", Config.Language),
             ct
         );
         await File.WriteAllTextAsync(ConfigFullName + ".schema.json", schema, ct);

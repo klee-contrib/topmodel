@@ -8,7 +8,7 @@
     <ProjectReference Include="..\TopModel.Utils.Mermaid\TopModel.Utils.Mermaid.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="documentation.config.json">
+    <Content Include="*.config*.json">
       <Pack>true</Pack>
       <PackagePath>contentFiles</PackagePath>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

@@ -1,0 +1,164 @@
+{
+  "type": "object",
+  "description": "Config pour la génération de Javascript.",
+  "additionalProperties": false,
+  "required": ["outputDirectory", "tags"],
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Nom de cette configuration.\n\n- Valeur par défaut : `{module}@{index}`."
+    },
+    "tags": {
+      "type": "array",
+      "description": "Tags pris en compte par cette configuration.",
+      "items": {
+        "type": "string",
+        "description": "Catégorie de fichier que le générateur doit lire."
+      }
+    },
+    "referencedTags": {
+      "type": "object",
+      "description": "Tags d'autres configs dont les classes peuvent être référencées dans le code généré par les générateurs de ce module.",
+      "additionalProperties": {
+        "type": "string",
+        "description": "Le nom de la config dans laquelle aller chercher le tag."
+      }
+    },
+    "language": {
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Langages de la configuration, utilisés en cascade pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs.\n\n- Valeur par défaut : `ts`.\n- Variables par tag : **oui**.",
+          "default": "ts"
+        },
+        {
+          "type": "array",
+          "description": "Langages de la configuration, utilisés en cascade pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs.\n\n- Valeur par défaut : `ts`.\n- Variables par tag : **oui**.",
+          "items": { "type": "string" }
+        }
+      ]
+    },
+    "variables": {
+      "type": "object",
+      "description": "Variables globales de la configuration, qui pourront être utilisées dans toutes les propriétés de la configuration.",
+      "patternProperties": { ".+": { "type": ["string", "number", "boolean"] } }
+    },
+    "tagVariables": {
+      "type": "object",
+      "description": "Variables par tag de la configuration, qui pourront être utilisées dans les propriétés de la configuration qui supportent ces variables.",
+      "patternProperties": {
+        ".*": {
+          "type": "object",
+          "patternProperties": {
+            ".*": { "type": ["string", "number", "boolean"] }
+          }
+        }
+      }
+    },
+    "rootModule": {
+      "type": "string",
+      "description": "Définition du module racine, pour les différents regroupements à faire dessus (fichiers de traductions...).\n\n- Valeur par défaut : `{module:head}`.\n- Templating : `{module}`.",
+      "default": "{module:head}"
+    },
+    "outputDirectory": {
+      "type": "string",
+      "description": "Racine du répertoire de génération."
+    },
+    "ignoreDefaultValues": {
+      "type": "boolean",
+      "description": "Désactive la génération des valeurs par défaut des propriétés dans les classes et endpoints générés avec cette configuration.\n\n- Valeur par défaut : `false`.",
+      "default": false
+    },
+    "translateReferences": {
+      "type": "boolean",
+      "description": "Si les libellés des listes de références doivent être traduits dans cette configuration.\n\n- Valeur par défaut : la valeur renseignée dans le bloc `i18n` global."
+    },
+    "translateProperties": {
+      "type": "boolean",
+      "description": "Si les libellés des propriétés doivent être traduits dans cette configuration.\n\n- Valeur par défaut : la valeur renseignée dans le bloc `i18n` global."
+    },
+    "disable": {
+      "type": "array",
+      "description": "Générateurs à désactiver pour cette configuration.",
+      "items": {
+        "type": "string",
+        "enum": [
+          "JSDefinitionGen",
+          "JSEnumsGen",
+          "JSNGApiClientGen",
+          "JSApiClientGen",
+          "JSResourceGen"
+        ]
+      }
+    },
+    "modelRootPath": {
+      "type": "string",
+      "description": "Localisation du modèle, relative au répertoire de génération. Si non renseigné, aucun modèle ne sera généré. Si '{module}' n'est pas présent dans le chemin, alors il sera ajouté à la fin.\n\n- Templating : `{module}`.\n- Variables par tag : **oui**."
+    },
+    "enumsFileName": {
+      "type": "string",
+      "description": "Nom du fichier généré contenant les enums d'un module.\n\n- Valeur par défaut : `enums`.",
+      "default": "enums"
+    },
+    "resourceRootPath": {
+      "type": "string",
+      "description": "Localisation des ressources i18n, relative au répertoire de génération. Si non renseigné, aucun fichier ne sera généré. Si '{lang}' n'est pas présent dans le chemin, alors il sera ajouté à la fin.\n\n- Templating : `{module}`, `{lang}`.\n- Variables par tag : **oui**."
+    },
+    "apiClientRootPath": {
+      "type": "string",
+      "description": "Localisation des clients d'API, relative au répertoire de génération. Si non renseigné, aucun fichier ne sera généré.\n\n- Variables par tag : **oui**."
+    },
+    "apiClientFilePath": {
+      "type": "string",
+      "description": "Chemin vers lequel sont créés les fichiers d'endpoints générés, relatif à la racine de l'API.\n\n- Valeur par défaut : `{module}/{fileName}` (en mode Angular : `{module}/{fileName}.service`).\n- Templating : `{module}`, `{fileName}`.",
+      "default": "{module}/{fileName}"
+    },
+    "fetchPath": {
+      "type": "string",
+      "description": "Chemin ou import vers un 'fetch' personnalisé, relatif au répertoire de génération s'il commence par un '.'.\n\n- Variables par tag : **oui**."
+    },
+    "domainPath": {
+      "type": "string",
+      "description": "Chemin ou import vers le fichier 'domain', relatif au répertoire de génération s'il commence par un '.'.\n\n- Valeur par défaut : `./domains`.\n- Variables par tag : **oui**.",
+      "default": "./domains"
+    },
+    "apiMode": {
+      "type": "string",
+      "description": "Framework cible pour la génération des clients d'API JavaScript.\n\n- Valeur par défaut : `fetch`.",
+      "default": "fetch",
+      "enum": ["fetch", "angular", "angular_promise", "legacy"]
+    },
+    "entityMode": {
+      "type": "string",
+      "description": "Mode de génération des entités TypeScript.\n\n- Valeur par défaut : `untyped`.",
+      "default": "untyped",
+      "enum": ["untyped", "typed", "none", "focus"]
+    },
+    "extendedCompositions": {
+      "type": "boolean",
+      "description": "Génère `isRequired`, `label` (et `comment`) sur les compositions dans les entités typées."
+    },
+    "optionalPrimaryKeys": {
+      "type": "boolean",
+      "description": "Génère les (alias de) clés primaires simples comme optionnelles dans les définitions d'entités. Il s'agit d'un paramètre de compatibilité avec l'existant, qui ne devrait plus être utilisé dans les nouveaux projets."
+    },
+    "entityTypesPath": {
+      "type": "string",
+      "description": "Chemin (ou alias commençant par '@') vers les imports de types d'entités, relatif au répertoire de génération."
+    },
+    "resourceMode": {
+      "type": "string",
+      "description": "Mode de génération (JS ou JSON).\n\n- Valeur par défaut : `js`.",
+      "enum": ["js", "json"],
+      "default": "js"
+    },
+    "generateComments": {
+      "type": "boolean",
+      "description": "Ajoute les commentaires dans les entités JS générées."
+    },
+    "generateMainResourceFiles": {
+      "type": "boolean",
+      "description": "Génère un fichier 'index.ts' qui importe et réexporte tous les fichiers de resources générés par langue. Uniquement compatible avec `resourceMode: js`."
+    }
+  }
+}

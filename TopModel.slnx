@@ -13,6 +13,7 @@
     <Project Path="TopModel.Generator.Translation/TopModel.Generator.Translation.csproj" />
   </Folder>
   <Folder Name="/Tests/">
+    <Project Path="TopModel.Core.Tests/TopModel.Core.Tests.csproj" />
     <Project Path="TopModel.LanguageServer.IntegrationTests/TopModel.LanguageServer.IntegrationTests.csproj" />
     <Project Path="TopModel.LanguageServer.Tests/TopModel.LanguageServer.Tests.csproj" />
     <Project Path="TopModel.ModelGenerator.Tests/TopModel.ModelGenerator.Tests.csproj" />
@@ -20,6 +21,7 @@
   <Folder Name="/Utils/">
     <Project Path="TopModel.Utils.Cli/TopModel.Utils.Cli.csproj" />
     <Project Path="TopModel.Utils.Mermaid/TopModel.Utils.Mermaid.csproj" />
+    <Project Path="TopModel.Utils.Tests/TopModel.Utils.Tests.csproj" />
     <Project Path="TopModel.Utils/TopModel.Utils.csproj" />
   </Folder>
   <Project Path="TopModel.Core/TopModel.Core.csproj" />

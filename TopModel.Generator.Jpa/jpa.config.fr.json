@@ -1,0 +1,345 @@
+{
+  "type": "object",
+  "description": "Config pour la génération de Jpa.",
+  "additionalProperties": false,
+  "required": ["tags", "outputDirectory"],
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Nom de cette configuration.\n\n- Valeur par défaut : `{module}@{index}`."
+    },
+    "tags": {
+      "type": "array",
+      "description": "Tags pris en compte par cette configuration.",
+      "items": {
+        "type": "string",
+        "description": "Catégorie de fichier que le générateur doit lire."
+      }
+    },
+    "referencedTags": {
+      "type": "object",
+      "description": "Tags d'autres configs dont les classes peuvent être référencées dans le code généré par les générateurs de ce module.",
+      "additionalProperties": {
+        "type": "string",
+        "description": "Le nom de la config dans laquelle aller chercher le tag."
+      }
+    },
+    "language": {
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Langages de la configuration, utilisés en cascade pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs.\n\n- Valeur par défaut : `java`.\n- Variables par tag : **oui**.",
+          "default": "java"
+        },
+        {
+          "type": "array",
+          "description": "Langages de la configuration, utilisés en cascade pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs.\n\n- Valeur par défaut : `java`.\n- Variables par tag : **oui**.",
+          "items": { "type": "string" }
+        }
+      ]
+    },
+    "variables": {
+      "type": "object",
+      "description": "Variables globales de la configuration, qui pourront être utilisées dans toutes les propriétés de la configuration.",
+      "patternProperties": { ".+": { "type": ["string", "number", "boolean"] } }
+    },
+    "tagVariables": {
+      "type": "object",
+      "description": "Variables par tag de la configuration, qui pourront être utilisées dans les propriétés de la configuration qui supportent ces variables.",
+      "patternProperties": {
+        ".*": {
+          "type": "object",
+          "patternProperties": {
+            ".*": { "type": ["string", "number", "boolean"] }
+          }
+        }
+      }
+    },
+    "rootModule": {
+      "type": "string",
+      "description": "Définition du module racine, pour les différents regroupements à faire dessus (fichiers de traductions...).\n\n- Valeur par défaut : `{module:head}`.\n- Templating : `{module}`.",
+      "default": "{module:head}"
+    },
+    "outputDirectory": {
+      "type": "string",
+      "description": "Racine du répertoire de génération."
+    },
+    "ignoreDefaultValues": {
+      "type": "boolean",
+      "description": "Désactive la génération des valeurs par défaut des propriétés dans les classes et endpoints générés avec cette configuration.\n\n- Valeur par défaut : `false`.",
+      "default": false
+    },
+    "translateReferences": {
+      "type": "boolean",
+      "description": "Si les libellés des listes de références doivent être traduits dans cette configuration.\n\n- Valeur par défaut : la valeur renseignée dans le bloc `i18n` global."
+    },
+    "translateProperties": {
+      "type": "boolean",
+      "description": "Si les libellés des propriétés doivent être traduits dans cette configuration.\n\n- Valeur par défaut : la valeur renseignée dans le bloc `i18n` global."
+    },
+    "disable": {
+      "type": "array",
+      "description": "Générateurs à désactiver pour cette configuration.",
+      "items": {
+        "type": "string",
+        "enum": [
+          "JavaDtoGen",
+          "JavaEnumClassPropGen",
+          "JavaEnumDtoGen",
+          "JavaEnumEnumGen",
+          "JavaUniqValPropGen",
+          "JdbcEntityGen",
+          "JpaDaoGen",
+          "JpaEntityGen",
+          "JpaEnumEntityGen",
+          "JpaMetaModelGen",
+          "JpaInterfaceGen",
+          "SpringDataFlowGen",
+          "FeignClientApiGen",
+          "SpringApiClientGen",
+          "SpringRestTemplateGen",
+          "SpringApiServerGen",
+          "JpaMapperGenerator",
+          "JpaResourceGen"
+        ]
+      }
+    },
+    "useLowerCaseSqlNames": {
+      "oneOf": [
+        {
+          "type": "boolean",
+          "description": "Utilise des noms de tables et de colonnes en minuscules.\n\n- Valeur par défaut : `true`.\n- Variables par tag : **oui**.",
+          "default": true
+        },
+        {
+          "type": "string",
+          "description": "Utilise des noms de tables et de colonnes en minuscules.\n\n- Valeur par défaut : `true`.\n- Variables par tag : **oui**.",
+          "pattern": "^\\{[^\\}]+\\}$"
+        }
+      ]
+    },
+    "uniqueValueGeneration": {
+      "type": "string",
+      "description": "Mode de génération des valeurs de propriétés avec clé d'unicité.\n\n- Valeur par défaut : `enum-or-const`.",
+      "enum": ["none", "const-only", "enum-only", "enum-or-const"],
+      "default": "enum-or-const"
+    },
+    "apiGeneration": {
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Mode de génération de l'API (`Client` ou `Server`).\n\n- Variables par tag : **oui**.",
+          "enum": ["Client", "Server"]
+        },
+        {
+          "type": "string",
+          "description": "Mode de génération de l'API (`Client` ou `Server`).\n\n- Variables par tag : **oui**.",
+          "pattern": "^\\{[^\\}]+\\}$"
+        }
+      ]
+    },
+    "metaModel": {
+      "type": "boolean",
+      "description": "Option pour générer le métamodèle JPA.\n\n- Valeur par défaut : `false`.",
+      "default": false
+    },
+    "entitiesPath": {
+      "type": "string",
+      "description": "Localisation des classes persistées du modèle, relative au répertoire de génération.\n\n- Valeur par défaut : `javagen:{app:path}/entities/{module:path}`.\n- Templating : `{module}`.\n- Variables par tag : **oui**.",
+      "default": "javagen:{app:path}/entities/{module:path}"
+    },
+    "enumsPath": {
+      "type": "string",
+      "description": "Localisation des enums du modèle, relative au répertoire de génération.\n\n- Valeur par défaut : `javagen:{app:path}/enums/{module:path}`.\n- Templating : `{module}`.\n- Variables par tag : **oui**.",
+      "default": "javagen:{app:path}/enums/{module:path}"
+    },
+    "daosPath": {
+      "type": "string",
+      "description": "Localisation des DAOs, relative au répertoire de génération.\n\n- Templating : `{module}`.\n- Variables par tag : **oui**."
+    },
+    "dtosPath": {
+      "type": "string",
+      "description": "Localisation des classes non persistées du modèle, relative au répertoire de génération.\n\n- Valeur par défaut : `javagen:{app:path}/dtos/{module:path}`.\n- Templating : `{module}`.\n- Variables par tag : **oui**.",
+      "default": "javagen:{app:path}/dtos/{module:path}"
+    },
+    "apiPath": {
+      "type": "string",
+      "description": "Localisation de l'API générée (client ou serveur), relative au répertoire de génération.\n\n- Valeur par défaut : `javagen:{app:path}/api/{module:path}`.\n- Templating : `{module}`.\n- Variables par tag : **oui**.",
+      "default": "javagen:{app:path}/api/{module:path}"
+    },
+    "openApiAnnotations": {
+      "type": "boolean",
+      "description": "Si les annotations `swagger-annotation-jakarta` doivent être ajoutées aux interfaces.\n\n- Valeur par défaut : `false`.",
+      "default": false
+    },
+    "clientApiGeneration": {
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Mode de génération de l'API Client.\n\n- Valeur par défaut : `RestClient`.",
+          "default": "RestClient",
+          "enum": ["RestTemplate", "RestClient", "FeignClient"]
+        },
+        {
+          "type": "string",
+          "description": "Mode de génération de l'API Client.\n\n- Valeur par défaut : `RestClient`.",
+          "pattern": "^\\{[^\\}]+\\}$"
+        }
+      ]
+    },
+    "resourcesPath": {
+      "type": "string",
+      "description": "Localisation des ressources, relative au répertoire de génération.\n\n- Templating : `{module}`, `{lang}`.\n- Variables par tag : **oui**."
+    },
+    "resourcesEncoding": {
+      "type": "string",
+      "description": "Encodage des fichiers de ressources.\n\n- Valeur par défaut : `Latin1`.",
+      "default": "Latin1",
+      "enum": ["Latin1", "UTF8"]
+    },
+    "dbSchema": {
+      "type": "string",
+      "description": "Nom du schéma sur lequel les entités sont sauvegardées.\n\n- Valeur par défaut : `public`.\n- Variables par tag : **oui**.",
+      "default": "public"
+    },
+    "compositionConverterCanonicalName": {
+      "type": "string",
+      "description": "Nom complet de la classe permettant de convertir les compositions stockées en JSON dans la base de données.\n\n- Valeur par défaut : `{package}.{class}Converter`.\n- Templating : `{package}`, `{class}`.",
+      "default": "{package}.{class}Converter"
+    },
+    "associationAdders": {
+      "type": "boolean",
+      "description": "Option pour générer des méthodes d'ajout pour les associations multiples. Ces méthodes permettent de synchroniser les objets ajoutés en mettant à jour la relation réciproque.\n\n- Valeur par défaut : `false`.",
+      "default": false
+    },
+    "associationRemovers": {
+      "type": "boolean",
+      "description": "Option pour générer des méthodes de suppression pour les associations multiples. Ces méthodes permettent de synchroniser les objets supprimés en mettant à jour la relation réciproque.\n\n- Valeur par défaut : `false`.",
+      "default": false
+    },
+    "generatedHint": {
+      "type": "boolean",
+      "description": "Option pour générer l'annotation `@Generated(\"TopModel : https://github.com/klee-contrib/topmodel\")`.\n\n- Valeur par défaut : `true`.",
+      "default": true
+    },
+    "fieldsEnum": {
+      "type": "array",
+      "description": "Option pour générer une enum des champs des classes persistées ou non persistées.",
+      "items": { "type": "string", "enum": ["non-persisted", "persisted"] }
+    },
+    "fieldsEnumInterface": {
+      "type": "string",
+      "description": "Précise l'interface des fields enum générés.\n\n- Templating : `<>`."
+    },
+    "dataFlowsPath": {
+      "type": "string",
+      "description": "Localisation des flux de données générés.\n\n- Templating : `{module}`.\n- Variables par tag : **oui**."
+    },
+    "dataFlowsWriter": {
+      "type": "string",
+      "description": "Writer à utiliser pour les flux de données.\n\n- Valeur par défaut : `jpa`.",
+      "default": "jpa",
+      "enum": ["bulk", "jpa"]
+    },
+    "useJdbc": {
+      "type": "boolean",
+      "description": "Génération des entités en mode JDBC au lieu de JPA.\n\n- Valeur par défaut : `false`.",
+      "default": false
+    },
+    "daosAbstract": {
+      "type": "boolean",
+      "description": "Génère les DAOs sous forme d'interfaces `Abstract` annotées avec `@NoRepositoryBean`, à hériter dans le projet.\n\n- Valeur par défaut : `false`.",
+      "default": false
+    },
+    "daosName": {
+      "type": "string",
+      "description": "Template du nom des DAOs.\n\n- Valeur par défaut : `{class}DAO` si `daosAbstract` est désactivé, sinon `Abstract{class}DAO`.\n- Templating : `{class}`."
+    },
+    "cascadeTypes": {
+      "type": "object",
+      "description": "Types de cascade à ajouter aux associations générées.\n\n- Valeur par défaut : `{\"oneToOne\":[\"all\"],\"oneToMany\":[\"all\"]}`.",
+      "default": { "oneToOne": ["all"], "oneToMany": ["all"] },
+      "properties": {
+        "oneToOne": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "all",
+              "persist",
+              "merge",
+              "remove",
+              "refresh",
+              "detach",
+              "lock"
+            ]
+          },
+          "description": "Types de cascade appliqués aux associations one-to-one."
+        },
+        "oneToMany": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "all",
+              "persist",
+              "merge",
+              "remove",
+              "refresh",
+              "detach",
+              "lock"
+            ]
+          },
+          "description": "Types de cascade appliqués aux associations one-to-many."
+        },
+        "manyToOne": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "all",
+              "persist",
+              "merge",
+              "remove",
+              "refresh",
+              "detach",
+              "lock"
+            ]
+          },
+          "description": "Types de cascade appliqués aux associations many-to-one."
+        }
+      }
+    },
+    "apisName": {
+      "type": "string",
+      "description": "Nom des classes d'API générées.\n\n- Valeur par défaut : dépend du mode de génération de l'API.\n- Templating : `{module}`, `{fileName}`.\n- Variables par tag : **oui**."
+    },
+    "daosInterface": {
+      "type": "string",
+      "description": "Précise l'interface des DAOs générés."
+    },
+    "useRecords": {
+      "type": "boolean",
+      "description": "Indique s'il faut générer les classes non persistées de type `regular` qui ont `readonly: true` en tant que records Java.\n\n- Valeur par défaut : `false`.\n- Variables par tag : **oui**.",
+      "default": false
+    },
+    "dataFlowsBulkSize": {
+      "type": "number",
+      "description": "Taille des chunks à extraire et insérer.\n\n- Valeur par défaut : `100000`.",
+      "default": 100000
+    },
+    "dataFlowsListeners": {
+      "type": "array",
+      "description": "Listeners à ajouter à tous les dataflows.\n\n- Valeur par défaut : `[]`.",
+      "items": {
+        "type": "string",
+        "description": "Listener à ajouter à tous les dataflows"
+      }
+    },
+    "mapperTagsOverrides": {
+      "type": "array",
+      "description": "Si un mapper contient au moins une classe de ces tags, alors il sera généré avec les tags de cette classe (au lieu du comportement par défaut qui priorise les tags de la classe persistée puis de celle qui définit le mapper).\n\n- Valeur par défaut : `[]`.",
+      "items": { "type": "string" }
+    }
+  }
+}

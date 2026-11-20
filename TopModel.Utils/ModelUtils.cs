@@ -74,6 +74,44 @@ public static class ModelUtils
     }
 
     /// <summary>
+    /// Récupère le chemin d'un fichier localisé dans un assembly, ou celui du fichier par défaut.
+    /// </summary>
+    /// <param name="assembly">L'assembly contenant le fichier.</param>
+    /// <param name="fileName">Le fichier par défaut.</param>
+    /// <param name="language">La langue demandée.</param>
+    /// <returns>Le chemin du fichier localisé existant, ou celui du fichier par défaut.</returns>
+    public static string GetLocalizedFilePath(this Assembly assembly, string fileName, string? language)
+    {
+        var defaultPath = assembly.GetFilePath(fileName);
+        if (string.IsNullOrWhiteSpace(language))
+        {
+            return defaultPath;
+        }
+
+        var normalizedLanguage = language.Replace('_', '-').ToLowerInvariant();
+        if (!Regex.IsMatch(normalizedLanguage, "^[a-z0-9]+(?:-[a-z0-9]+)*$"))
+        {
+            return defaultPath;
+        }
+
+        var extension = Path.GetExtension(fileName);
+        var baseName = fileName[..^extension.Length];
+        while (!string.IsNullOrEmpty(normalizedLanguage))
+        {
+            var localizedPath = assembly.GetFilePath($"{baseName}.{normalizedLanguage}{extension}");
+            if (File.Exists(localizedPath))
+            {
+                return localizedPath;
+            }
+
+            var separatorIndex = normalizedLanguage.LastIndexOf('-');
+            normalizedLanguage = separatorIndex < 0 ? string.Empty : normalizedLanguage[..separatorIndex];
+        }
+
+        return defaultPath;
+    }
+
+    /// <summary>
     /// Vérifie si la chaîne de caractères est un nom d'enum valide.
     /// </summary>
     /// <param name="name">Le nom à vérifier.</param>

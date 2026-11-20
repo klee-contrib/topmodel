@@ -880,14 +880,14 @@
           },
           "openApiAnnotations": {
             "type": "boolean",
-            "description": "Si les annotations `swagger-annotation-jakarta` doivent être ajoutées aux interfaces.\n\n- Valeur par défaut : `false`.\n- Variables par tag : **non**.",
+            "description": "Si les annotations `swagger-annotation-jakarta` doivent être ajoutées aux interfaces.\n\n- Valeur par défaut : `false`.",
             "default": false
           },
           "clientApiGeneration": {
             "oneOf": [
               {
                 "type": "string",
-                "description": "Mode de génération de l'API Client.\n\n- Valeur par défaut : `RestClient`.\n- Variables par tag : **non**.",
+                "description": "Mode de génération de l'API Client.\n\n- Valeur par défaut : `RestClient`.",
                 "default": "RestClient",
                 "enum": [
                   "RestTemplate",
@@ -897,7 +897,7 @@
               },
               {
                 "type": "string",
-                "description": "Mode de génération de l'API Client.\n\n- Valeur par défaut : `RestClient`.\n- Variables par tag : **non**.",
+                "description": "Mode de génération de l'API Client.\n\n- Valeur par défaut : `RestClient`.",
                 "pattern": "^\\{[^\\}]+\\}$"
               }
             ]
@@ -908,7 +908,7 @@
           },
           "resourcesEncoding": {
             "type": "string",
-            "description": "Encodage des fichiers de ressources.\n\n- Valeur par défaut : `Latin1`.\n- Variables par tag : **non**.",
+            "description": "Encodage des fichiers de ressources.\n\n- Valeur par défaut : `Latin1`.",
             "default": "Latin1",
             "enum": [
               "Latin1",
@@ -922,7 +922,7 @@
           },
           "compositionConverterCanonicalName": {
             "type": "string",
-            "description": "Nom complet de la classe permettant de convertir les compositions stockées en JSON dans la base de données.\n\n- Valeur par défaut : `{package}.{class}Converter`.\n- Templating : `{package}`, `{class}`.\n- Variables par tag : **non**.",
+            "description": "Nom complet de la classe permettant de convertir les compositions stockées en JSON dans la base de données.\n\n- Valeur par défaut : `{package}.{class}Converter`.\n- Templating : `{package}`, `{class}`.",
             "default": "{package}.{class}Converter"
           },
           "associationAdders": {
@@ -1072,7 +1072,7 @@
           },
           "mapperTagsOverrides": {
             "type": "array",
-            "description": "Si un mapper contient au moins une classe de ces tags, alors il sera généré avec les tags de cette classe (au lieu du comportement par défaut qui priorise les tags de la classe persistée puis de celle qui définit le mapper).\n\n- Valeur par défaut : `[]`.\n- Variables par tag : **non**.",
+            "description": "Si un mapper contient au moins une classe de ces tags, alors il sera généré avec les tags de cette classe (au lieu du comportement par défaut qui priorise les tags de la classe persistée puis de celle qui définit le mapper).\n\n- Valeur par défaut : `[]`.",
             "items": {
               "type": "string"
             }

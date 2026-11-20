@@ -7,7 +7,7 @@
     <ProjectReference Include="..\TopModel.Generator.Core\TopModel.Generator.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="javascript.config.json">
+    <Content Include="*.config*.json">
       <Pack>true</Pack>
       <PackagePath>contentFiles</PackagePath>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

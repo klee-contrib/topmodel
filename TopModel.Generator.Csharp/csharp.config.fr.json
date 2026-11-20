@@ -1,0 +1,304 @@
+{
+  "type": "object",
+  "description": "Config pour la génération de C#.",
+  "additionalProperties": false,
+  "required": ["outputDirectory", "tags"],
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Nom de cette configuration.\n\n- Valeur par défaut : `{module}@{index}`."
+    },
+    "tags": {
+      "type": "array",
+      "description": "Tags pris en compte par cette configuration.",
+      "items": {
+        "type": "string",
+        "description": "Catégorie de fichier que le générateur doit lire."
+      }
+    },
+    "referencedTags": {
+      "type": "object",
+      "description": "Tags d'autres configs dont les classes peuvent être référencées dans le code généré par les générateurs de ce module.",
+      "additionalProperties": {
+        "type": "string",
+        "description": "Le nom de la config dans laquelle aller chercher le tag."
+      }
+    },
+    "language": {
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Langages de la configuration, utilisés en cascade pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs.\n\n- Valeur par défaut : `csharp`.\n- Variables par tag : **oui**.",
+          "default": "csharp"
+        },
+        {
+          "type": "array",
+          "description": "Langages de la configuration, utilisés en cascade pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs.\n\n- Valeur par défaut : `csharp`.\n- Variables par tag : **oui**.",
+          "items": { "type": "string" }
+        }
+      ]
+    },
+    "variables": {
+      "type": "object",
+      "description": "Variables globales de la configuration, qui pourront être utilisées dans toutes les propriétés de la configuration.",
+      "patternProperties": { ".+": { "type": ["string", "number", "boolean"] } }
+    },
+    "tagVariables": {
+      "type": "object",
+      "description": "Variables par tag de la configuration, qui pourront être utilisées dans les propriétés de la configuration qui supportent ces variables.",
+      "patternProperties": {
+        ".*": {
+          "type": "object",
+          "patternProperties": {
+            ".*": { "type": ["string", "number", "boolean"] }
+          }
+        }
+      }
+    },
+    "rootModule": {
+      "type": "string",
+      "description": "Définition du module racine, pour les différents regroupements à faire dessus (fichiers de traductions...).\n\n- Valeur par défaut : `{module:head}`.\n- Templating : `{module}`.",
+      "default": "{module:head}"
+    },
+    "outputDirectory": {
+      "type": "string",
+      "description": "Racine du répertoire de génération."
+    },
+    "ignoreDefaultValues": {
+      "type": "boolean",
+      "description": "Désactive la génération des valeurs par défaut des propriétés dans les classes et endpoints générés avec cette configuration.\n\n- Valeur par défaut : `false`.",
+      "default": false
+    },
+    "translateReferences": {
+      "type": "boolean",
+      "description": "Si les libellés des listes de références doivent être traduits dans cette configuration.\n\n- Valeur par défaut : la valeur renseignée dans le bloc `i18n` global."
+    },
+    "translateProperties": {
+      "type": "boolean",
+      "description": "Si les libellés des propriétés doivent être traduits dans cette configuration.\n\n- Valeur par défaut : la valeur renseignée dans le bloc `i18n` global."
+    },
+    "disable": {
+      "type": "array",
+      "description": "Générateurs à désactiver pour cette configuration.",
+      "items": {
+        "type": "string",
+        "enum": [
+          "CSharpClassGen",
+          "CSharpMapperGen",
+          "CSharpDbContextGen",
+          "CSharpRefAccessGen",
+          "CSharpApiServerGen",
+          "CSharpApiClientGen"
+        ]
+      }
+    },
+    "useLowerCaseSqlNames": {
+      "oneOf": [
+        {
+          "type": "boolean",
+          "description": "Utilise des noms de tables et de colonnes en minuscules.\n\n- Valeur par défaut : `true`.\n- Variables par tag : **oui**.",
+          "default": true
+        },
+        {
+          "type": "string",
+          "description": "Utilise des noms de tables et de colonnes en minuscules.\n\n- Valeur par défaut : `true`.\n- Variables par tag : **oui**.",
+          "pattern": "^\\{[^\\}]+\\}$"
+        }
+      ]
+    },
+    "uniqueValueGeneration": {
+      "type": "string",
+      "description": "Mode de génération des valeurs de propriétés avec clé d'unicité.\n\n- Valeur par défaut : `enum-or-const`.",
+      "enum": ["none", "const-only", "enum-only", "enum-or-const"],
+      "default": "enum-or-const"
+    },
+    "apiGeneration": {
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Mode de génération de l'API (`Client` ou `Server`).\n\n- Variables par tag : **oui**.",
+          "enum": ["Client", "Server"]
+        },
+        {
+          "type": "string",
+          "description": "Mode de génération de l'API (`Client` ou `Server`).\n\n- Variables par tag : **oui**.",
+          "pattern": "^\\{[^\\}]+\\}$"
+        }
+      ]
+    },
+    "persistentModelPath": {
+      "type": "string",
+      "description": "Localisation du modèle persisté, relative au répertoire de génération.\n\n- Valeur par défaut : `{app}.{module}.Models`.\n- Templating : `{module}`.\n- Variables par tag : **oui**.",
+      "default": "{app}.{module}.Models"
+    },
+    "referencesModelPath": {
+      "type": "string",
+      "description": "Localisation des classes de références, relative au répertoire de génération. Si non renseigné, ces classes seront générées comme les autres (selon si elles sont persistantes ou non).\n\n- Templating : `{module}`.\n- Variables par tag : **oui**.\n- Valeur par défaut : `persistentModelPath` ou `nonPersistentModelPath`, selon que la classe est persistée ou non."
+    },
+    "nonPersistentModelPath": {
+      "type": "string",
+      "description": "Localisation du modèle non persisté, relative au répertoire de génération.\n\n- Valeur par défaut : `{app}.{module}.Models/Dto`.\n- Templating : `{module}`.\n- Variables par tag : **oui**.",
+      "default": "{app}.{module}.Models/Dto"
+    },
+    "apiRootPath": {
+      "type": "string",
+      "description": "Localisation de l'API générée (client ou serveur), relative au répertoire de génération.\n\n- Valeur par défaut : `{app}.Web`.\n- Templating : `{module}`.\n- Variables par tag : **oui**.",
+      "default": "{app}.Web"
+    },
+    "apiFilePath": {
+      "type": "string",
+      "description": "Chemin vers lequel sont créés les fichiers d'endpoints générés, relatif à la racine de l'API.\n\n- Valeur par défaut : `{module:path}`.\n- Templating : `{module}`.\n- Variables par tag : **oui**.",
+      "default": "{module:path}"
+    },
+    "noAsyncControllers": {
+      "type": "boolean",
+      "description": "Génère des contrôleurs d'API synchrones."
+    },
+    "dbContextPath": {
+      "type": "string",
+      "description": "Localisation du DbContext, relative au répertoire de génération.\n\n- Templating : `{module}`.\n- Variables par tag : **oui**."
+    },
+    "dbContextName": {
+      "type": "string",
+      "description": "Nom du DbContext.\n\n- Valeur par défaut : `{app}DbContext`.\n- Templating : `{module}`.\n- Variables par tag : **oui**.",
+      "default": "{app}DbContext"
+    },
+    "noBaseDbContext": {
+      "type": "boolean",
+      "description": "Ne renseigne pas la classe de base `DbContext` sur le DbContext généré, pour que vous puissiez renseigner la vôtre (avec son constructeur) dans un partial."
+    },
+    "dataFlowsPath": {
+      "type": "string",
+      "description": "Localisation des flux de données générés.\n\n- Templating : `{module}`.\n- Variables par tag : **oui**."
+    },
+    "referenceAccessorsInterfacePath": {
+      "type": "string",
+      "description": "Chemin vers lequel générer les interfaces d'accesseurs de référence.\n\n- Templating : `{module}`.\n- Variables par tag : **oui**."
+    },
+    "referenceAccessorsImplementationPath": {
+      "type": "string",
+      "description": "Chemin vers lequel générer les implémentations d'accesseurs de référence.\n\n- Valeur par défaut : `{dbContextPath}/Reference`.\n- Templating : `{module}`.\n- Variables par tag : **oui**."
+    },
+    "referenceAccessorsName": {
+      "type": "string",
+      "description": "Nom des accesseurs de référence (préfixé par 'I' pour l'interface, puis 'Db' pour les accesseurs persistés). (La variable `{module}` aura toujours la transformation `flat` ajoutée).\n\n- Valeur par défaut : `{module}ReferenceAccessors`.\n- Templating : `{module}`.\n- Variables par tag : **oui**.",
+      "default": "{module}ReferenceAccessors"
+    },
+    "mappersName": {
+      "type": "string",
+      "description": "Nom des mappers. (La variable `{module}` aura toujours la transformation `flat` ajoutée).\n\n- Valeur par défaut : `{module}Mappers`.\n- Templating : `{module}`.",
+      "default": "{module}Mappers"
+    },
+    "useEFMigrations": {
+      "type": "boolean",
+      "description": "Utilise les migrations EF pour créer/mettre à jour la base de données.\n\n- Valeur par défaut : `true`.",
+      "default": true
+    },
+    "dbSchema": {
+      "type": "string",
+      "description": "Nom du schéma de base de données à cibler. Si non renseigné, EF utilise le schéma par défaut du fournisseur (`dbo` pour SQL Server, `public` pour PostgreSQL).\n\n- Templating : `{module}`.\n- Variables par tag : **oui**."
+    },
+    "kinetix": {
+      "type": "string",
+      "description": "Ce qu'il faut générer pour Kinetix : `references` pour les annotations et accesseurs de listes de référence, `legacy` pour générer en plus des annotations de domaines, et `none` pour ne rien générer.\n\n- Valeur par défaut : `references`.",
+      "enum": ["none", "references", "legacy"],
+      "default": "references"
+    },
+    "domainNamespace": {
+      "type": "string",
+      "description": "Namespace de l'enum de domaine pour Kinetix (mode legacy).\n\n- Valeur par défaut : `{app}.Common`.",
+      "default": "{app}.Common"
+    },
+    "valueTypes": {
+      "type": "array",
+      "description": "Types C# que le générateur doit considérer comme étant types valeurs (en plus des plus standard comme 'int', 'bool' ou 'DateTime'), qu'il faudra wrapper dans un `Nullable` (avec un `?`) pour les rendre nullables.",
+      "items": { "type": "string" }
+    },
+    "nullableEnable": {
+      "type": "boolean",
+      "description": "Prend en compte l'activation du paramètre `nullable: enable` dans le code généré (pour ajouter des `?` derrière les types références nullables)."
+    },
+    "requiredNonNullable": {
+      "oneOf": [
+        {
+          "type": "boolean",
+          "description": "Génère des types non-nullables pour les propriétés obligatoires.\n\n- Variables par tag : **oui**."
+        },
+        {
+          "type": "string",
+          "description": "Génère des types non-nullables pour les propriétés obligatoires.\n\n- Variables par tag : **oui**.",
+          "pattern": "^\\{[^\\}]+\\}$"
+        }
+      ]
+    },
+    "noColumnOnAlias": {
+      "type": "boolean",
+      "description": "Ne génère pas les attributs de colonnes sur les alias dans les classes non persistées.\n\n- Valeur par défaut : `true`.",
+      "default": true
+    },
+    "noPersistence": {
+      "oneOf": [
+        {
+          "type": "boolean",
+          "description": "Considère toutes les classes comme étant non persistées (= pas d'attribut SQL).\n\n- Variables par tag : **oui**."
+        },
+        {
+          "type": "string",
+          "description": "Considère toutes les classes comme étant non persistées (= pas d'attribut SQL).\n\n- Variables par tag : **oui**.",
+          "pattern": "^\\{[^\\}]+\\}$"
+        }
+      ]
+    },
+    "mapperTagsOverrides": {
+      "type": "array",
+      "description": "Si un mapper contient au moins une classe de ces tags, alors il sera généré avec les tags de cette classe (au lieu du comportement par défaut qui priorise les tags de la classe persistée puis de celle qui définit le mapper).\n\n- Valeur par défaut : `[]`.",
+      "items": { "type": "string" }
+    },
+    "mapperLocationPriority": {
+      "type": "string",
+      "description": "Détermine le type de classe prioritaire pour déterminer la localisation des mappers générés (`persisted` ou `non-persisted`).\n\n- Valeur par défaut : `persisted`.",
+      "enum": ["persisted", "non-persisted"],
+      "default": "persisted"
+    },
+    "useEFComments": {
+      "type": "boolean",
+      "description": "Annote les tables et les colonnes générées par EF avec les commentaires du modèle (nécessite `useEFMigrations`)."
+    },
+    "usePostgresEnums": {
+      "type": "boolean",
+      "description": "Utilise des enums Postgres pour les classes `enum: true` en base de données."
+    },
+    "dotnetVersion": {
+      "type": "number",
+      "description": "Permet de spécifier la version de .NET cible, afin de savoir si certaines fonctionnalités sont disponibles pour la génération.\n\n- Valeur par défaut : `10`.",
+      "default": 10
+    },
+    "useRecords": {
+      "type": "boolean",
+      "description": "Utilise des records (mutables) au lieu de classes pour la génération de classes.\n\n- Valeur par défaut : `true`.",
+      "default": true
+    },
+    "useCancellationTokens": {
+      "type": "boolean",
+      "description": "Ajoute un CancellationToken en paramètre des endpoints générés (client et serveur).\n\n- Valeur par défaut : `false`."
+    },
+    "useAsyncReferenceAccessors": {
+      "type": "boolean",
+      "description": "Génère des accesseurs de référence asynchrones (pour Kinetix 10+).\n\n- Valeur par défaut : `false`."
+    },
+    "resourcesResxPath": {
+      "type": "string",
+      "description": "Chemin vers les fichiers de ressources (`*.resx`) à générer pour les traductions de libellés de propriétés et de listes de références.\n\n- Templating : `{module}`, `{lang}`.\n- Variables par tag : **oui**."
+    },
+    "resourcesInResx": {
+      "type": "string",
+      "description": "Précise les ressources à générer dans les fichiers resx (si `resourcesResxPath` est renseigné), au lieu de les générer en base de données.\n\n- Valeur par défaut : `all`.",
+      "enum": ["all", "properties", "references"],
+      "default": "all"
+    },
+    "enumCols": {
+      "type": "boolean",
+      "description": "Génère les enums de nom de colonnes dans les classes persistées. Activé automatiquement si `dbContextPath` est `null` et si `kinetix` est renseigné."
+    }
+  }
+}
