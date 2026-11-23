@@ -1,19 +1,18 @@
 import * as fs from "fs";
-import { configure } from "mobx";
-import { ExtensionContext, RelativePattern, Uri, window, workspace, WorkspaceFolder } from "vscode";
+import {loadAll} from "js-yaml";
+import {configure} from "mobx";
+import open from "open";
+import {ExtensionContext, RelativePattern, Uri, window, workspace, WorkspaceFolder} from "vscode";
 
-import { Application } from "./application";
-import { t } from "./i18n";
-import { State } from "./state";
-import { TopModelConfig, TopModelException } from "./types";
-import { execute } from "./utils";
-
-const open = require("open").default;
-const yaml = require("js-yaml");
+import {Application} from "./application";
+import {t} from "./i18n";
+import {State} from "./state";
+import {TopModelConfig, TopModelException} from "./types";
+import {execute} from "./utils";
 
 let state: State;
 
-configure({ enforceActions: "never" });
+configure({enforceActions: "never"});
 
 export async function activate(ctx: ExtensionContext) {
     try {
@@ -36,14 +35,14 @@ export async function activate(ctx: ExtensionContext) {
         // son propre client LSP (et son propre process modls), il faut le démarrer/arrêter à la volée :
         // sans cela un dossier ajouté après coup resterait définitivement sans service.
         ctx.subscriptions.push(
-            workspace.onDidChangeWorkspaceFolders(async (event) => {
+            workspace.onDidChangeWorkspaceFolders(async event => {
                 try {
                     await state.removeApplications(event.removed);
                     await addApplications(event.added);
                 } catch (error: any) {
                     handleError(error);
                 }
-            }),
+            })
         );
     } catch (error: any) {
         handleError(error);
@@ -98,21 +97,18 @@ async function checkDotnetInstall(): Promise<boolean> {
  * La recherche est scopée au dossier (et non menée sur tout le workspace puis répartie ensuite) :
  * chaque language server ne doit recevoir que les configs du dossier dont il a la charge.
  */
-async function findConfFiles(folder: WorkspaceFolder): Promise<{ config: TopModelConfig; file: Uri }[]> {
+async function findConfFiles(folder: WorkspaceFolder): Promise<{config: TopModelConfig; file: Uri}[]> {
     const files = await workspace.findFiles(new RelativePattern(folder, "**/topmodel*.config"));
 
     return files
-        .map((file) => {
+        .map(file => {
             const doc = fs.readFileSync(file.fsPath, "utf8");
-            const config = doc
-                .split("---")
-                .filter((e) => e)
-                .map(yaml.load)
-                .map((e) => e as TopModelConfig)
-                .filter((e) => e?.app)[0];
-            return { config, file };
+            const config = loadAll(doc)
+                .map(document => document as TopModelConfig | null)
+                .find(document => document?.app)!;
+            return {config, file};
         })
-        .filter((c) => c.config);
+        .filter(c => !!c.config);
 }
 
 function handleError(exception: TopModelException) {

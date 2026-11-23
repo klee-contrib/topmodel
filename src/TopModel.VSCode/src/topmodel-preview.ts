@@ -1,15 +1,15 @@
 import mermaid from "mermaid";
-mermaid.initialize({ securityLevel: "loose" });
+mermaid.initialize({securityLevel: "loose"});
 
 const ZOOM_SPEED = 0.4;
 function zoomClick(inOut: boolean) {
-    const event = new CustomEvent("zoomClick", { detail: { inOut } });
+    const event = new CustomEvent("zoomClick", {detail: {inOut}});
     document.dispatchEvent(event);
     return false;
 }
 
 function scope(scope: "file" | "module" | "model") {
-    const event = new CustomEvent("update:scope", { detail: { scope } });
+    const event = new CustomEvent("update:scope", {detail: {scope}});
     document.dispatchEvent(event);
     return false;
 }
@@ -124,7 +124,7 @@ function showFeedback(message: string) {
         vscode.postMessage({
             type: "update:matrix",
             //@ts-ignore
-            matrix,
+            matrix
         });
     }
 
@@ -144,7 +144,7 @@ function showFeedback(message: string) {
             const className = classId.split("-classId-")[1].replace(/-\d+$/, "");
             vscode.postMessage({
                 type: "click:class",
-                className,
+                className
             });
         }
     }
@@ -180,11 +180,11 @@ function showFeedback(message: string) {
         cadre.onmousedown = startDrag;
         //@ts-ignore
         document.addEventListener("zoomClick", handleZoomClick);
-        document.addEventListener("update:scope", (event) => {
+        document.addEventListener("update:scope", event => {
             vscode.postMessage({
                 type: "update:scope",
                 //@ts-ignore
-                scope: event.detail.scope,
+                scope: event.detail.scope
             });
         });
         await mermaid.run();

@@ -1,4 +1,5 @@
-import { autorun, makeAutoObservable } from "mobx";
+import {autorun, makeAutoObservable} from "mobx";
+import path from "path";
 import {
     ExtensionContext,
     Position,
@@ -10,18 +11,18 @@ import {
     ViewColumn,
     WebviewPanel,
     window,
-    workspace,
+    workspace
 } from "vscode";
-import { Application } from "./application";
-import { t } from "./i18n";
-import { Mermaid } from "./types";
-import path = require("path");
+
+import {Application} from "./application";
+import {t} from "./i18n";
+import {Mermaid} from "./types";
 
 export class TopModelPreviewPanel {
     private readonly diagramMap: Record<string, Mermaid> = {};
     private readonly context: ExtensionContext;
     private readonly previewSrcUri: Uri;
-    private matrix: { scale: number; x: number; y: number };
+    private matrix: {scale: number; x: number; y: number};
 
     public readonly panel: WebviewPanel;
     public currentFsPath: string = "";
@@ -29,7 +30,7 @@ export class TopModelPreviewPanel {
 
     constructor(
         context: ExtensionContext,
-        private readonly applications: Application[],
+        private readonly applications: Application[]
     ) {
         makeAutoObservable(this);
         autorun(() => this.refresh());
@@ -37,17 +38,17 @@ export class TopModelPreviewPanel {
         this.panel = window.createWebviewPanel(
             "preview", // Identifies the type of the webview. Used internally
             "Top Model Preview", // Title of the panel displayed to the user
-            { viewColumn: ViewColumn.Beside, preserveFocus: true }, // Editor column to show the new webview panel in.
-            { enableScripts: true }, // Webview options. More on these later.
+            {viewColumn: ViewColumn.Beside, preserveFocus: true}, // Editor column to show the new webview panel in.
+            {enableScripts: true} // Webview options. More on these later.
         );
 
         this.matrix = {
             x: -1,
             y: -1,
-            scale: 1,
+            scale: 1
         };
         this.previewSrcUri = this.panel.webview.asWebviewUri(
-            Uri.file(path.join(this.context.extensionPath, "out", "topmodel-preview.js")),
+            Uri.file(path.join(this.context.extensionPath, "out", "topmodel-preview.js"))
         );
 
         this.initSubscriptions();
@@ -74,22 +75,22 @@ export class TopModelPreviewPanel {
                     this.currentScope = "file";
                 }
             }),
-            this.panel.webview.onDidReceiveMessage((message) => {
+            this.panel.webview.onDidReceiveMessage(message => {
                 this.handleMessage(message);
             }),
-            workspace.onDidSaveTextDocument((e) => {
+            workspace.onDidSaveTextDocument(e => {
                 if (e.uri.fsPath === this.currentFsPath) {
                     this.refresh();
                 }
-            }),
+            })
         );
     }
 
     get currentApplication(): Application {
         if (this.currentFsPath) {
             return (
-                this.applications.find((c) => {
-                    if (c.modelRootFolders.some((folder) => this.currentFsPath.includes(folder))) {
+                this.applications.find(c => {
+                    if (c.modelRootFolders.some(folder => this.currentFsPath.includes(folder))) {
                         return c;
                     }
                 }) ?? this.applications[0]
@@ -109,19 +110,19 @@ export class TopModelPreviewPanel {
             const className = message.className;
             const symbolInformations: SymbolInformation[] =
                 (await this.currentApplication?.client?.sendRequest("workspace/symbol", {
-                    query: className,
+                    query: className
                 })) ?? [];
-            const symbol = symbolInformations.find((s) => s.name === className);
+            const symbol = symbolInformations.find(s => s.name === className);
             const position = new Position(symbol!.location.range.start.line, 0);
             const uri = Uri.parse(symbol!.location.uri as any);
             const textEditor =
-                window.visibleTextEditors.find((t) => t.document.uri.fsPath === uri.fsPath) ??
+                window.visibleTextEditors.find(t => t.document.uri.fsPath === uri.fsPath) ??
                 (window.activeTextEditor?.document.uri.fsPath.endsWith(".tmd") ? window.activeTextEditor : undefined) ??
-                window.visibleTextEditors.find((t) => t.document.uri.fsPath.endsWith(".tmd")) ??
+                window.visibleTextEditors.find(t => t.document.uri.fsPath.endsWith(".tmd")) ??
                 window.visibleTextEditors[0];
             await window.showTextDocument(uri, {
                 preserveFocus: false,
-                viewColumn: textEditor.viewColumn,
+                viewColumn: textEditor.viewColumn
             });
             textEditor?.revealRange(new Range(position, position));
         }
@@ -131,7 +132,7 @@ export class TopModelPreviewPanel {
         if (this.currentApplication?.client) {
             const data = await this.currentApplication.client.sendRequest("mermaid", {
                 uri: this.currentFsPath,
-                scope: this.currentScope,
+                scope: this.currentScope
             });
             this.diagramMap[this.currentFsPath] = data as Mermaid;
             this.panel.webview.html = this.webviewContent;

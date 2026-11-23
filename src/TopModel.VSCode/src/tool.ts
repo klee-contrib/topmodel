@@ -1,9 +1,10 @@
-import { autorun, makeAutoObservable } from "mobx";
-import { commands, ExtensionContext, Terminal, window, workspace } from "vscode";
-import { COMMANDS, COMMANDS_OPTIONS } from "./const";
-import { t } from "./i18n";
-import { Status } from "./types";
-import { execute, isWindows } from "./utils";
+import {autorun, makeAutoObservable} from "mobx";
+import {commands, ExtensionContext, Terminal, window, workspace} from "vscode";
+
+import {COMMANDS, COMMANDS_OPTIONS} from "./const";
+import {t} from "./i18n";
+import {Status} from "./types";
+import {execute, isWindows} from "./utils";
 
 export class TmdTool {
     currentVersion?: string;
@@ -21,14 +22,14 @@ export class TmdTool {
     private _terminal?: Terminal;
     constructor(
         public readonly name: "TopModel.Generator" | "TopModel.ModelGenerator" | "TopModel.LanguageServer",
-        public readonly command: "modgen" | "tmdgen" | "modls",
+        public readonly command: "modgen" | "tmdgen" | "modls"
     ) {
         makeAutoObservable(this);
         if (this.name === "TopModel.Generator") {
             autorun(() => this.onInstalledChanged());
         }
 
-        window.onDidCloseTerminal((terminal) => {
+        window.onDidCloseTerminal(terminal => {
             if (terminal.name === this._terminal?.name) {
                 this._terminal = undefined;
             }
@@ -48,7 +49,7 @@ export class TmdTool {
     }
 
     get statusText() {
-        const { currentVersion, latestVersion } = this;
+        const {currentVersion, latestVersion} = this;
 
         let text = `${this.command}${currentVersion ? " v" + currentVersion : ""}`;
 
@@ -88,8 +89,8 @@ export class TmdTool {
     private async loadVersions() {
         try {
             const res = await fetch(`https://api.nuget.org/v3-flatcontainer/${this.name.toLowerCase()}/index.json`);
-            const { versions } = (await res.json()) as { versions: string[] };
-            this.versions = versions.filter((v) => !v.includes("-") || this.currentVersion?.includes("-"));
+            const {versions} = (await res.json()) as {versions: string[]};
+            this.versions = versions.filter(v => !v.includes("-") || this.currentVersion?.includes("-"));
         } catch (error) {
             this.error = error;
             this.status = "ERROR";
@@ -169,7 +170,7 @@ export class TmdTool {
                 const selection = await window.showInformationMessage(
                     t("toolCanBeUpdated", [this.name, this.currentVersion ?? "", this.latestVersion ?? ""]),
                     shouldUpdate,
-                    showChangelog,
+                    showChangelog
                 );
                 if (selection === shouldUpdate) {
                     await this.update();
@@ -194,7 +195,7 @@ export class TmdTool {
             await this.onBeforeUpdate?.();
             await execute(`dotnet nuget locals http-cache --clear`);
             await execute(
-                `dotnet tool update --global ${this.name}${this.latestVersion ? ` --version ${this.latestVersion}` : ""}`,
+                `dotnet tool update --global ${this.name}${this.latestVersion ? ` --version ${this.latestVersion}` : ""}`
             );
             await this.loadCurrentVersion();
             this.status = "READY";
@@ -229,24 +230,24 @@ export class TmdTool {
 
     private registerInstallCommand(context: ExtensionContext) {
         const installCommandDisposable = commands.registerCommand(`topmodel.${this.command}.install`, () =>
-            this.install(),
+            this.install()
         );
         COMMANDS_OPTIONS[`topmodel.${this.command}.install`] = {
             title: `${this.command} - ${t("installToolButton", [this.command])}`,
             description: `${t("installToolButton", [this.command])}`,
-            command: `topmodel.${this.command}.install`,
+            command: `topmodel.${this.command}.install`
         };
         context.subscriptions.push(installCommandDisposable);
     }
 
     private registerUpdateCommand(context: ExtensionContext) {
         const updateCommandDisposable = commands.registerCommand(`topmodel.${this.command}.update`, () =>
-            this.update(true),
+            this.update(true)
         );
         COMMANDS_OPTIONS[`topmodel.${this.command}.update`] = {
             title: `${this.command} - ${t("updateTool", [this.command])}`,
             description: `${t("updateTool", [this.command])}`,
-            command: `topmodel.${this.command}.update`,
+            command: `topmodel.${this.command}.update`
         };
         context.subscriptions.push(updateCommandDisposable);
     }
@@ -257,7 +258,7 @@ export class TmdTool {
         COMMANDS_OPTIONS[startCommand] = {
             title: `${this.command} - ${t(watch ? "startGenerationWatch" : "startGeneration")}`,
             description: `${t(watch ? "startGenerationWatch" : "startGeneration")}`,
-            command: startCommand,
+            command: startCommand
         };
         context.subscriptions.push(modgen);
     }
@@ -271,7 +272,7 @@ export class TmdTool {
         if (!this._terminal) {
             this._terminal = window.createTerminal({
                 name: this.name,
-                hideFromUser: true,
+                hideFromUser: true
             });
         }
         return this._terminal;

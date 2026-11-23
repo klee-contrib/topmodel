@@ -1,4 +1,4 @@
-import { TextDocumentContentProvider } from "vscode";
+import {TextDocumentContentProvider} from "vscode";
 
 /** Scheme des URI des schémas servis par le language server. */
 
@@ -13,7 +13,7 @@ export interface YamlExtensionApi {
         schema: string,
         requestSchema: (resource: string) => string | undefined,
         requestSchemaContent: (uri: string) => Promise<string> | string,
-        label?: string,
+        label?: string
     ): boolean;
 }
 

@@ -1,12 +1,12 @@
-import { ChildProcess, spawn } from "child_process";
-import { makeAutoObservable } from "mobx";
-import { CodeLens, Location, Position, Range, Terminal, Uri, window, WorkspaceFolder } from "vscode";
-import { CloseAction, ErrorAction, LanguageClient, ServerOptions } from "vscode-languageclient/node";
+import {ChildProcess, spawn} from "child_process";
+import {makeAutoObservable} from "mobx";
+import path from "path";
+import {CodeLens, Location, Position, Range, Terminal, Uri, window, WorkspaceFolder} from "vscode";
+import {CloseAction, ErrorAction, LanguageClient, ServerOptions} from "vscode-languageclient/node";
 
-import { t } from "./i18n";
-import { Status, TopModelConfig } from "./types";
-import { getServerCommand, killProcessTree } from "./utils";
-import path = require("path");
+import {t} from "./i18n";
+import {Status, TopModelConfig} from "./types";
+import {getServerCommand, killProcessTree} from "./utils";
 
 function convertShowReferencesArguments(lens: CodeLens): CodeLens {
     if (lens.command?.command !== "editor.action.showReferences" || !lens.command.arguments) {
@@ -22,17 +22,17 @@ function convertShowReferencesArguments(lens: CodeLens): CodeLens {
             locations.map(
                 (location: {
                     uri: string;
-                    range: { start: { line: number; character: number }; end: { line: number; character: number } };
+                    range: {start: {line: number; character: number}; end: {line: number; character: number}};
                 }) =>
                     new Location(
                         Uri.parse(location.uri),
                         new Range(
                             new Position(location.range.start.line, location.range.start.character),
-                            new Position(location.range.end.line, location.range.end.character),
-                        ),
-                    ),
-            ),
-        ],
+                            new Position(location.range.end.line, location.range.end.character)
+                        )
+                    )
+            )
+        ]
     };
 
     return lens;
@@ -60,7 +60,7 @@ export class Application {
         if (!this._terminal) {
             this._terminal = window.createTerminal({
                 name: `modgen - ${this.workspaceFolder.name}`,
-                message: "TopModel",
+                message: "TopModel"
             });
         }
         this._terminal.show();
@@ -69,10 +69,10 @@ export class Application {
 
     constructor(
         public readonly workspaceFolder: WorkspaceFolder,
-        private readonly configs: { config: TopModelConfig; file: Uri }[],
+        private readonly configs: {config: TopModelConfig; file: Uri}[]
     ) {
         makeAutoObservable(this);
-        window.onDidCloseTerminal((terminal) => {
+        window.onDidCloseTerminal(terminal => {
             if (terminal.name === this._terminal?.name) {
                 this._terminal = undefined;
             }
@@ -81,11 +81,11 @@ export class Application {
 
     /** Racines de modèle de ce workspace folder, résolues depuis le dossier de chaque fichier de config. */
     public get modelRootFolders() {
-        return this.configs.map((c) => path.resolve(path.dirname(c.file.fsPath), c.config.modelRoot ?? "./"));
+        return this.configs.map(c => path.resolve(path.dirname(c.file.fsPath), c.config.modelRoot ?? "./"));
     }
 
     private get configPaths() {
-        return this.configs.map((c) => c.file.fsPath);
+        return this.configs.map(c => c.file.fsPath);
     }
 
     /**
@@ -110,13 +110,13 @@ export class Application {
             this.clientStatus = "LOADING";
             // La commande dépend du paramètre `topmodel.languageServerPath` : tool global `modls`
             // par défaut, ou l'exécutable indiqué par l'utilisateur (debug, version alternative).
-            const { command, args: commandArgs } = getServerCommand(this.workspaceFolder);
-            const args = [...commandArgs, ...this.configPaths.flatMap((f) => ["-f", f])];
+            const {command, args: commandArgs} = getServerCommand(this.workspaceFolder);
+            const args = [...commandArgs, ...this.configPaths.flatMap(f => ["-f", f])];
             const cwd = this.workspaceFolder.uri.fsPath;
             const serverOptions: ServerOptions = () => {
-                const proc = spawn(command, args, { cwd });
+                const proc = spawn(command, args, {cwd});
                 this.serverProcess = proc;
-                proc.on("error", (error) => this.onServerProcessError(proc, command, error));
+                proc.on("error", error => this.onServerProcessError(proc, command, error));
                 proc.on("exit", () => this.onServerProcessExit(proc));
                 return Promise.resolve(proc);
             };
@@ -128,10 +128,10 @@ export class Application {
                 serverOptions,
                 {
                     workspaceFolder: this.workspaceFolder,
-                    documentSelector: [{ pattern: folderPattern }],
+                    documentSelector: [{pattern: folderPattern}],
                     errorHandler: {
-                        error: () => ({ action: ErrorAction.Continue }),
-                        closed: () => ({ action: CloseAction.DoNotRestart, message: t("languageServerWillRestart") }),
+                        error: () => ({action: ErrorAction.Continue}),
+                        closed: () => ({action: CloseAction.DoNotRestart, message: t("languageServerWillRestart")})
                     },
                     middleware: {
                         provideCodeLenses: async (document, token, next) => {
@@ -141,9 +141,9 @@ export class Application {
                         resolveCodeLens: async (codeLens, token, next) => {
                             const resolved = await next(codeLens, token);
                             return resolved && convertShowReferencesArguments(resolved);
-                        },
-                    },
-                },
+                        }
+                    }
+                }
             );
             await this.client.start();
             this.clientStatus = "READY";

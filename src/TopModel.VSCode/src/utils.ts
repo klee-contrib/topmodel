@@ -1,7 +1,7 @@
-import { workspace, WorkspaceFolder } from "vscode";
+import path from "path";
+import {workspace, WorkspaceFolder} from "vscode";
 
-import { SERVER_EXE, SETTINGS } from "./const";
-import path = require("path");
+import {SERVER_EXE, SETTINGS} from "./const";
 
 const cp = require("child_process");
 const exec = cp.exec;
@@ -39,10 +39,10 @@ export function getLanguageServerPath(): string | undefined {
  * `${workspaceFolder}`, peut être relatif (résolu depuis le workspace folder), et un `.dll` est
  * lancé via `dotnet`.
  */
-export function getServerCommand(workspaceFolder: WorkspaceFolder): { command: string; args: string[] } {
+export function getServerCommand(workspaceFolder: WorkspaceFolder): {command: string; args: string[]} {
     const configuredPath = getLanguageServerPath();
     if (!configuredPath) {
-        return { command: SERVER_EXE, args: [] };
+        return {command: SERVER_EXE, args: []};
     }
 
     const folderPath = workspaceFolder.uri.fsPath;
@@ -50,8 +50,8 @@ export function getServerCommand(workspaceFolder: WorkspaceFolder): { command: s
     const resolvedPath = path.resolve(folderPath, substitutedPath);
 
     return path.extname(resolvedPath).toLowerCase() === ".dll"
-        ? { command: "dotnet", args: [resolvedPath] }
-        : { command: resolvedPath, args: [] };
+        ? {command: "dotnet", args: [resolvedPath]}
+        : {command: resolvedPath, args: []};
 }
 
 /**
@@ -62,7 +62,7 @@ export function getServerCommand(workspaceFolder: WorkspaceFolder): { command: s
  * `dotnet tool update` avec une erreur d'accès refusé.
  */
 export function killProcessTree(pid?: number): Promise<void> {
-    return new Promise<void>((resolve) => {
+    return new Promise<void>(resolve => {
         if (pid === undefined) {
             resolve();
             return;
@@ -95,7 +95,7 @@ export function killProcessTree(pid?: number): Promise<void> {
  * échouer la mise à jour. Les autres fenêtres détectent la mort de leur process et le redémarrent.
  */
 export function killAllLanguageServers(): Promise<void> {
-    return new Promise<void>((resolve) => {
+    return new Promise<void>(resolve => {
         try {
             if (isWindows) {
                 // /T : arbre de processus, /F : force, /IM : par nom d'image.

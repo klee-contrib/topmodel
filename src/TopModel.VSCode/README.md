@@ -16,15 +16,15 @@ Main features:
 - Symbol search (classes, domains and endpoints) with `Ctrl + T`
 - List references for classes and domains (via `Shift + F12` and CodeLens)
 - Formatting:
-  - Oranize imports (`Alt + Shift + O`)
+    - Oranize imports (`Alt + Shift + O`)
 - Input assistance:
-  - Add missing import
-  - Add missing class to current file
-  - Add missing domain to domains file
-  - Rename classes and domains (`F2`)
+    - Add missing import
+    - Add missing class to current file
+    - Add missing domain to domains file
+    - Rename classes and domains (`F2`)
 - UML diagram preview
 - `Outline` panel
 - Warnings
-  - Unused imports
-  - Duplicate trigrams
-  - Duplicate alias properties
+    - Unused imports
+    - Duplicate trigrams
+    - Duplicate alias properties

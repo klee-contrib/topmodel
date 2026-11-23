@@ -2,7 +2,7 @@ export const SERVER_EXE = "modls";
 
 /** Clés des paramètres de l'extension, relatives à la section `topmodel`. */
 export const SETTINGS = {
-    languageServerPath: "languageServerPath",
+    languageServerPath: "languageServerPath"
 };
 
 export const COMMANDS = {
@@ -11,7 +11,7 @@ export const COMMANDS = {
     preview: "topmodel.preview",
     releaseNote: "topmodel.releaseNote",
     chooseCommand: "topmodel.chooseCommand",
-    restartLanguageServer: "topmodel.modls.restart",
+    restartLanguageServer: "topmodel.modls.restart"
 };
 
 // Stockage de l'ensemble des commandes disponibles.

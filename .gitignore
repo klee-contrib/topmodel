@@ -1,8 +1,8 @@
 .vs
 bin
 obj
-TopModel.VSCode/out
-TopModel.VSCode/schemas
+src/TopModel.VSCode/out
+src/TopModel.VSCode/schemas
 node_modules
 language-server
 .nupkg

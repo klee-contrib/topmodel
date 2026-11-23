@@ -1,4 +1,4 @@
-import { env } from "vscode";
+import {env} from "vscode";
 
 type LangTranslations = {
     startGeneration: string;
@@ -76,7 +76,7 @@ const translations: Record<AvailableLanguages, LangTranslations> = {
         restartLanguageServer: "Redémarrer le language server",
         customLanguageServer: "Language server personnalisé ({0})",
         languageServerStartFailed: "Impossible de démarrer le language server « {0} » : {1}",
-        languageServerWillRestart: "Le language server s'est arrêté inopinément. Il va redémarrer dans 3 secondes.",
+        languageServerWillRestart: "Le language server s'est arrêté inopinément. Il va redémarrer dans 3 secondes."
     },
     en: {
         startGeneration: "Start Generation",
@@ -114,8 +114,8 @@ const translations: Record<AvailableLanguages, LangTranslations> = {
         restartLanguageServer: "Restart the language server",
         customLanguageServer: "Custom language server ({0})",
         languageServerStartFailed: "Failed to start the language server « {0} »: {1}",
-        languageServerWillRestart: "The language server has stopped unexpectedly. It will restart in 3 seconds.",
-    },
+        languageServerWillRestart: "The language server has stopped unexpectedly. It will restart in 3 seconds."
+    }
 };
 
 function getLangKey(lang?: string): AvailableLanguages {

@@ -1,6 +1,6 @@
 # Installation de Topmodel
 
-Une fois que vous avez installé  dotnet, vous devez installer Topmodel.Generator, avec la commande :
+Une fois que vous avez installé dotnet, vous devez installer Topmodel.Generator, avec la commande :
 
 ```bash
 dotnet tool install --global TopModel.Generator

@@ -1,0 +1,28 @@
+{
+    "bracketSpacing": false,
+    "trailingComma": "none",
+    "arrowParens": "avoid",
+    "endOfLine": "crlf",
+    "tabWidth": 4,
+    "printWidth": 120,
+    "overrides": [
+        {
+            "files": ["package.json"],
+            "options": {
+                "printWidth": 320
+            }
+        },
+        {
+            "files": ["*.yaml"],
+            "options": {
+                "tabWidth": 2
+            }
+        }
+    ],
+    "sortImports": {
+        "groups": [["builtin", "external"], ["internal", "subpath"], "parent", ["sibling", "index"]]
+    },
+    "sortPackageJson": {
+        "sortScripts": true
+    }
+}

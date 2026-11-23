@@ -1,4 +1,4 @@
-import { autorun, makeAutoObservable } from "mobx";
+import {autorun, makeAutoObservable} from "mobx";
 import {
     commands,
     DocumentSelector,
@@ -11,25 +11,26 @@ import {
     StatusBarItem,
     window,
     workspace,
-    WorkspaceFolder,
+    WorkspaceFolder
 } from "vscode";
-import { Application } from "./application";
-import { COMMANDS, COMMANDS_OPTIONS, SETTINGS } from "./const";
-import { t } from "./i18n";
-import { TopModelPreviewPanel } from "./preview";
-import { TmdTool } from "./tool";
-import { Status } from "./types";
-import { getLanguageServerPath, getServerCommand, killAllLanguageServers } from "./utils";
-import { SchemaContentProvider, YamlExtensionApi } from "./schemas";
+
+import {Application} from "./application";
+import {COMMANDS, COMMANDS_OPTIONS, SETTINGS} from "./const";
+import {t} from "./i18n";
+import {TopModelPreviewPanel} from "./preview";
+import {SchemaContentProvider, YamlExtensionApi} from "./schemas";
+import {TmdTool} from "./tool";
+import {Status} from "./types";
+import {getLanguageServerPath, getServerCommand, killAllLanguageServers} from "./utils";
 
 const SCHEME = "topmodel";
 const MODEL_SCHEMA_URI = `${SCHEME}:/schema.json`;
 
 /** Fichiers TopModel : c'est sur ceux-ci que le cartouche des versions des outils est affiché. */
 const TOPMODEL_SELECTOR: DocumentSelector = [
-    { pattern: "**/*.tmd" },
-    { pattern: "**/topmodel*.config" },
-    { pattern: "**/tmdgen*.config" },
+    {pattern: "**/*.tmd"},
+    {pattern: "**/topmodel*.config"},
+    {pattern: "**/tmdgen*.config"}
 ];
 
 const open = require("open").default;
@@ -38,7 +39,7 @@ export class State {
     tools = {
         modgen: new TmdTool("TopModel.Generator", "modgen"),
         tmdgen: new TmdTool("TopModel.ModelGenerator", "tmdgen"),
-        ls: new TmdTool("TopModel.LanguageServer", "modls"),
+        ls: new TmdTool("TopModel.LanguageServer", "modls")
     };
     topModelStatusBar: StatusBarItem;
     private toolLanguageStatusItems: Record<string, LanguageStatusItem>;
@@ -91,10 +92,10 @@ export class State {
             if (tool.installed === false && tool.status !== "INSTALLING") {
                 item.command = {
                     title: t("installToolButton", [tool.command]),
-                    command: `topmodel.${tool.command}.install`,
+                    command: `topmodel.${tool.command}.install`
                 };
             } else if (tool.updateAvailable && tool.status !== "INSTALLING") {
-                item.command = { title: t("updateTool", [tool.command]), command: `topmodel.${tool.command}.update` };
+                item.command = {title: t("updateTool", [tool.command]), command: `topmodel.${tool.command}.update`};
             } else {
                 item.command = undefined;
             }
@@ -133,7 +134,7 @@ export class State {
                 return t("loading");
             case "WARNING":
             case "READY":
-                let tooltip = t("started", [this.applications.map((app) => app.workspaceFolder.name).join(", ")]);
+                let tooltip = t("started", [this.applications.map(app => app.workspaceFolder.name).join(", ")]);
 
                 if (this.tools.modgen.updateAvailable) {
                     tooltip += ` | ${t("toolCouldBeUpdated", [this.tools.modgen.name])}`;
@@ -174,11 +175,11 @@ export class State {
 
     /** Agrège le statut des clients LSP de tous les workspace folders. */
     get appStatus(): Status {
-        if (this.applications.some((a) => a.clientStatus === "ERROR")) {
+        if (this.applications.some(a => a.clientStatus === "ERROR")) {
             return "ERROR";
         }
 
-        if (this.applications.some((a) => a.clientStatus === "LOADING")) {
+        if (this.applications.some(a => a.clientStatus === "LOADING")) {
             return "LOADING";
         }
 
@@ -192,16 +193,16 @@ export class State {
     get versionsAligned(): boolean {
         const major = (version?: string) => version?.split(".")[0];
         const versions = Object.values(this.tools)
-            .filter((tool) => tool.installed && tool.currentVersion)
-            .map((tool) => major(tool.currentVersion));
+            .filter(tool => tool.installed && tool.currentVersion)
+            .map(tool => major(tool.currentVersion));
 
         return new Set(versions).size <= 1;
     }
 
     get mismatchedTools(): string {
         return Object.values(this.tools)
-            .filter((tool) => tool.installed && tool.currentVersion)
-            .map((tool) => `${tool.command} v${tool.currentVersion}`)
+            .filter(tool => tool.installed && tool.currentVersion)
+            .map(tool => `${tool.command} v${tool.currentVersion}`)
             .join(", ");
     }
 
@@ -254,8 +255,8 @@ export class State {
             return;
         }
 
-        const { command, args } = getServerCommand(folder);
-        const quoted = [command, ...args, "--version"].map((part) => (part.includes(" ") ? `"${part}"` : part));
+        const {command, args} = getServerCommand(folder);
+        const quoted = [command, ...args, "--version"].map(part => (part.includes(" ") ? `"${part}"` : part));
         await this.tools.ls.loadCurrentVersion(quoted.join(" "));
     }
 
@@ -267,7 +268,7 @@ export class State {
      */
     private watchLanguageServerPath() {
         this.context.subscriptions.push(
-            workspace.onDidChangeConfiguration(async (event) => {
+            workspace.onDidChangeConfiguration(async event => {
                 if (!event.affectsConfiguration(`topmodel.${SETTINGS.languageServerPath}`)) {
                     return;
                 }
@@ -276,7 +277,7 @@ export class State {
                 if (await this.installLanguageServerTool()) {
                     await this.startLanguageServer();
                 }
-            }),
+            })
         );
     }
 
@@ -286,12 +287,12 @@ export class State {
      */
     public async addApplications(applications: Application[]) {
         const added = applications.filter(
-            (app) => !this.applications.some((a) => a.workspaceFolder.uri.fsPath === app.workspaceFolder.uri.fsPath),
+            app => !this.applications.some(a => a.workspaceFolder.uri.fsPath === app.workspaceFolder.uri.fsPath)
         );
 
         // Mutation en place : la preview conserve une référence sur ce tableau.
         this.applications.push(...added);
-        await Promise.all(added.map((app) => app.startLanguageServer()));
+        await Promise.all(added.map(app => app.startLanguageServer()));
         await this.loadSchemas();
     }
 
@@ -309,19 +310,19 @@ export class State {
         }
 
         try {
-            const response = await client.sendRequest<{ content: string } | null>("schema");
+            const response = await client.sendRequest<{content: string} | null>("schema");
             this.modelSchema = response?.content;
             if (this.modelSchema) {
                 this.context.subscriptions.push(
-                    workspace.registerTextDocumentContentProvider(SCHEME, new SchemaContentProvider(this.modelSchema!)),
+                    workspace.registerTextDocumentContentProvider(SCHEME, new SchemaContentProvider(this.modelSchema!))
                 );
 
                 const api = await extensions.getExtension<YamlExtensionApi>("redhat.vscode-yaml")?.activate();
                 api?.registerContributor(
                     SCHEME,
-                    (resource) => (resource.endsWith(".tmd") ? MODEL_SCHEMA_URI : undefined),
+                    resource => (resource.endsWith(".tmd") ? MODEL_SCHEMA_URI : undefined),
                     () => this.modelSchema!,
-                    "TopModel",
+                    "TopModel"
                 );
             }
         } catch (error) {
@@ -334,35 +335,35 @@ export class State {
      * processus modls correspondants, qui verrouillent les fichiers de l'outil) puis les déréférence.
      */
     public async removeApplications(folders: readonly WorkspaceFolder[]) {
-        const removed = this.applications.filter((app) =>
-            folders.some((folder) => folder.uri.fsPath === app.workspaceFolder.uri.fsPath),
+        const removed = this.applications.filter(app =>
+            folders.some(folder => folder.uri.fsPath === app.workspaceFolder.uri.fsPath)
         );
 
         for (const app of removed) {
             this.applications.splice(this.applications.indexOf(app), 1);
         }
 
-        await Promise.all(removed.map((app) => app.stopLanguageServer()));
+        await Promise.all(removed.map(app => app.stopLanguageServer()));
     }
 
     /** Démarre le language server de chaque workspace folder (idempotent). */
     public async startLanguageServer() {
-        await Promise.all(this.applications.map((app) => app.startLanguageServer()));
+        await Promise.all(this.applications.map(app => app.startLanguageServer()));
     }
 
     /** Arrête le language server de chaque workspace folder (libération des verrous fichiers). */
     public async stopLanguageServer() {
-        await Promise.all(this.applications.map((app) => app.stopLanguageServer()));
+        await Promise.all(this.applications.map(app => app.stopLanguageServer()));
     }
 
     /** Arrête puis redémarre le language server de chaque workspace folder (commande utilisateur). */
     public async restartLanguageServer() {
-        await Promise.all(this.applications.map((app) => app.restartLanguageServer()));
+        await Promise.all(this.applications.map(app => app.restartLanguageServer()));
     }
 
     private async notifyVersionMismatch() {
         const toolsReady = Object.values(this.tools).every(
-            (tool) => !tool.installed || (tool.status !== "LOADING" && tool.status !== "INSTALLING"),
+            tool => !tool.installed || (tool.status !== "LOADING" && tool.status !== "INSTALLING")
         );
 
         if (this._versionMismatchNotified || this.versionsAligned || !toolsReady) {
@@ -375,8 +376,8 @@ export class State {
         if (selection === updateAll) {
             await Promise.all(
                 Object.values(this.tools)
-                    .filter((tool) => tool.installed && tool.updateAvailable)
-                    .map((tool) => tool.update(true)),
+                    .filter(tool => tool.installed && tool.updateAvailable)
+                    .map(tool => tool.update(true))
             );
         }
     }
@@ -397,12 +398,12 @@ export class State {
 
     private registerRestartLanguageServer() {
         this.context.subscriptions.push(
-            commands.registerCommand(COMMANDS.restartLanguageServer, () => this.restartLanguageServer()),
+            commands.registerCommand(COMMANDS.restartLanguageServer, () => this.restartLanguageServer())
         );
         COMMANDS_OPTIONS[COMMANDS.restartLanguageServer] = {
             title: `modls - ${t("restartLanguageServer")}`,
             description: t("restartLanguageServer"),
-            command: COMMANDS.restartLanguageServer,
+            command: COMMANDS.restartLanguageServer
         };
     }
 
@@ -413,7 +414,7 @@ export class State {
                 this.preview.panel.onDidDispose(
                     () => (this.preview = undefined),
                     undefined,
-                    this.context.subscriptions,
+                    this.context.subscriptions
                 );
             }
 
@@ -425,7 +426,7 @@ export class State {
         this.context.subscriptions.push(
             commands.registerCommand(COMMANDS.releaseNote, async () => {
                 open("https://github.com/klee-contrib/topmodel/blob/develop/CHANGELOG.md");
-            }),
+            })
         );
     }
 
@@ -433,13 +434,13 @@ export class State {
         this.context.subscriptions.push(
             commands.registerCommand(COMMANDS.chooseCommand, async () => {
                 const quickPick = window.createQuickPick();
-                quickPick.items = Object.keys(COMMANDS_OPTIONS).map((key) => ({
+                quickPick.items = Object.keys(COMMANDS_OPTIONS).map(key => ({
                     key,
                     label: COMMANDS_OPTIONS[key].title,
                     description: COMMANDS_OPTIONS[key].description,
-                    detail: COMMANDS_OPTIONS[key].detail,
+                    detail: COMMANDS_OPTIONS[key].detail
                 }));
-                quickPick.onDidChangeSelection((selection) => {
+                quickPick.onDidChangeSelection(selection => {
                     if (selection[0]) {
                         commands.executeCommand(COMMANDS_OPTIONS[(selection[0] as any).key].command);
                         quickPick.hide();
@@ -447,7 +448,7 @@ export class State {
                 });
                 quickPick.onDidHide(() => quickPick.dispose());
                 quickPick.show();
-            }),
+            })
         );
     }
 }

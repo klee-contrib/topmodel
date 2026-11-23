@@ -1,7 +1,7 @@
 .vscode/**
 src/**
 **/tsconfig.json
-**/.eslintrc.json
+**/.oxfmtrc.json
 **/*.map
 **/*.ts
 **/*.mjs
