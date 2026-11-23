@@ -11,6 +11,11 @@ Changelogs des modules :
 
 > Remarque : ce changelog s'applique aussi à l'outil `modls`, utilisé pour le support TopModel dans l'extension VSCode, lorsque les mises à jour ne sont pas uniquement liées à la génération. La version correspondante sera précisée si son numéro n'est pas le même.
 
+## 5.0.1
+
+- [`c76af1c`](https://github.com/klee-contrib/topmodel/commit/c76af1c7936949efac24ad3d3712fca736cb6384) - [modgen] Fix installation dépendances avec version de dotnet antérieure
+  (Fix pour le module C# qui plantait à l'installation)
+
 ## 5.0.0
 
 TopModel cible désormais **.NET 11**, vous avez donc besoin d'installer le SDK à jour ([gros bouton "download" ici](https://dotnet.microsoft.com/en-us/download)) pour continuer à l'utiliser. On a profité de cette montée de version pour faire de grosses mises à jour structurantes, pour faire des évolutions internes qui étaient jusque là impossible en gardant la compatibilité avec les générateurs existants. Ces évolutions n'apportent **que très peu de breaking changes visibles**, l'essentiel étant caché derrière la machine.
