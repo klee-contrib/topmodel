@@ -1,5 +1,16 @@
 # Changelog JPA
 
+## 5.0.0
+
+Compatibilité avec TopModel 5.0
+
+**impacts génération**
+
+- Les commentaires sont désormais tous écrits dans la même langue (au lieu de mélanger anglais et français).
+- Les enums sont désormais générées dans l'ordre alphabétique (conformément à ce que font les autres générateurs).
+- Les commentaires sont générés sur les propriétés de records.
+- Des annotations @Generated manquantes ont été ajoutées.
+
 ## 4.8.3
 
 - [`7f4a82c`](https://github.com/klee-contrib/topmodel/commit/7f4a82cbf82767a5296a1efdd2adeb69a9185b98) - [Core/C#/JPA] Fix mauvais tag utilisé pour les sous mappers

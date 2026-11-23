@@ -1,5 +1,10 @@
 # VSCode
 
+## 2026.11.1
+
+- Renumérotation pour se dissocier des versions de modgen/modls/tmdgen
+- Version de VSCode min : 1.146
+
 ## 4.7.1
 
 - [`28d64d2`](https://github.com/klee-contrib/topmodel/commit/28d64d2bc810364e0ea78257fda419001b1a53d9) - Montée de version de `vscode-languageclient` (11.0.0, support LSP 3.18) et de TypeScript (7.0.2).

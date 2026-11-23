@@ -1,5 +1,10 @@
 # TopModel.ModelGenerator (`tmdgen`)
 
+## 5.0.0
+
+- Comme `modgen`, `tmdgen` nécessite désormais .NET 11 pour s'exécuter.
+- Comme `modgen`, `tmdgen` est désormais entièrement traduit en anglais et repsecte la propriété `language` de la configuration pour la langue des libellés techniques dans le code généré (par défaut, si non renseigné, ces libellés sont désormais en anglais).
+
 ## 4.2.1
 
 Corrections sur la correspondance des domaines (`domains`) :

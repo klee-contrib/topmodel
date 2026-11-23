@@ -1,4 +1,8 @@
-# Changelog : Générateur Documentation
+# Changelog Documentation
+
+## 5.0.0
+
+Compatibilité avec TopModel 5.0
 
 ## 4.2.0
 

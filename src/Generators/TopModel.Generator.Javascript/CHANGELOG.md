@@ -1,3 +1,9 @@
+# Changelog Javascript
+
+## 5.0.0
+
+Compatibilité avec TopModel 5.0
+
 ## 4.5.2
 
 - [`9a5c8d7`](https://github.com/klee-contrib/topmodel/commit/9a5c8d7d5dbb085d7e4894ed2b78498b20b74297) - [Javascript] Fix génération du fichier de commentaire ne tenant pas compte de la langue

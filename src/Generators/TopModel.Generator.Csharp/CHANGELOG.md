@@ -1,4 +1,9 @@
-# Changelog CSharp
+# Changelog C#
+
+## 5.0.0
+
+- Compatibilité avec TopModel 5.0
+- Le switch dans le `GetValue` d'une classe enum readonly est désormais généré dans le même ordre que l'enum.
 
 ## 4.6.4
 

@@ -11,6 +11,24 @@ Changelogs des modules :
 
 > Remarque : ce changelog s'applique aussi à l'outil `modls`, utilisé pour le support TopModel dans l'extension VSCode, lorsque les mises à jour ne sont pas uniquement liées à la génération. La version correspondante sera précisée si son numéro n'est pas le même.
 
+## 5.0.0
+
+TopModel cible désormais **.NET 11**, vous avez donc besoin d'installer le SDK à jour ([gros bouton "download" ici](https://dotnet.microsoft.com/en-us/download)) pour continuer à l'utiliser. On a profité de cette montée de version pour faire de grosses mises à jour structurantes, pour faire des évolutions internes qui étaient jusque là impossible en gardant la compatibilité avec les générateurs existants. Ces évolutions n'apportent **que très peu de breaking changes visibles**, l'essentiel étant caché derrière la machine.
+
+Il y a quand mêmes des nouveautés notables dans cette version :
+
+- TopModel est désormais **entièrement traduit en anglais**. En particulier :
+  - Les messages dans la CLI et l'extension sont maintenant tous dans la langue de votre OS.
+  - Le texte écrit par TopModel dans le code généré (certains commentaires, le message "Attention code généré"...) est désormais dans **la langue renseignée dans la nouvelle propriété `language` de configuration globale**. Par défaut, si la langue n'est pas renseignée, **ce texte sera en anglais**. Pour minimiser les impacts dans le code généré, vous devriez donc renseigner `language: fr` à la racine de votre fichier de config TopModel
+
+  _Remarque : les générateurs JPA et SQL mélangeaient des commentaires en anglais et en français dans leur code généré. Ils sont désormais uniformément traduits dans la langue demandée, ce qui apportera donc nécessairement des impacts dans le code généré..._
+
+- Vous pouvez désormais utiliser des variables par tag dans le `language` de chaque configuration de module (rien à voir avec la propriété `language` précédemment citée, celle-ci est celle de l'implémentation des domaines, annotations et décorateurs du modèle). Cela permet, entre-autres, de traiter des sujets comme #562.
+
+- L'autocomplétion et le renommage dans le Language Server ont été entièrement repensés : la première devrait être plus stable, tandis que la seconde nous a permis de fermer l'issue #9 ouverte depuis presque 5 ans en permettant enfin propager des renommages de classes et propriétés sur des noms de propriétés calculés (par exemple renommer la classe "Client" en "Client2" renomme maintenant "ClientId" en "Client2Id".
+
+- L'option `useLegacyRoleNames` a été retirée (car incompatibles avec les évolutions nécessaires pour le renommage). Si vous l'utilisiez, il vous faudra migrer vers la gestion normale des noms de rôles (en particulier, pour conserver les mêmes noms SQL, il faudra renommer `role: GestionnaireMetier` en `role: Gestionnairemetier` et propager les impacts dans le modèle et le code généré non SQL).
+
 ## 4.8.10
 
 - [#608](https://github.com/klee-contrib/topmodel/issues/608) / [`28d64d2`](https://github.com/klee-contrib/topmodel/commit/28d64d2bc810364e0ea78257fda419001b1a53d9) - [LS] Amélioration de la gestion du renommage de fichiers :

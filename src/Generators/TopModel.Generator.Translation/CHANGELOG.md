@@ -1,3 +1,9 @@
+# Changelog Traductions manquantes
+
+## 5.0.0
+
+Compatibilité avec TopModel 5.0.
+
 ## 4.0.0
 
 Compatibilité avec TopModel 4.0.
