@@ -96,7 +96,6 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
     private static async Task<List<PackageDependency>> DownloadMissingDependenciesCascade(
         string moduleFolder,
         IEnumerable<PackageDependency> dependencies,
-        string framework,
         CancellationToken ct
     )
     {
@@ -114,8 +113,16 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
                 otherDep.VersionRange.MinVersion!.ToString(),
                 ct
             );
+            var nuspecReaderDep = await packageReaderDep.GetNuspecReaderAsync(ct);
+            var dependencyGroup = VersionUtils.GetNearestFramework(nuspecReaderDep.GetDependencyGroups(), group =>
+                group.TargetFramework
+            );
+            var framework = dependencyGroup?.TargetFramework.ToString();
             var file = (await packageReaderDep.GetFilesAsync(ct)).SingleOrDefault(f =>
-                f.StartsWith($"lib/{framework}") && f.EndsWith(".dll") && !f.EndsWith(".resources.dll")
+                framework != null
+                && f.StartsWith($"lib/{framework}")
+                && f.EndsWith(".dll")
+                && !f.EndsWith(".resources.dll")
             );
             if (file != null)
             {
@@ -126,25 +133,15 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
                 );
 
                 installedDependencies.Add(otherDep);
-
-                var nuspecReaderDep = await packageReaderDep.GetNuspecReaderAsync(ct);
-                if (nuspecReaderDep.GetDependencyGroups().Any())
-                {
-                    newDeps.AddRange(
-                        nuspecReaderDep
-                            .GetDependencyGroups()
-                            .Single(dg => dg.TargetFramework.ToString() == framework)
-                            .Packages.Where(dep => !installedDependencies.Select(d => d.Id).Contains(dep.Id))
-                    );
-                }
+                newDeps.AddRange(
+                    dependencyGroup!.Packages.Where(dep => !installedDependencies.Select(d => d.Id).Contains(dep.Id))
+                );
             }
         }
 
         if (newDeps.Count > 0)
         {
-            installedDependencies.AddRange(
-                await DownloadMissingDependenciesCascade(moduleFolder, newDeps, framework, ct)
-            );
+            installedDependencies.AddRange(await DownloadMissingDependenciesCascade(moduleFolder, newDeps, ct));
         }
 
         return installedDependencies;
@@ -305,13 +302,13 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
         using var packageReader = await NugetUtils.DownloadPackageAsync(dep.FullName, depVersion, ct);
         var nuspecReader = await packageReader.GetNuspecReaderAsync(ct);
 
-        var dependencyGroup = nuspecReader
-            .GetDependencyGroups()
-            .OrderByDescending(dg => dg.TargetFramework.Version.Major)
-            .First(dg => dg.TargetFramework.Version.Major <= VersionUtils.DotnetMajor);
+        var dependencyGroup = VersionUtils.GetNearestFramework(nuspecReader.GetDependencyGroups(), group =>
+            group.TargetFramework
+        )!;
 
         var dependencies = dependencyGroup.Packages;
         var framework = dependencyGroup.TargetFramework.ToString();
+
         var coreDep = dependencies.Single(d => d.Id == "TopModel.Generator.Core");
         await File.WriteAllTextAsync(
             Path.Combine(moduleFolder, "min-version"),
@@ -329,7 +326,7 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
         }
 
         var missingDependencies = dependencies.Where(d => d.Id != "TopModel.Generator.Core").ToList();
-        await DownloadMissingDependenciesCascade(moduleFolder, missingDependencies, framework, ct);
+        await DownloadMissingDependenciesCascade(moduleFolder, missingDependencies, ct);
 
         _logger.LogInformation(GeneratorMessage.ModuleInstallCompleted, dep.FullName, depVersion);
         dep.Version.Hash = GetFolderHash(moduleFolder);

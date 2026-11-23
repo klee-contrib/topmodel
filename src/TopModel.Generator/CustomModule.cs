@@ -108,8 +108,8 @@ public class CustomModule(
         var lockFile = LockFileUtilities.GetLockFile(assetsPath, NullLogger.Instance);
 
         foreach (
-            var dep in lockFile
-                .Targets.FirstOrDefault(dg => dg.TargetFramework.Version.Major <= VersionUtils.DotnetMajor)
+            var dep in VersionUtils
+                .GetNearestFramework(lockFile.Targets, target => target.TargetFramework)
                 ?.Libraries.Where(n => n.Name?.StartsWith("TopModel.Generator") ?? false)
                 ?? []
         )
