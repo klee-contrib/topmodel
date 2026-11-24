@@ -50,12 +50,12 @@ public closed record NameSegment
     /// Texte fixe, avec sa forme brute et sa forme PascalCase.
     /// </summary>
     /// <param name="Raw">Forme brute.</param>
-    /// <param name="Pascal">Forme PascalCase.</param>
-    public sealed record Text(LocatedString Raw) : NameSegment
+    /// <param name="ToPascalCase">Transformation pour le PascalCase personnalisée.</param>
+    public sealed record Text(LocatedString Raw, Func<string, string>? ToPascalCase = null) : NameSegment
     {
         internal override string Render(bool pascalCase)
         {
-            return pascalCase ? Raw.ToPascalCase(strictIfUppercase: true) : Raw;
+            return pascalCase ? (ToPascalCase?.Invoke(Raw) ?? Raw.ToPascalCase(strictIfUppercase: true)) : Raw;
         }
     }
 }
