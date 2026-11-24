@@ -140,7 +140,7 @@ public class LocatedString(Scalar value) : IComparable
 
     public string ToPascalCase(bool strictIfUppercase = false)
     {
-        return Value.ToPascalCase(strictIfUppercase);
+        return Value.ToPascalCase(strictIfUppercase: strictIfUppercase);
     }
 
     public override string ToString()

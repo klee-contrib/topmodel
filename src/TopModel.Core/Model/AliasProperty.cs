@@ -124,7 +124,7 @@ internal class AliasProperty(Declaration declaration) : IProperty
 
             if (Prefix is LocatedString prefix)
             {
-                segments.Add(new NameSegment.Text(prefix));
+                segments.Add(new NameSegment.Text(prefix, p => p.ToFirstUpper()));
             }
             else if (Prefix is true && OriginalProperty != null)
             {
@@ -153,7 +153,7 @@ internal class AliasProperty(Declaration declaration) : IProperty
 
             if (Suffix is LocatedString suffix)
             {
-                segments.Add(new NameSegment.Text(suffix));
+                segments.Add(new NameSegment.Text(suffix, p => p));
             }
             else if (Suffix is true && OriginalProperty != null)
             {

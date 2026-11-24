@@ -449,7 +449,7 @@ public class PropertyLoader(FileChecker fileChecker)
                         case "prefix":
                             if (value!.Value == "true" || value.Value == "false")
                             {
-                                alp.Prefix = true;
+                                alp.Prefix = value.Value == "true";
                             }
                             else
                             {
@@ -459,7 +459,7 @@ public class PropertyLoader(FileChecker fileChecker)
                         case "suffix":
                             if (value!.Value == "true" || value.Value == "false")
                             {
-                                alp.Suffix = true;
+                                alp.Suffix = value.Value == "true";
                             }
                             else
                             {
