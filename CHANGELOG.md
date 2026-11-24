@@ -11,6 +11,10 @@ Changelogs des modules :
 
 > Remarque : ce changelog s'applique aussi à l'outil `modls`, utilisé pour le support TopModel dans l'extension VSCode, lorsque les mises à jour ne sont pas uniquement liées à la génération. La version correspondante sera précisée si son numéro n'est pas le même.
 
+## 5.0.3
+
+- [`c41814b`](https://github.com/klee-contrib/topmodel/commit/c41814b940a75243cd067e1a845e1adc9b0c0501) - [Core] Fixes régresions calculs noms de propriétés
+
 ## 5.0.2
 
 - [`76935db`](https://github.com/klee-contrib/topmodel/commit/76935db492dec7a6d2eacce08117465df0bb5372) - [Core] Fix régression casse des préfixes/suffixes
