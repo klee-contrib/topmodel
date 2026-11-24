@@ -11,6 +11,11 @@ Changelogs des modules :
 
 > Remarque : ce changelog s'applique aussi à l'outil `modls`, utilisé pour le support TopModel dans l'extension VSCode, lorsque les mises à jour ne sont pas uniquement liées à la génération. La version correspondante sera précisée si son numéro n'est pas le même.
 
+## 5.0.2
+
+- [`76935db`](https://github.com/klee-contrib/topmodel/commit/76935db492dec7a6d2eacce08117465df0bb5372) - [Core] Fix régression casse des préfixes/suffixes
+- [`909ee9b`](https://github.com/klee-contrib/topmodel/commit/909ee9b5a763274592014f77546b6bece6087ba7) - [modgen] fix installation ressources multilingues
+
 ## 5.0.1
 
 - [`c76af1c`](https://github.com/klee-contrib/topmodel/commit/c76af1c7936949efac24ad3d3712fca736cb6384) - [modgen] Fix installation dépendances avec version de dotnet antérieure
