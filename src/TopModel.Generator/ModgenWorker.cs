@@ -316,13 +316,26 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
             ct
         );
 
+        var frameworkFolder = $"lib/{framework}/";
         foreach (
             var file in (await packageReader.GetFilesAsync(ct)).Where(f =>
-                f == $"lib/{framework}/{dep.FullName}.dll" || f.EndsWith("config.json")
+                f.StartsWith("contentFiles/", StringComparison.OrdinalIgnoreCase)
+                || f == $"{frameworkFolder}{dep.FullName}.dll"
+                || (
+                    f.StartsWith(frameworkFolder, StringComparison.OrdinalIgnoreCase)
+                    && f.EndsWith($"/{dep.FullName}.resources.dll", StringComparison.OrdinalIgnoreCase)
+                )
             )
         )
         {
-            packageReader.ExtractFile(file, Path.Combine(moduleFolder, file.Split('/')[^1]), NullLogger.Instance);
+            var destination =
+                file.StartsWith(frameworkFolder, StringComparison.OrdinalIgnoreCase)
+                && file.EndsWith(".resources.dll", StringComparison.OrdinalIgnoreCase)
+                    ? Path.Combine(moduleFolder, file[frameworkFolder.Length..].Replace('/', '\\'))
+                    : Path.Combine(moduleFolder, file.Split('/')[^1]);
+
+            Directory.CreateDirectory(Path.GetDirectoryName(destination)!);
+            packageReader.ExtractFile(file, destination, NullLogger.Instance);
         }
 
         var missingDependencies = dependencies.Where(d => d.Id != "TopModel.Generator.Core").ToList();
