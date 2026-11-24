@@ -1,5 +1,23 @@
 {
   "dotnet.defaultSolution": "src/TopModel.slnx",
   "editor.formatOnSave": true,
-  "topmodel.languageServerPath": "./src/TopModel.LanguageServer/bin/Debug/net11.0/TopModel.LanguageServer.dll"
+  "topmodel.languageServerPath": "./src/TopModel.LanguageServer/bin/Debug/net11.0/TopModel.LanguageServer.dll",
+  "[css]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "[markdown]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  }
 }

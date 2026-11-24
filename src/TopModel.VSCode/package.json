@@ -2,7 +2,7 @@
     "name": "topmodel",
     "displayName": "TopModel",
     "version": "2026.11.1",
-    "description": "Extension for TopModel",
+    "description": "VSCode extension for TopModel",
     "categories": [
         "Programming Languages"
     ],
