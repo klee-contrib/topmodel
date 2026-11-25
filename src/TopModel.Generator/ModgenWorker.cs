@@ -390,11 +390,16 @@ public class ModgenWorker : TopModelWorker<ModelConfig, FileChecker>
         if (Environment.GetEnvironmentVariable("LOCAL_DEV") != null)
         {
             var generatorsPath = Path.GetFullPath(
-                Path.Combine(new FileInfo(Assembly.GetEntryAssembly()!.Location).DirectoryName!, "..", "..", "..", "..")
+                Path.Combine(
+                    new FileInfo(Assembly.GetEntryAssembly()!.Location).DirectoryName!,
+                    "..",
+                    "..",
+                    "..",
+                    "..",
+                    "Generators"
+                )
             );
-            var modules = Directory
-                .GetFileSystemEntries(generatorsPath)
-                .Where(e => e.Contains("TopModel.Generator.") && !e.Contains("TopModel.Generator.Core"));
+            var modules = Directory.GetFileSystemEntries(generatorsPath);
             var customGeneratorsToAdd = modules.Select(m =>
                 Path.GetRelativePath(new FileInfo(ConfigFullName).DirectoryName!, m)
             );
