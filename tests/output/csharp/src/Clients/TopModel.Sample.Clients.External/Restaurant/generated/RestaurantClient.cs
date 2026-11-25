@@ -2,7 +2,6 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using TopModel.Sample.Restaurant.Models;

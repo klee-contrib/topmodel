@@ -60,48 +60,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                 ? Config.GetMapperInfo(sampleFromMapper, tag)
                 : Config.GetMapperInfo(sampleToMapper, tag);
 
-        var usings = fromMappers
-            .SelectMany(m => m.Mapper.ClassParams.Select(p => p.Class).Concat([m.Classe]))
-            .Concat(toMappers.SelectMany(m => new[] { m.Classe, m.Mapper.Class }))
-            .Select(c => Config.GetNamespace(c, Config.GetBestClassTag(c, tag)))
-            .ToList();
-
-        foreach (
-            var property in fromMappers.SelectMany(fm =>
-                fm.Mapper.PropertyParams.Select(pp => pp.Property)
-                    .Concat(toMappers.SelectMany(tm => GetMissingRequiredProperties(tm.Mapper, tag)))
-            )
-        )
-        {
-            usings.AddRange(Config.GetDomainImports(property, tag));
-            usings.AddRange(Config.GetValueImports(property, tag));
-
-            switch (property)
-            {
-                case { EnumProperty: IProperty ep }
-                    when Config.AvailableClasses.Contains(ep.Class) && Config.UniqueValueGeneration.CanEnum:
-                    usings.Add(Config.GetNamespace(ep.Class, Config.GetBestClassTag(ep.Class, tag)));
-                    break;
-                case { Composition: Class cpc } when Config.AvailableClasses.Contains(cpc):
-                    usings.Add(Config.GetNamespace(cpc, Config.GetBestClassTag(cpc, tag)));
-                    break;
-            }
-        }
-
-        foreach (var mapping in fromMappers.SelectMany(fm => fm.Mapper.ClassParams.Select(c => c.Mappings)))
-        {
-            usings.AddRange(mapping.SelectMany(m => Config.GetConverterImports(m.Value.Domain, m.Key.Domain, tag)));
-        }
-
-        foreach (var mapping in toMappers.Select(fm => fm.Mapper.Mappings))
-        {
-            usings.AddRange(mapping.SelectMany(m => Config.GetConverterImports(m.Key.Domain, m.Value.Domain, tag)));
-        }
-
-        if (usings.Exists(@using => !mapperNs.Contains(@using)))
-        {
-            w.AddUsings(usings.Where(@using => !mapperNs.Contains(@using)));
-        }
+        w.WriteNamespace(mapperNs);
 
         string GetValue(
             string? paramName,
@@ -347,6 +306,8 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                 value += ".Value";
             }
 
+            w.AddUsings(Config.GetConverterImports(source.Domain, target.Domain, tag));
+
             return Config.GetConvertedValue(
                 value,
                 source.Domain,
@@ -356,7 +317,6 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
             );
         }
 
-        w.WriteNamespace(mapperNs);
         w.WriteSummary(Config.GetMessage(CsharpMessage.MapperModule, mapperModule));
         w.WriteLine($"public static class {mapperName}");
         w.WriteLine("{");
@@ -383,12 +343,23 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                 $"public static {Config.GetTypeName(classe)} Create{classe.NamePascal}{(classe.Type != ClassType.Regular ? "<T>" : string.Empty)}"
             );
 
+            w.AddUsing(Config.GetNamespace(classe, Config.GetBestClassTag(classe, tag)));
+
             w.WriteLine(
                 $"({string.Join(", ", mapper.Params.Select(mp => mp switch
                 {
                     ClassMappings c => $"{Config.GetTypeName(c.Class)}{(!c.Required && Config.NullableEnable ? "?" : string.Empty)} {c.Name}{(!c.Required ? " = null" : string.Empty)}",
                     PropertyMapping p => $"{Config.GetType(p.Property, tag, nonNullable: mp.Required || Config.GetDefaultValue(p.Property, tag) != "null")} {p.Property.NameCamel}{(!mp.Required ? $" = {Config.GetDefaultValue(p.Property, tag)}" : string.Empty)}"
                 }))})"
+            );
+
+            w.AddUsings(
+                mapper.ClassParams.Select(c => Config.GetNamespace(c.Class, Config.GetBestClassTag(c.Class, tag)))
+            );
+            w.AddUsings(
+                mapper.PropertyParams.SelectMany(p =>
+                    Config.GetPropertyImports(p.Property, tag).Concat(Config.GetValueImports(p.Property, tag))
+                )
             );
 
             if (classe.Type != ClassType.Regular)
@@ -546,12 +517,20 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
             {
                 extraParams =
                     $", {string.Join(", ", missingRequiredProperties.Select(mrp => $"{Config.GetType(mrp, tag, nonNullable: rrnTarget)} {mrp.NameCamel.Verbatim()}{(!rrnTarget ? " = null" : string.Empty)}"))}";
+
+                foreach (var property in missingRequiredProperties)
+                {
+                    w.AddUsings(Config.GetPropertyImports(property, tag).Concat(Config.GetValueImports(property, tag)));
+                }
             }
 
             w.WriteLine(
                 1,
                 $"public static {Config.GetTypeName(mapper.Class)} {mapper.Name}{(mapper.Class.Type != ClassType.Regular ? "<T>" : string.Empty)}(this {Config.GetTypeName(classe)} source{extraParams})"
             );
+
+            w.AddUsing(Config.GetNamespace(classe, Config.GetBestClassTag(classe, tag)));
+            w.AddUsing(Config.GetNamespace(mapper.Class, Config.GetBestClassTag(mapper.Class, tag)));
 
             if (mapper.Class.Type != ClassType.Regular)
             {

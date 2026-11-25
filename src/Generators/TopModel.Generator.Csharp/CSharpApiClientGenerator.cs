@@ -55,78 +55,11 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
 
         await using var fw = this.OpenCSharpWriter(filePath);
 
-        var hasBody = endpoints.Any(e => e.GetJsonBodyParam(Config) != null);
-        var hasReturn = endpoints.Any(e =>
-            Config.GetReturns(e) != null
-            && !new[] { "string", "byte[]" }.Contains(Config.GetType(Config.GetReturns(e)!, tag)?.TrimEnd('?'))
+        var hasJson = endpoints.Any(e =>
+            e.GetJsonBodyParam(Config) != null
+            || Config.GetReturns(e) != null
+                && !new[] { "string", "byte[]" }.Contains(Config.GetType(Config.GetReturns(e)!, tag)?.TrimEnd('?'))
         );
-        var hasJson = hasReturn || hasBody;
-
-        var hasAsyncEnumerable = endpoints.Any(e =>
-            Config.GetReturns(e) != null
-            && (Config.GetType(Config.GetReturns(e)!, tag)?.StartsWith("IAsyncEnumerable") ?? false)
-        );
-
-        var usings = new List<string>();
-
-        if (endpoints.Any(e => Config.GetReturns(e) != null && !Config.GetReturns(e)!.Required))
-        {
-            usings.Add("System.Net");
-        }
-
-        if (hasJson)
-        {
-            usings.Add("System.Net.Http.Json");
-            usings.Add("System.Text.Json");
-            usings.Add("System.Text.Json.Serialization");
-        }
-
-        if (hasAsyncEnumerable && Config.UseCancellationTokens)
-        {
-            usings.Add("System.Runtime.CompilerServices");
-        }
-
-        if (
-            endpoints.Any(e =>
-                e.GetQueryParams(Config)
-                    .Concat(
-                        e.GetFormDataParams(Config)
-                            .SelectMany(p => p is { Composition: Class c } ? Config.GetProperties(c) : [p])
-                    )
-                    .Any(qp =>
-                    {
-                        var typeName = Config.GetType(qp, tag);
-                        return typeName.Contains("decimal")
-                            || typeName.Contains("double")
-                            || typeName.Contains("float");
-                    })
-            )
-        )
-        {
-            usings.Add("System.Globalization");
-        }
-
-        foreach (var property in endpoints.SelectMany(e => e.Properties))
-        {
-            usings.AddRange(Config.GetDomainImports(property, tag));
-
-            if (property.ParamLocation == ParamLocation.Query)
-            {
-                usings.AddRange(Config.GetValueImports(property, tag));
-            }
-
-            switch (property)
-            {
-                case { EnumProperty: IProperty ep } when Config.UniqueValueGeneration.CanEnum:
-                    usings.Add(GetNamespace(ep.Class, tag));
-                    break;
-                case { Composition: Class cpc }:
-                    usings.Add(GetNamespace(cpc, tag));
-                    break;
-            }
-        }
-
-        fw.AddUsings(usings.Where(u => u != ns));
 
         fw.WriteNamespace(ns);
 
@@ -161,6 +94,14 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
 
         if (hasJson)
         {
+            fw.AddUsing("System.Text.Json");
+            fw.AddUsing("System.Text.Json.Serialization");
+
+            if (Config.DotnetVersion < 11)
+            {
+                fw.AddUsing("System.Net.Http.Json");
+            }
+
             fw.WriteLine(
                 1,
                 "private readonly JsonSerializerOptions _jsOptions = new() { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, PropertyNamingPolicy = JsonNamingPolicy.CamelCase };"
@@ -242,6 +183,12 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
 
             foreach (var param in Config.GetParams(endpoint))
             {
+                fw.AddUsings(Config.GetPropertyImports(param, tag));
+                if (param.ParamLocation == ParamLocation.Query)
+                {
+                    fw.AddUsings(Config.GetValueImports(param, tag));
+                }
+
                 var defaultValue = Config.GetDefaultValue(param, tag);
                 fw.Write(
                     $"{Config.GetType(param, tag, nonNullable: param.Required)} {param.GetParamName().Verbatim()}"
@@ -310,7 +257,8 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
                 foreach (var param in formDataParams.Where(qp => !qp.Type.Contains("[]")))
                 {
                     var nullable = param.Type.EndsWith('?');
-                    var toString = param.Type.TrimEnd("?") switch
+                    var fpType = param.Type.TrimEnd("?");
+                    var toString = fpType switch
                     {
                         "string" => string.Empty,
                         "decimal" or "double" or "float" =>
@@ -318,6 +266,11 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
                         "DateTime" or "DateOnly" => $"{(nullable ? "?" : string.Empty)}.ToString(\"o\")",
                         _ => $"{(nullable ? "?" : string.Empty)}.ToString()",
                     };
+
+                    if (fpType is "decimal" or "double" or "float")
+                    {
+                        fw.AddUsing("System.Globalization");
+                    }
 
                     fw.WriteLine(3, $@"[""{param.Name}""] = {param.Value}{toString},");
                 }
@@ -336,13 +289,19 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
                     fw.Write("        }");
                     foreach (var qp in listQPs)
                     {
-                        var toString = Config.GetType(qp, tag) switch
+                        var qpType = Config.GetType(qp, tag);
+                        var toString = qpType switch
                         {
                             "string[]" => string.Empty,
                             "decimal[]" or "double[]" or "float[]" => $".ToString(CultureInfo.InvariantCulture)",
                             "DateTime[]" or "DateOnly[]" => $".ToString(\"o\")",
                             _ => $".ToString()",
                         };
+
+                        if (qpType is "decimal[]" or "double[]" or "float[]")
+                        {
+                            fw.AddUsing("System.Globalization");
+                        }
 
                         var first = listQPs.IndexOf(qp) == 0;
                         fw.WriteLine(
@@ -383,8 +342,11 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
 
             if (returnType != null)
             {
+                fw.AddUsings(Config.GetPropertyImports(returns!, tag));
+
                 if (!returns!.Required)
                 {
+                    fw.AddUsing("System.Net");
                     fw.WriteLine();
                     fw.WriteLine(2, $"if ({res}.StatusCode == HttpStatusCode.NoContent)");
                     fw.WriteLine(2, "{");
@@ -412,6 +374,11 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
                 }
                 else if (isAsyncEnumerable)
                 {
+                    if (Config.UseCancellationTokens)
+                    {
+                        fw.AddUsing("System.Runtime.CompilerServices");
+                    }
+
                     fw.WriteLine();
                     fw.WriteLine(
                         2,

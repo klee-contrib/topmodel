@@ -17,14 +17,14 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
     /// </summary>
     /// <param name="fileName">Nom du fichier cible.</param>
     /// <param name="tag">Tag du fichier cible.</param>
-    /// <param name="classList">Liste de classes à générer.</param>
+    /// <param name="classes">Classes à générer.</param>
     protected virtual async Task GenerateReferenceAccessorsImplementation(
         string fileName,
         string tag,
-        IList<Class> classList
+        IList<Class> classes
     )
     {
-        var ns = classList[0].Namespace;
+        var ns = classes[0].Namespace;
 
         var implementationName = $"Db{Config.GetReferenceAccessorName(ns, tag)}";
         var implementationNamespace = Config.GetReferenceImplementationNamespace(ns, tag);
@@ -34,76 +34,10 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
 
         await using var w = this.OpenCSharpWriter(fileName);
 
-        var usings = new HashSet<string>();
-
-        if (!implementationNamespace.StartsWith(interfaceNamespace))
-        {
-            usings.Add(interfaceNamespace);
-        }
-
-        if (
-            Config.PersistedReferencesResources
-            && Config.DbContextPath != null
-            && Config.AvailableClasses.Any(c => c.Translation && c.LocaleProperty != null)
-            && classList.Any(c => c.DefaultProperty != null)
-        )
-        {
-            usings.Add("System.Globalization");
-        }
-
-        foreach (var classe in classList)
-        {
-            var classNs = Config.GetNamespace(classe, tag);
-            if (!implementationNamespace.StartsWith(classNs))
-            {
-                usings.Add(classNs);
-            }
-
-            if (!classe.IsPersistent)
-            {
-                foreach (var value in classe.Values.SelectMany(v => v.Value))
-                {
-                    foreach (var @using in Config.GetValueImports(value.Key, tag, value.Value))
-                    {
-                        usings.Add(@using);
-                    }
-                }
-            }
-        }
-
-        usings.Add("Kinetix.Services.Annotations");
-
-        if (Config.DbContextPath == null)
-        {
-            usings.Add("Kinetix.DataAccess.Sql.Broker");
-
-            if (
-                classList.Any(classe =>
-                    classe.OrderProperty != null
-                    || classe.DefaultProperty != null && classe.DefaultProperty.NamePascal != "Libelle"
-                )
-            )
-            {
-                usings.Add("Kinetix.DataAccess.Sql");
-            }
-        }
-        else
-        {
-            var contextNs = Config.GetDbContextNamespace(tag, ns.Module);
-            if (!implementationNamespace.Contains(contextNs))
-            {
-                usings.Add(contextNs);
-            }
-
-            if (Config.UseAsyncReferenceAccessors || !Config.PersistedReferencesResources)
-            {
-                usings.Add("Microsoft.EntityFrameworkCore");
-            }
-        }
-
-        w.AddUsings(usings);
-
         w.WriteNamespace(implementationNamespace);
+
+        w.AddUsing("Kinetix.Services.Annotations");
+        w.AddUsing(interfaceNamespace);
 
         w.WriteSummary(Config.GetMessage(CsharpMessage.ImplementationOf, interfaceName));
 
@@ -122,7 +56,7 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
         w.WriteLine("[RegisterImpl]");
 
         if (
-            classList.All(c =>
+            classes.All(c =>
                 !c.IsPersistent || c.Enum == EnumMode.Class && c.Readonly && !Config.PersistedReferencesResources
             )
         )
@@ -131,6 +65,8 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
         }
         else if (Config.DbContextPath != null)
         {
+            w.AddUsing(Config.GetDbContextNamespace(tag, ns.Module));
+
             var dbContextName = Config.GetDbContextName(tag, ns.Module);
             var parameters = $"{dbContextName} dbContext";
 
@@ -156,6 +92,8 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
         }
         else
         {
+            w.AddUsing("Kinetix.DataAccess.Sql.Broker");
+
             var parameters = $"BrokerManager brokerManager";
 
             w.WriteClassDeclaration(
@@ -179,10 +117,10 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
             }
         }
 
-        foreach (
-            var classe in classList.Where(c => !Config.NoPersistence(tag) && (c.IsPersistent || c.Values.Count > 0))
-        )
+        foreach (var classe in classes.Where(c => !Config.NoPersistence(tag) && (c.IsPersistent || c.Values.Count > 0)))
         {
+            w.AddUsing(Config.GetNamespace(classe, tag));
+
             var serviceName =
                 "Load" + (Config.DbContextPath == null ? $"{classe.NamePascal}List" : classe.PluralNamePascal);
             w.WriteLine(1, "/// <inheritdoc cref=\"" + interfaceName + "." + serviceName + "\" />");
@@ -197,7 +135,7 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
             WriteReferenceAccessorBody(w, classe, tag);
             w.WriteLine(1, "}");
 
-            if (classList.IndexOf(classe) != classList.Count - 1)
+            if (classes.IndexOf(classe) != classes.Count - 1)
             {
                 w.WriteLine();
             }
@@ -212,15 +150,15 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
     /// <param name="fileType">Type d'interface (persistée ou pas).</param>
     /// <param name="fileName">Nom du fichier cible.</param>
     /// <param name="tag">Tag du fichier cible.</param>
-    /// <param name="classList">Liste de classes à générer.</param>
+    /// <param name="classes">Classes à générer.</param>
     protected virtual async Task GenerateReferenceAccessorsInterface(
         string fileType,
         string fileName,
         string tag,
-        IEnumerable<Class> classList
+        IEnumerable<Class> classes
     )
     {
-        var ns = classList.First().Namespace;
+        var ns = classes.First().Namespace;
 
         var interfaceNamespace = Config.GetReferenceInterfaceNamespace(ns, tag);
         var interfaceName =
@@ -228,22 +166,10 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
 
         await using var w = this.OpenCSharpWriter(fileName);
 
-        var usings = new HashSet<string>();
-
-        foreach (var classe in classList)
-        {
-            var classNs = Config.GetNamespace(classe, tag);
-            if (!interfaceNamespace.StartsWith(classNs))
-            {
-                usings.Add(classNs);
-            }
-        }
-
-        usings.Add("Kinetix.Services.Annotations");
-
-        w.AddUsings(usings);
-
         w.WriteNamespace(interfaceNamespace);
+
+        w.AddUsing("Kinetix.Services.Annotations");
+
         w.WriteSummary(
             Config.GetMessage(
                 fileType.StartsWith("db")
@@ -256,8 +182,10 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
         w.WriteLine("{");
 
         var count = 0;
-        foreach (var classe in classList)
+        foreach (var classe in classes)
         {
+            w.AddUsing(Config.GetNamespace(classe, tag));
+
             count++;
             w.WriteSummary(1, Config.GetMessage(CsharpMessage.ReferenceAccessor, Config.GetTypeName(classe)));
             if (Config.UseAsyncReferenceAccessors)
@@ -275,7 +203,7 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
                     + $"({(Config.UseAsyncReferenceAccessors ? "CancellationToken ct = default" : string.Empty)});"
             );
 
-            if (count != classList.Count())
+            if (count != classes.Count())
             {
                 w.WriteLine();
             }
@@ -308,20 +236,20 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
         CancellationToken ct = default
     )
     {
-        var classList = classes
+        var orderedClasses = classes
             .OrderBy(
-                x => Config.DbContextPath == null ? $"{x.NamePascal}List" : x.PluralNamePascal,
+                classe => Config.DbContextPath == null ? $"{classe.NamePascal}List" : classe.PluralNamePascal,
                 StringComparer.Ordinal
             )
             .ToList();
 
         if (fileType == "db-implementation")
         {
-            await GenerateReferenceAccessorsImplementation(fileName, tag, classList);
+            await GenerateReferenceAccessorsImplementation(fileName, tag, orderedClasses);
         }
         else
         {
-            await GenerateReferenceAccessorsInterface(fileType, fileName, tag, classList);
+            await GenerateReferenceAccessorsInterface(fileType, fileName, tag, orderedClasses);
         }
     }
 
@@ -340,6 +268,11 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
         }
         else if (!classe.IsPersistent)
         {
+            foreach (var value in classe.Values.SelectMany(v => v.Value))
+            {
+                w.AddUsings(Config.GetValueImports(value.Key, tag, value.Value));
+            }
+
             w.WriteLine(
                 2,
                 $@"return new List<{Config.GetTypeName(classe)}>
@@ -367,6 +300,8 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
 
                     if (translationClass.LocaleProperty != null)
                     {
+                        w.AddUsing("System.Globalization");
+
                         var rk = translationClass
                             .PrimaryKey.Single(p => p != translationClass.LocaleProperty)
                             .NamePascal;
@@ -397,6 +332,7 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
                     w.WriteLine(3, "}");
                     if (Config.UseAsyncReferenceAccessors)
                     {
+                        w.AddUsing("Microsoft.EntityFrameworkCore");
                         w.WriteLine(2, ").ToListAsync(ct);");
                     }
                     else
@@ -406,6 +342,8 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
                     return;
                 }
             }
+
+            w.AddUsing("Microsoft.EntityFrameworkCore");
 
             if (defaultProperty != null)
             {
@@ -421,6 +359,7 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
         {
             if (defaultProperty != null)
             {
+                w.AddUsing("Kinetix.DataAccess.Sql");
                 queryParameter =
                     $"new QueryParameter({Config.GetTypeName(classe)}.Cols.{defaultProperty.SqlName}, SortOrder.Asc)";
             }

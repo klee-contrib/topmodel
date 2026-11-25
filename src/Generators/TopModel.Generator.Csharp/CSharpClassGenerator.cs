@@ -13,61 +13,6 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
     public override string Name => "CSharpClassGen";
 
     /// <summary>
-    /// Génération des imports.
-    /// </summary>
-    /// <param name="w">Writer.</param>
-    /// <param name="item">Classe concernée.</param>
-    /// <param name="tag">Tag.</param>
-    protected virtual void AddUsings(CSharpWriter w, Class item, string tag)
-    {
-        if (item.Extends != null)
-        {
-            w.AddUsing(GetNamespace(item.Extends, tag));
-        }
-
-        w.AddUsings(item.Implements.Select(implements => GetNamespace(implements, tag)));
-        w.AddUsings(Config.GetDecoratorImports(item, tag));
-        w.AddUsings(Config.GetAnnotations(item, tag).SelectMany(a => a.Imports));
-
-        foreach (
-            var property in Config
-                .GetProperties(item)
-                .Concat(
-                    item.Extends?.InheritanceStrategy == InheritanceStrategy.SingleTable
-                    && Config.GetProperties(item.Extends).Contains(item.Extends.DiscriminatorProperty)
-                        ? [item.Extends.DiscriminatorProperty!]
-                        : []
-                )
-        )
-        {
-            w.AddUsings(Config.GetDomainImports(property, tag));
-            w.AddUsings(Config.GetValueImports(property, tag));
-
-            switch (property)
-            {
-                case { Association: Class a, AssociationProperty: IProperty ap, UseClassForAssociation: var useClass }
-                    when Config.AvailableClasses.Contains(a)
-                        && (ap.EnumProperty != null && Config.UniqueValueGeneration.CanEnum || useClass):
-                    w.AddUsing(GetNamespace(a, tag));
-                    break;
-                case { EnumProperty: IProperty ep }
-                    when Config.AvailableClasses.Contains(ep.Class) && Config.UniqueValueGeneration.CanEnum:
-                    w.AddUsing(GetNamespace(ep.Class, tag));
-                    break;
-                case { ReferenceClass: Class refClass }
-                    when Config.Kinetix != KinetixMode.None
-                        && Config.AvailableClasses.Contains(refClass)
-                        && (!property.PrimaryKeyish || property.Association != null):
-                    w.AddUsing(GetNamespace(refClass, tag));
-                    break;
-                case { Composition: Class cpc } when Config.AvailableClasses.Contains(cpc):
-                    w.AddUsing(GetNamespace(cpc, tag));
-                    break;
-            }
-        }
-    }
-
-    /// <summary>
     /// Génération de la déclaration de la classe.
     /// </summary>
     /// <param name="w">Writer</param>
@@ -121,8 +66,11 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
             }
         }
 
-        foreach (var (annotation, _) in Config.GetAnnotations(item, tag))
+        w.AddUsings(Config.GetDecoratorImports(item, tag));
+
+        foreach (var (annotation, imports) in Config.GetAnnotations(item, tag))
         {
+            w.AddUsings(imports);
             w.WriteAttribute(annotation);
         }
 
@@ -131,6 +79,13 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
             WriteEnum(w, item.EnumKey!, GetRefs(item), indent: 0);
             return;
         }
+
+        if (item.Extends != null)
+        {
+            w.AddUsing(GetNamespace(item.Extends, tag));
+        }
+
+        w.AddUsings(item.Implements.Select(implements => GetNamespace(implements, tag)));
 
         var extends = Config.GetClassExtends(item, tag);
         var implements = Config.GetClassImplements(item, tag);
@@ -353,10 +308,15 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
         if (hasDiscriminator)
         {
             var dp = item.Extends!.DiscriminatorProperty!;
+            var discriminatorValue = item.DiscriminatorValue ?? item.SqlName;
+
+            w.AddUsings(Config.GetPropertyImports(dp, tag));
+            w.AddUsings(Config.GetValueImports(dp, tag, discriminatorValue));
+
             w.WriteLine(1, "/// <inheritdoc />");
             w.WriteLine(
                 1,
-                $"public override {Config.GetType(dp, tag, nonNullable: true)} {dp.NamePascal} {{ get; init; }} = {Config.GetValue(dp, tag, item.DiscriminatorValue ?? item.SqlName)};"
+                $"public override {Config.GetType(dp, tag, nonNullable: true)} {dp.NamePascal} {{ get; init; }} = {Config.GetValue(dp, tag, discriminatorValue)};"
             );
         }
 
@@ -384,6 +344,8 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
     /// <param name="tag">Tag.</param>
     protected virtual void GenerateProperty(CSharpWriter w, IProperty property, ISet<string> sameColumnSet, string tag)
     {
+        w.AddUsings(Config.GetPropertyImports(property, tag));
+
         w.WriteSummary(1, property.Comment);
 
         if (property.CustomProperties.TryGetValue("example", out var example))
@@ -443,6 +405,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
             )
             {
                 w.AddUsing("Kinetix.Modeling.Annotations");
+                w.AddUsing(GetNamespace(refClass, tag));
                 w.WriteAttribute(1, "ReferencedType", $"typeof({Config.GetTypeName(refClass)})");
             }
 
@@ -509,6 +472,8 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
             var defaultValue = isDiscriminator
                 ? Config.GetValue(property, tag, property.Class.DiscriminatorValue)
                 : Config.GetDefaultValue(property, tag);
+
+            w.AddUsings(Config.GetValueImports(property, tag));
 
             w.Write(1, "public");
 
@@ -649,10 +614,6 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
     {
         await using var w = this.OpenCSharpWriter(fileName);
 
-        if (classe.Enum != EnumMode.Enum)
-        {
-            AddUsings(w, classe, tag);
-        }
         w.WriteNamespace(Config.GetNamespace(classe, tag));
         w.WriteSummary(classe.Comment);
         GenerateClassDeclaration(w, classe, tag);

@@ -526,6 +526,28 @@ public class CsharpConfig : GeneratorConfigBase
         return ResolveVariables(modelPath, tag: tag, module: ns.Module).ToNamespace().Replace(".Dto", string.Empty);
     }
 
+    public virtual IEnumerable<string> GetPropertyImports(IProperty property, string tag)
+    {
+        foreach (var import in GetDomainImports(property, tag))
+        {
+            yield return import;
+        }
+
+        switch (property)
+        {
+            case { EnumProperty: IProperty ep }
+                when AvailableClasses.Contains(ep.Class) && UniqueValueGeneration.CanEnum:
+                yield return GetNamespace(ep.Class, GetBestClassTag(ep.Class, tag));
+                break;
+            case { Association: Class a, UseClassForAssociation: true }:
+                yield return GetNamespace(a, GetBestClassTag(a, tag));
+                break;
+            case { Composition: Class cpc } when AvailableClasses.Contains(cpc):
+                yield return GetNamespace(cpc, GetBestClassTag(cpc, tag));
+                break;
+        }
+    }
+
     public virtual string GetReferenceAccessorName(Namespace ns, string tag)
     {
         return ResolveVariables(AddModuleFlat(ReferenceAccessorsName), tag: tag, module: ns.Module);

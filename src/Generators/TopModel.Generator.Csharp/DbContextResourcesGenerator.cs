@@ -46,30 +46,26 @@ public class DbContextResourcesGenerator(
         CancellationToken ct = default
     )
     {
-        await using var cw = this.OpenCSharpWriter(filePath);
+        await using var w = this.OpenCSharpWriter(filePath);
 
         var module = properties.First().Parent.Namespace.Module;
         var dbContextName = Config.GetDbContextName(tag, module);
-        var usings = new List<string> { "Microsoft.EntityFrameworkCore" };
         var contextNs = Config.GetDbContextNamespace(tag, module);
 
-        foreach (var classe in Config.AvailableClasses.Where(c => c.Translation))
-        {
-            usings.Add(Config.GetNamespace(classe, Config.GetBestClassTag(classe, tag)));
-        }
+        w.WriteNamespace(contextNs);
 
-        cw.AddUsings(usings);
+        w.AddUsing("Microsoft.EntityFrameworkCore");
 
-        cw.WriteNamespace(contextNs);
-
-        cw.WriteSummary(Config.GetMessage(CsharpMessage.EfTranslationsPartial));
-        cw.WriteClassDeclaration(dbContextName);
-        cw.WriteLine(1, $"partial void Add{lang.ToPascalCase()}Resources(ModelBuilder modelBuilder)");
-        cw.WriteLine(1, "{");
+        w.WriteSummary(Config.GetMessage(CsharpMessage.EfTranslationsPartial));
+        w.WriteClassDeclaration(dbContextName);
+        w.WriteLine(1, $"partial void Add{lang.ToPascalCase()}Resources(ModelBuilder modelBuilder)");
+        w.WriteLine(1, "{");
 
         foreach (var translationClass in Config.AvailableClasses.Where(c => c.Translation))
         {
-            cw.WriteLine(2, $"modelBuilder.Entity<{Config.GetTypeName(translationClass)}>().HasData(");
+            w.AddUsing(Config.GetNamespace(translationClass, Config.GetBestClassTag(translationClass, tag)));
+
+            w.WriteLine(2, $"modelBuilder.Entity<{Config.GetTypeName(translationClass)}>().HasData(");
             var containers = properties.GroupBy(prop => prop.Parent);
 
             var orderedContainers = containers
@@ -97,18 +93,18 @@ public class DbContextResourcesGenerator(
                     {
                         if (property.Label != null || _translationStore.AllowPropertyLabelFallback)
                         {
-                            cw.Write(
+                            w.Write(
                                 3,
                                 $"new {Config.GetTypeName(translationClass)} {{ {translationClass.PrimaryKey.Single(p => p != translationClass.LocaleProperty).NamePascal} = \"{property.ResourceKey}\"{(translationClass.LocaleProperty != null ? $", {translationClass.LocaleProperty.NamePascal} = \"{lang}\"" : string.Empty)}, {translationClass.DefaultProperty!.NamePascal} = \"{_translationStore.GetTranslation(property, lang)}\" }}"
                             );
 
                             if (property == orderedProperties[^1] && container == lastContainer && values.Count == 0)
                             {
-                                cw.WriteLine();
+                                w.WriteLine();
                             }
                             else
                             {
-                                cw.WriteLine(",");
+                                w.WriteLine(",");
                             }
                         }
                     }
@@ -116,7 +112,7 @@ public class DbContextResourcesGenerator(
 
                 foreach (var value in values)
                 {
-                    cw.Write(
+                    w.Write(
                         3,
                         $"new {Config.GetTypeName(translationClass)} {{ {translationClass.PrimaryKey.Single(p => p != translationClass.LocaleProperty).NamePascal} = \"{value.ResourceKey}\"{(translationClass.LocaleProperty != null ? $", {translationClass.LocaleProperty.NamePascal} = \"{lang}\"" : string.Empty)}, {translationClass.DefaultProperty!.NamePascal} = \"{_translationStore.GetTranslation(value, lang)}\" }}"
                     );
@@ -129,19 +125,19 @@ public class DbContextResourcesGenerator(
                         )
                     )
                     {
-                        cw.WriteLine();
+                        w.WriteLine();
                     }
                     else
                     {
-                        cw.WriteLine(",");
+                        w.WriteLine(",");
                     }
                 }
             }
 
-            cw.WriteLine(2, ");");
+            w.WriteLine(2, ");");
         }
 
-        cw.WriteLine(1, "}");
-        cw.WriteLine("}");
+        w.WriteLine(1, "}");
+        w.WriteLine("}");
     }
 }

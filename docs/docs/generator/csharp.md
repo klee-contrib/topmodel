@@ -348,6 +348,10 @@ Si >= 8 :
 - Utilise les constructeurs principaux pour la génération des classes avec dépendances (clients d'API, DbContext, accesseurs de références).
 - Utilise les initialiseurs de collection quand c'est possible.
 
+Si >= 11 :
+
+- Retire le using `System.Net.Http.Json` de la génération des clients car il a été ajouté en using implicite.
+
 ### `useRecords`
 
 Utilise des records (mutables) au lieu de classes pour la génération de classes.
