@@ -1,5 +1,9 @@
 # Changelog C#
 
+## 5.0.1
+
+- [`85a8a92`](https://github.com/klee-contrib/topmodel/commit/85a8a92d64eaf362dd5778d856737fe6782cf2fc) - [C#] Unification de la résolution des usings + fix de qualification manquante sur le HasData statique du DbContext
+
 ## 5.0.0
 
 - Compatibilité avec TopModel 5.0
